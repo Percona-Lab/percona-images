@@ -1,0 +1,30 @@
+---
+provisioner:
+  name: ansible_playbook
+  roles_path: roles
+  hosts: 127.0.0.1
+  ansible_verbose: true
+  require_chef_for_busser: true
+  roles_path: ansible/roles
+
+platforms:
+  - name: vagrant-centos-7
+    driver:
+      name: vagrant
+      box: puppetlabs/centos-7.2-64-nocm
+  - name: ec2-centos-7
+    driver:
+      name: ec2
+      instance_type: t2.micro
+      aws_ssh_key_id: mykola
+      security_group_ids: ["sg-4378343e"]
+      subnet_id: subnet-4765a930
+      region: us-east-1
+      associate_public_ip: true
+    transport:
+      username: centos
+
+suites:
+  - name: mysql
+    provisioner:
+      playbook: ansible/mysql/main.yml

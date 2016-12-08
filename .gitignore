@@ -1,0 +1,6 @@
+*~
+*.lock
+.kitchen/
+.kitchen.local.yml
+ansible/tmp/
+ansible/roles/

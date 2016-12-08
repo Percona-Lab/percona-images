@@ -1,0 +1,39 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: Add Percona repository
+      yum_repository:
+        name: percona
+        description: CentOS $releasever - Percona
+        baseurl: http://repo.percona.com/centos/$releasever/os/$basearch/
+        gpgkey: http://www.percona.com/downloads/percona-release/RPM-GPG-KEY-percona
+        gpgcheck: yes
+        enabled: yes
+
+    - name: Install Percona Server
+      yum: name={{ item }} state=installed
+      when: ansible_os_family == 'RedHat'
+      with_items:
+        - Percona-Server-client-57
+        - Percona-Server-server-57
+        - percona-xtrabackup
+        - percona-toolkit
+
+    - name: Start Percona Server
+      service: name=mysqld state=started enabled=yes
+
+    - name: Install firewalld
+      yum: name={{ item }} state=installed
+      when: ansible_os_family == 'RedHat'
+      with_items:
+        - firewalld
+
+    - name: Start firewalld
+      service: name=firewalld state=started enabled=yes
+
+    - name: insert firewalld rule
+      firewalld: port=3306/tcp permanent=true state=enabled immediate=yes
+

@@ -1,0 +1,14 @@
+Pre-install:
+  bundle install
+  cd ansible
+    librarian-ansible install
+  cd ..
+
+Make image:
+  packer build mysql.json
+
+Test:
+  kitchen create
+  kitchen converge
+  kitchen verify
+  kitchen destroy
