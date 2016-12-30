@@ -1,0 +1,171 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - stat: path=/boot/grub/grub.conf
+      register: grub1_conf
+
+    - name: Fix EC2 System Log
+      when: grub1_conf.stat.exists
+      replace:
+        dest: /boot/grub/grub.conf
+        regexp: 'console=hvc0'
+        replace: 'console=ttyS0 xen_emul_unplug=unnecessary'
+
+    - name: Add EPEL repository
+      when: ansible_os_family == 'RedHat'
+      yum:
+        name: https://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
+        state: installed
+
+    - name: Update OS
+      when: false
+      #when: ansible_os_family == 'RedHat'
+      yum:
+        name: '*'
+        state: latest
+
+    - name: Install console tools
+      when: ansible_os_family == 'RedHat'
+      yum: name={{ item }} state=installed
+      with_items:
+        - screen
+        - vim
+
+    - name: Add Percona repository
+      when: ansible_os_family == 'RedHat'
+      yum:
+        name: https://www.percona.com/redir/downloads/percona-release/redhat/0.1-4/percona-release-0.1-4.noarch.rpm
+        state: installed
+
+    - name: Add Mykola repository
+      when: ansible_os_family == 'RedHat'
+      yum_repository:
+        name: mykola
+        description: Mykola temporary repo
+        baseurl: http://34.195.117.48/epel-7-x86_64/
+        gpgcheck: no
+        enabled: yes
+
+    - name: Install Percona Client
+      when: ansible_os_family == 'RedHat'
+      yum: name={{ item }} state=installed
+      with_items:
+        - Percona-Server-client-55
+        - MySQL-python
+
+    - name: Remove MariaDB Client
+      when: ansible_os_family == 'RedHat'
+      yum: name={{ item }} state=absent
+      with_items:
+        - mariadb-libs
+
+    - name: Install PMM Server
+      when: ansible_os_family == 'RedHat'
+      yum: name={{ item }} state=installed
+      with_items:
+        - Percona-Server-server-55
+        - consul
+        - grafana
+        - nginx
+        - prometheus
+        - orchestrator
+        - node_exporter
+        - percona-qan-api
+        - percona-qan-app
+        - percona-toolkit
+        - percona-dashboards
+        - pmm-server
+
+    - name: Disable SELinux
+      selinux:
+        policy: targeted
+        state: permissive
+
+    - name: Start MySQL Service
+      service: name={{ item }} state=started enabled=yes
+      with_items:
+        - mysqld
+
+    - name: Create orchestrator database
+      mysql_db:
+        name: orchestrator
+        state: present
+
+    - name: Create orchestrator user
+      mysql_user:
+        name: orchestrator
+        host: localhost
+        password: orchestrator
+        priv: 'orchestrator.*:ALL'
+        state: present
+
+    - name: Create PMM database
+      mysql_db:
+        name: pmm
+        state: present
+      register: pmm_db
+
+    - name: Import PMM database
+      when: pmm_db.changed
+      mysql_db:
+        name: pmm
+        state: import
+        target: /usr/share/percona-qan-api/schema/pmm.sql
+
+    - name: Create PMM user
+      mysql_user:
+        name: percona
+        host: localhost
+        password: percona
+        priv: 'pmm.*:ALL'
+        state: present
+
+    - name: Fix nginx config
+      replace:
+        dest: /etc/nginx/nginx.conf
+        regexp: '^(\s*)listen'
+        replace: '\1#listen'
+
+    - name: Start PMM Server
+      service: name={{ item }} state=started enabled=yes
+      with_items:
+        - consul
+        - node_exporter
+        - prometheus
+        - orchestrator
+        - grafana-server
+        - percona-qan-api
+        - nginx
+
+    - stat: path=/var/lib/grafana/PERCONA_DASHBOARDS_VERSION
+      register: dashboards_file
+
+    - name: Import dashboards
+      when: not dashboards_file.stat.exists
+      command: /usr/share/percona-dashboards/import-dashboards.py
+
+    - name: Install firewalld
+      when: ansible_os_family == 'RedHat'
+      yum: name={{ item }} state=installed
+      with_items:
+        - firewalld
+
+    - name: Start firewalld
+      when: ansible_os_family == 'RedHat'
+      service: name=firewalld state=started enabled=yes
+
+    - name: Add firewalld rule
+      when: ansible_os_family == 'RedHat'
+      firewalld: port={{ item }} permanent=true state=enabled immediate=yes
+      with_items:
+          - 80/tcp
+          - 443/tcp
+
+    - name: Cleanup cloud-init cache
+      file:
+        state: absent
+        path: /var/lib/cloud
+

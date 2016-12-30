@@ -34,3 +34,6 @@ suites:
   - name: mysql57
     provisioner:
       playbook: ansible/mysql57/main.yml
+  - name: pmm
+    provisioner:
+      playbook: ansible/pmm/main.yml
