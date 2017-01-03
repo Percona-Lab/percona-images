@@ -21,8 +21,8 @@
         state: installed
 
     - name: Update OS
-      when: false
-      #when: ansible_os_family == 'RedHat'
+      #when: false
+      when: ansible_os_family == 'RedHat'
       yum:
         name: '*'
         state: latest
@@ -78,6 +78,7 @@
         - percona-toolkit
         - percona-dashboards
         - pmm-server
+        - cloud-init
 
     - name: Disable SELinux
       selinux:
@@ -165,7 +166,22 @@
           - 443/tcp
 
     - name: Cleanup cloud-init cache
-      file:
-        state: absent
-        path: /var/lib/cloud
+      file: path={{ item }} state=absent
+      with_items:
+        - /var/lib/cloud/sem
+        - /var/lib/cloud/data
+        - /var/lib/cloud/instance
+        - /var/lib/cloud/instances
+        - /var/log/cloud-init.log
+        - /var/log/cloud-init-output.log
+
+    - name: Fix cloud-init start-up sequence
+      replace:
+        dest: /usr/lib/systemd/system/cloud-final.service
+        regexp: 'After=network.target'
+        replace: 'After=mysqld.service network.target'
+
+    - name: Create per-once dir for cloud-init
+      file: path=/var/lib/cloud/scripts/per-once state=directory
+
 

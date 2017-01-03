@@ -10,11 +10,13 @@ transport:
   max_ssh_sessions: 5
 
 platforms:
-  - name: vagrant-centos-7
+  - name: ovf
     driver:
       name: vagrant
-      box: puppetlabs/centos-7.2-64-nocm
-  - name: ec2-centos-7
+      box: centos/7
+      box_version: 1611.01
+      cache_directory: false
+  - name: ami
     driver:
       name: ec2
       image_id: ami-6d1c2007

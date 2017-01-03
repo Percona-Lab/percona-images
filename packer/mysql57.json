@@ -1,0 +1,66 @@
+{
+    "builders": [
+        {
+            "type": "amazon-ebs",
+            "ami_name": "Percona Server 5.7 for MySQL [{{isotime \"2006-01-02\"}}]",
+            "instance_type": "t2.micro",
+            "region": "us-east-1",
+            "source_ami": "ami-6d1c2007",
+            "ssh_username": "centos",
+            "ssh_pty" : "true",
+            "subnet_id" : "subnet-4765a930",
+            "security_group_id" : "sg-4378343e",
+            "launch_block_device_mappings": [
+                {
+                    "device_name": "/dev/sda1",
+                    "volume_size": 8,
+                    "volume_type": "gp2",
+                    "delete_on_termination": true
+                },
+                {
+                    "device_name": "/dev/sdf",
+                    "volume_size": 400,
+                    "volume_type": "io1",
+                    "iops": 20000,
+                    "delete_on_termination": false
+                }
+            ]
+        },
+        {
+              "type": "virtualbox-ovf",
+              "vm_name": "Percona Server 5.7 for MySQL [{{isotime \"2006-01-02\"}}]",
+              "output_directory": "mysql57-ovf",
+              "source_path": ".cache/CentOS-7-x86_64-Vagrant-1611_01.VirtualBox.ova",
+              "ssh_username": "vagrant",
+              "ssh_pty": true,
+              "ssh_private_key_file": ".cache/id_rsa_vagrant",
+              "guest_additions_mode": "disable",
+              "headless": true,
+              "shutdown_command": "sudo shutdown -P now"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "inline": [
+                "sudo yum -y install epel-release",
+                "sudo yum -y install ansible bats"
+            ]
+        },
+        {
+            "type": "ansible-local",
+            "playbook_file": "ansible/mysql57/main.yml"
+        },
+        {
+            "type": "file",
+            "source": "test/integration/mysql57/bats",
+            "destination": "/tmp"
+        },
+        {
+            "type": "shell",
+            "inline": [
+                "echo bats /tmp/bats/*.bats"
+            ]
+        }
+    ]
+}

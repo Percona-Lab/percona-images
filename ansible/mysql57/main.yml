@@ -100,6 +100,9 @@
         regexp: 'After=network.target'
         replace: 'After=mysqld.service network.target'
 
+    - name: Create per-once dir for cloud-init
+      file: path=/var/lib/cloud/scripts/per-once state=directory
+
     - name: Add MySQL password generator script
       copy:
         content: |
