@@ -4,32 +4,49 @@
             "type": "amazon-ebs",
             "ami_name": "PMM Server [{{isotime \"2006-01-02\"}}]",
             "instance_type": "t2.micro",
-            "region": "us-east-1",
-            "source_ami": "ami-6d1c2007",
-            "ssh_username": "centos",
-            "ssh_pty" : "true",
-            "subnet_id" : "subnet-4765a930",
-            "security_group_id" : "sg-4378343e",
             "launch_block_device_mappings": [
                 {
+                    "delete_on_termination": true,
                     "device_name": "/dev/sda1",
                     "volume_size": 8,
-                    "volume_type": "gp2",
-                    "delete_on_termination": true
+                    "volume_type": "gp2"
                 }
-            ]
+            ],
+            "region": "us-east-1",
+            "security_group_id": "sg-4378343e",
+            "source_ami": "ami-6d1c2007",
+            "ssh_pty": "true",
+            "ssh_username": "centos",
+            "subnet_id": "subnet-4765a930"
         },
         {
-              "type": "virtualbox-ovf",
-              "vm_name": "PMM Server [{{isotime \"2006-01-02\"}}]",
-              "output_directory": "pmm-ovf",
-              "source_path": ".cache/CentOS-7-x86_64-Vagrant-1611_01.VirtualBox.ova",
-              "ssh_username": "vagrant",
-              "ssh_pty": true,
-              "ssh_private_key_file": ".cache/id_rsa_vagrant",
-              "guest_additions_mode": "disable",
-              "headless": true,
-              "shutdown_command": "sudo shutdown -P now"
+            "type": "virtualbox-ovf",
+            "vm_name": "PMM Server [{{isotime \"2006-01-02\"}}]",
+            "guest_additions_mode": "disable",
+            "headless": true,
+            "shutdown_command": "sudo shutdown -P now",
+            "source_path": ".cache/CentOS-7-x86_64-Vagrant-1611_01.VirtualBox.ova",
+            "ssh_private_key_file": ".cache/id_rsa_vagrant",
+            "ssh_pty": true,
+            "ssh_username": "vagrant",
+            "vboxmanage": [
+                [
+                    "modifyvm",
+                    "{{.Name}}",
+                    "--memory",
+                    "1024"
+                ]
+            ]
+        }
+    ],
+    "post-processors": [
+        {
+            "type": "vagrant",
+            "output": "PMM-Server-{{isotime \"2006-01-02\"}}.ova",
+            "compression_level": "0",
+            "only": [
+                "virtualbox-ovf"
+            ]
         }
     ],
     "provisioners": [
@@ -46,8 +63,8 @@
         },
         {
             "type": "file",
-            "source": "test/integration/pmm/bats",
-            "destination": "/tmp"
+            "destination": "/tmp",
+            "source": "test/integration/pmm/bats"
         },
         {
             "type": "shell",

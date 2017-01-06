@@ -1,6 +1,11 @@
+export PACKER_CACHE_DIR := .cache
+
 clean:
-	rm -rf .kitchen/ Gemfile.lock ansible/{Ansiblefile.lock,roles,tmp} .cache pmm-ovf mysql57-ovf
+	rm -rf .kitchen/ Gemfile.lock ansible/{Ansiblefile.lock,roles,tmp} *.ova
 	find . -name "*~" -delete
+
+clean-all: clean
+	rm -rf .cache
 
 fetch:
 	mkdir -p .cache || :
@@ -13,18 +18,22 @@ fetch:
 	chmod 600 .cache/id_rsa_vagrant
 
 deps:
+	gem install bundler || :
 	bundle install
 	cd ansible && \
 	    librarian-ansible install
+	mkdir -p .cache || :
+	curl https://releases.hashicorp.com/packer/0.12.1/packer_0.12.1_linux_amd64.zip > .cache/packer.zip
+	unzip -o .cache/packer.zip -d ~/bin
 
 pmm-ovf: fetch
-	PACKER_CACHE_DIR=.cache packer build -only virtualbox-ovf packer/pmm.json
+	packer build -only virtualbox-ovf packer/pmm.json
 
 pmm-ami:
 	packer build -only amazon-ebs packer/pmm.json
 
 mysql57-ovf: fetch
-	PACKER_CACHE_DIR=.cache packer build -only virtualbox-ovf packer/mysql57.json
+	packer build -only virtualbox-ovf packer/mysql57.json
 
 mysql57-ami:
 	packer build -only amazon-ebs packer/mysql57.json

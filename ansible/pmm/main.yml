@@ -33,6 +33,8 @@
       with_items:
         - screen
         - vim
+        - wget
+        - lsof
 
     - name: Add Percona repository
       when: ansible_os_family == 'RedHat'
