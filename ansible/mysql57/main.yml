@@ -2,48 +2,11 @@
 - hosts: all
   become: yes
   gather_facts: yes
+  roles:
+    - cloud-node
+    - mysql-init
 
   tasks:
-    - name: Fix System Log | stat /boot/grub/grub.conf
-      stat: path=/boot/grub/grub.conf
-      register: grub1_conf
-
-    - name: Fix System Log | change /boot/grub/grub.conf
-      when: grub1_conf.stat.exists
-      replace:
-        dest: /boot/grub/grub.conf
-        regexp: 'console=hvc0'
-        replace: 'console=ttyS0 xen_emul_unplug=unnecessary'
-
-    - name: Fix System Log | stat /boot/grub2/grub.cfg
-      stat: path=/boot/grub2/grub.cfg
-      register: grub2_conf
-
-    - name: Fix System Log | change /etc/default/grub
-      when: grub2_conf.stat.exists
-      replace:
-        dest: /etc/default/grub
-        regexp: 'rhgb'
-        replace: 'console=ttyS0 xen_emul_unplug=unnecessary'
-      register: grub2_var
-
-    - name: Fix System Log | run grub2-mkconfig
-      when: grub2_var.changed and grub2_conf.stat.exists
-      command: grub2-mkconfig -o /boot/grub2/grub.cfg
-
-    - name: Add EPEL repository
-      when: ansible_os_family == 'RedHat'
-      yum:
-        name: https://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
-        state: installed
-
-    - name: Update OS
-      #when: false
-      when: ansible_os_family == 'RedHat'
-      yum:
-        name: '*'
-        state: latest
-
     - name: Install console tools
       when: ansible_os_family == 'RedHat'
       yum: name={{ item }} state=installed
@@ -53,48 +16,13 @@
         - wget
         - lsof
 
-    - name: Add Percona repository
-      when: ansible_os_family == 'RedHat'
-      yum:
-        name: https://www.percona.com/redir/downloads/percona-release/redhat/0.1-4/percona-release-0.1-4.noarch.rpm
-        state: installed
-
-    - name: Install Percona Client
+    - name: Install Percona tools
       when: ansible_os_family == 'RedHat'
       yum: name={{ item }} state=installed
       with_items:
-        - Percona-Server-client-57
-
-    - name: Remove MariaDB Client
-      when: ansible_os_family == 'RedHat'
-      yum: name={{ item }} state=absent
-      with_items:
-        - mariadb-libs
-
-    - name: Install Percona Server
-      when: ansible_os_family == 'RedHat'
-      yum: name={{ item }} state=installed
-      with_items:
-        - Percona-Server-server-57
         - percona-toolkit
         - percona-xtrabackup
         - pmm-client
-        - cloud-init
-
-    - name: Start Percona Server for MySQL
-      service: name={{ item }} state=started enabled=yes
-      with_items:
-        - mysqld
-
-    - name: Install firewalld
-      when: ansible_os_family == 'RedHat'
-      yum: name={{ item }} state=installed
-      with_items:
-        - firewalld
-
-    - name: Start firewalld
-      when: ansible_os_family == 'RedHat'
-      service: name=firewalld state=started enabled=yes
 
     - name: Add firewalld rule
       when: ansible_os_family == 'RedHat'
@@ -102,41 +30,4 @@
       with_items:
           - 3306/tcp
           - 42000-42005/tcp
-
-    - name: Cleanup cloud-init cache
-      file: path={{ item }} state=absent
-      with_items:
-        - /var/lib/cloud/sem
-        - /var/lib/cloud/data
-        - /var/lib/cloud/instance
-        - /var/lib/cloud/instances
-        - /var/log/cloud-init.log
-        - /var/log/cloud-init-output.log
-
-    - name: Fix cloud-init start-up sequence
-      replace:
-        dest: /usr/lib/systemd/system/cloud-final.service
-        regexp: 'After=network.target'
-        replace: 'After=mysqld.service network.target'
-
-    - name: Create per-once dir for cloud-init
-      file: path=/var/lib/cloud/scripts/per-once state=directory
-
-    - name: Add MySQL password generator script
-      copy:
-        content: |
-          #!/bin/sh
-
-          TEMP_PASS=$(grep 'temporary password' /var/log/mysqld.log  | sed -e 's/.*localhost: //' | tail -1)
-          NEW_PASS=$(dd if=/dev/urandom bs=1 count=256 2>/dev/null | tr -cd '[:alnum:],.!@#$%^&*' | head -c32)
-          mysql "-p${TEMP_PASS}" --connect-expired-password -e "SET PASSWORD = PASSWORD('$NEW_PASS');"
-          echo "[client]
-          password = '$NEW_PASS'" > /root/.my.cnf
-          echo "ci-info:
-          ci-info: ++++++++++++++++++++++++++ Percona Server for MySQL ++++++++++++++++++++++++++
-          ci-info: | Setting password for root@localhost user: $NEW_PASS |
-          ci-info: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-          ci-info:" | tee -a /var/log/mysqld.log
-        dest: /var/lib/cloud/scripts/per-once/init-mysql-password
-        mode: 0755
 

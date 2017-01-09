@@ -4,6 +4,5 @@
 .kitchen.local.yml
 .cache/
 ansible/tmp/
-ansible/roles/
 pmm-ovf/
 mysql57-ovf/

@@ -1,0 +1,50 @@
+---
+# Initialize Percona Server for MySQL 5.7
+
+    - name: Percona Server for MySQL   | Install Percona Client
+      when: ansible_os_family == 'RedHat'
+      yum: name={{ item }} state=installed
+      with_items:
+        - Percona-Server-client-57
+
+    - name: Percona Server for MySQL   | Remove MariaDB Client
+      when: ansible_os_family == 'RedHat'
+      yum: name={{ item }} state=absent
+      with_items:
+        - mariadb-libs
+
+    - name: Percona Server for MySQL   | Install Percona Server
+      when: ansible_os_family == 'RedHat'
+      yum: name={{ item }} state=installed
+      with_items:
+        - Percona-Server-server-57
+        - MySQL-python
+
+    - name: Percona Server for MySQL   | Start service
+      service: name={{ item }} state=started enabled=yes
+      with_items:
+        - mysqld
+
+    - name: Percona Server for MySQL   | stat /root/.my.cnf
+      stat: path=/root/.my.cnf
+      register: root_mycnf_file
+
+    - name: Percona Server for MySQL   | Add password generator script
+      when: not root_mycnf_file.stat.exists
+      copy:
+        content: |
+          #!/bin/sh
+
+          TEMP_PASS=$(grep 'temporary password' /var/log/mysqld.log  | sed -e 's/.*localhost: //' | tail -1)
+          NEW_PASS=$(dd if=/dev/urandom bs=1 count=256 2>/dev/null | tr -cd '[:alnum:],.!@#$%^&*' | head -c32)
+          mysql "-p${TEMP_PASS}" --connect-expired-password -e "SET PASSWORD = PASSWORD('$NEW_PASS');"
+          echo "[client]
+          password = '$NEW_PASS'" > /root/.my.cnf
+          echo "ci-info:
+          ci-info: ++++++++++++++++++++++++++ Percona Server for MySQL ++++++++++++++++++++++++++
+          ci-info: | Setting password for root@localhost user: $NEW_PASS |
+          ci-info: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+          ci-info:" | tee -a /var/log/mysqld.log
+        dest: /var/lib/cloud/scripts/per-once/init-mysql-password
+        mode: 0755
+

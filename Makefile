@@ -1,7 +1,7 @@
 export PACKER_CACHE_DIR := .cache
 
 clean:
-	rm -rf .kitchen/ Gemfile.lock ansible/{Ansiblefile.lock,roles,tmp} *.ova
+	rm -rf .kitchen/ Gemfile.lock ansible/{Ansiblefile.lock,tmp} *.ova
 	find . -name "*~" -delete
 
 clean-all: clean
