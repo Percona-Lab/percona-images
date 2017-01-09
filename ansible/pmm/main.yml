@@ -44,15 +44,6 @@
         name: '*'
         state: latest
 
-    - name: Install console tools
-      when: ansible_os_family == 'RedHat'
-      yum: name={{ item }} state=installed
-      with_items:
-        - screen
-        - vim
-        - wget
-        - lsof
-
     - name: Add Percona repository
       when: ansible_os_family == 'RedHat'
       yum:
