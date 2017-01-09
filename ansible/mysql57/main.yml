@@ -4,15 +4,32 @@
   gather_facts: yes
 
   tasks:
-    - stat: path=/boot/grub/grub.conf
+    - name: Fix System Log | stat /boot/grub/grub.conf
+      stat: path=/boot/grub/grub.conf
       register: grub1_conf
 
-    - name: Fix EC2 System Log
+    - name: Fix System Log | change /boot/grub/grub.conf
       when: grub1_conf.stat.exists
       replace:
         dest: /boot/grub/grub.conf
         regexp: 'console=hvc0'
         replace: 'console=ttyS0 xen_emul_unplug=unnecessary'
+
+    - name: Fix System Log | stat /boot/grub2/grub.cfg
+      stat: path=/boot/grub2/grub.cfg
+      register: grub2_conf
+
+    - name: Fix System Log | change /etc/default/grub
+      when: grub2_conf.stat.exists
+      replace:
+        dest: /etc/default/grub
+        regexp: 'rhgb'
+        replace: 'console=ttyS0 xen_emul_unplug=unnecessary'
+      register: grub2_var
+
+    - name: Fix System Log | run grub2-mkconfig
+      when: grub2_var.changed and grub2_conf.stat.exists
+      command: grub2-mkconfig -o /boot/grub2/grub.cfg
 
     - name: Add EPEL repository
       when: ansible_os_family == 'RedHat'
