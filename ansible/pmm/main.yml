@@ -16,18 +16,18 @@
         path: /var/lib/cloud/scripts/per-once/init-mysql-password
         state: absent
 
-    - name: Add Mykola repository
+    - name: Add Percona-Laboratory YUM repository
       when: ansible_os_family == 'RedHat'
       yum_repository:
-        name: mykola
-        description: Mykola temporary repo
-        baseurl: http://34.195.117.48/epel-7-x86_64/
+        name: percona-laboratory-x86_64
+        description: Percona-Laboratory YUM repository - x86_64
+        baseurl: https://repo.percona.com/laboratory/7/RPMS/x86_64/
         gpgcheck: no
-        enabled: yes
+        enabled: no
 
     - name: Install PMM Server
       when: ansible_os_family == 'RedHat'
-      yum: name={{ item }} state=installed
+      yum: name={{ item }} state=installed enablerepo=percona-laboratory-x86_64
       with_items:
         - consul
         - grafana
