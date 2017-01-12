@@ -22,6 +22,15 @@
         {
             "type": "virtualbox-ovf",
             "vm_name": "PMM Server [{{isotime \"2006-01-02\"}}]",
+            "export_opts": [
+                "--vsys", "0",
+                "--product", "Percona Monitoring and Management",
+                "--producturl", "https://www.percona.com/software/database-tools/percona-monitoring-and-management",
+                "--vendor", "Percona",
+                "--vendorurl", "https://www.percona.com",
+                "--version", "{{isotime \"2006-01-02\"}}",
+                "--description", "Percona Monitoring and Management (PMM) is an open-source platform for managing and monitoring MySQL and MongoDB performance"
+            ],
             "guest_additions_mode": "disable",
             "headless": true,
             "output_directory": "pmm-virtualbox-ovf",
@@ -31,12 +40,7 @@
             "ssh_pty": true,
             "ssh_username": "vagrant",
             "vboxmanage": [
-                [
-                    "modifyvm",
-                    "{{.Name}}",
-                    "--memory",
-                    "1024"
-                ]
+                [ "modifyvm", "{{.Name}}", "--memory", "1024" ]
             ]
         }
     ],

@@ -29,6 +29,15 @@
         {
             "type": "virtualbox-ovf",
             "vm_name": "Percona Server for MySQL 5.7 [{{isotime \"2006-01-02\"}}]",
+            "export_opts": [
+                "--vsys", "0",
+                "--product", "Percona Server for MySQL 5.7",
+                "--producturl", "https://www.percona.com/software/mysql-database/percona-server",
+                "--vendor", "Percona",
+                "--vendorurl", "https://www.percona.com",
+                "--version", "{{isotime \"2006-01-02\"}}",
+                "--description", "Percona Server for MySQL is a free, fully compatible, enhanced, open source drop-in replacement for MySQL that provides superior performance, scalability and instrumentation"
+            ],
             "guest_additions_mode": "disable",
             "headless": true,
             "output_directory": "mysql-virtualbox-ovf",
@@ -38,12 +47,7 @@
             "ssh_pty": true,
             "ssh_username": "vagrant",
             "vboxmanage": [
-                [
-                    "modifyvm",
-                    "{{.Name}}",
-                    "--memory",
-                    "1024"
-                ]
+                [ "modifyvm", "{{.Name}}", "--memory", "1024" ]
             ]
         }
     ],
