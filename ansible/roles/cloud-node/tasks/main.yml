@@ -1,6 +1,19 @@
 ---
 # Common things for all cloud images
 
+    - name: Data partition             | Format
+      filesystem:
+        fstype: btrfs
+        dev: /dev/sdb
+        opts: -m single -L DATA
+
+    - name: Data partition             | Mount
+      mount:
+        name: /opt/pmm
+        src: LABEL=DATA
+        fstype: btrfs
+        state: present
+
     - name: System Log                 | stat /boot/grub/grub.conf
       stat: path=/boot/grub/grub.conf
       register: grub1_conf

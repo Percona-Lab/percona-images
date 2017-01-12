@@ -16,6 +16,17 @@ platforms:
       box: centos/7
       box_version: 1611.01
       cache_directory: false
+      customize:
+        memory: 1024
+        createhd:
+          filename: /tmp/some_random_name.vmdk
+          size: 512
+        storageattach:
+          storagectl: IDE
+          port: 1
+          device: 0
+          type: hdd
+          medium: /tmp/some_random_name.vmdk
   - name: ami
     driver:
       name: ec2

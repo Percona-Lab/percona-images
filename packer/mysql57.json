@@ -13,7 +13,7 @@
                 },
                 {
                     "delete_on_termination": false,
-                    "device_name": "/dev/sdf",
+                    "device_name": "/dev/sdb",
                     "iops": 20000,
                     "volume_size": 400,
                     "volume_type": "io1"
@@ -48,7 +48,10 @@
             "ssh_pty": true,
             "ssh_username": "vagrant",
             "vboxmanage": [
-                [ "modifyvm", "{{.Name}}", "--memory", "1024" ]
+                [ "modifyvm", "{{.Name}}", "--memory", "1024" ],
+                [ "createhd", "--format", "VMDK", "--filename", "/tmp/{{.Name}}-disk2.vmdk", "--variant", "STREAM", "--size", "409600" ],
+                [ "storagectl", "{{.Name}}", "--name", "SATA Controller", "--add", "sata", "--controller", "IntelAHCI"],
+                [ "storageattach", "{{.Name}}", "--storagectl", "SATA Controller", "--port", "1", "--type", "hdd", "--medium", "/tmp/{{.Name}}-disk2.vmdk" ]
             ]
         }
     ],
