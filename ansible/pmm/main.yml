@@ -7,16 +7,16 @@
     - mysql-init
 
   tasks:
-    - name: MySQL password   | Generate
+    - name: MySQL password             | Generate
       when: not root_mycnf_file.stat.exists
       command: /var/lib/cloud/scripts/per-once/init-mysql-password
 
-    - name: MySQL password   | Remove script
+    - name: MySQL password             | Remove script
       file:
         path: /var/lib/cloud/scripts/per-once/init-mysql-password
         state: absent
 
-    - name: Add Percona-Laboratory YUM repository
+    - name: PMM                        | Add Percona-Laboratory YUM repository
       when: ansible_os_family == 'RedHat'
       yum_repository:
         name: percona-laboratory-x86_64
@@ -25,7 +25,7 @@
         gpgcheck: no
         enabled: no
 
-    - name: Install PMM Server
+    - name: PMM                        | Install RPMs
       when: ansible_os_family == 'RedHat'
       yum: name={{ item }} state=installed enablerepo=percona-laboratory-x86_64
       with_items:
@@ -46,12 +46,12 @@
         policy: targeted
         state: permissive
 
-    - name: Create orchestrator database
+    - name: Orchestrator               | Create MySQL database
       mysql_db:
         name: orchestrator
         state: present
 
-    - name: Create orchestrator user
+    - name: Orchestrator               | Create MySQL user
       mysql_user:
         name: orchestrator
         host: localhost
@@ -60,20 +60,20 @@
         encrypted: yes
         state: present
 
-    - name: Create PMM database
+    - name: qan-api                    | Create MySQL database
       mysql_db:
         name: pmm
         state: present
       register: pmm_db
 
-    - name: Import PMM database
+    - name: qan-api                    | Import MySQL database
       when: pmm_db.changed
       mysql_db:
         name: pmm
         state: import
         target: /usr/share/percona-qan-api/schema/pmm.sql
 
-    - name: Create PMM user
+    - name: qan-api                    | Create MySQL user
       mysql_user:
         name: percona
         host: localhost
@@ -82,13 +82,13 @@
         encrypted: yes
         state: present
 
-    - name: Fix nginx config
+    - name: PMM                        | Fix nginx config
       replace:
         dest: /etc/nginx/nginx.conf
         regexp: '^(\s*)listen'
         replace: '\1#listen'
 
-    - name: Start PMM Server
+    - name: PMM                        | Start services
       service: name={{ item }} state=started enabled=yes
       with_items:
         - consul
@@ -99,17 +99,43 @@
         - percona-qan-api
         - nginx
 
-    - stat: path=/var/lib/grafana/PERCONA_DASHBOARDS_VERSION
+    - name: PMM                        | Check dashboards version
+      stat: path=/var/lib/grafana/PERCONA_DASHBOARDS_VERSION
       register: dashboards_file
 
-    - name: Import dashboards
+    - name: PMM                        | Import dashboards
       when: not dashboards_file.stat.exists
       command: /usr/share/percona-dashboards/import-dashboards.py
 
-    - name: Add firewalld rule
+    - name: PMM                        | Add firewalld rule
       when: ansible_os_family == 'RedHat'
       firewalld: port={{ item }} permanent=true state=enabled immediate=yes
       with_items:
           - 80/tcp
           - 443/tcp
+
+    - name: PMM                        | Add script which show PMM URL
+      copy:
+        content: |
+          #!/bin/sh
+
+          set -o errexit
+
+          SOURCE=$(
+              cat /var/lib/cloud/data/result.json 2>/dev/null \
+                  | python -c 'import json, sys; print json.load(sys.stdin)["v1"]["datasource"];' 2>/dev/null
+          )
+
+          IP=$(ip route get 1 | awk '{print $NF;exit}')
+          if [ "x$SOURCE" = "xDataSourceEc2" ]; then
+              IP=$(curl --connect-timeout 5 -s http://169.254.169.254/latest/meta-data/public-ipv4)
+          fi
+
+          echo "
+          ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                Percona Monitoring and Management           https://${IP}/
+          ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+          "
+        dest: /var/lib/cloud/scripts/per-boot/show-pmm-url
+        mode: 0755
 
