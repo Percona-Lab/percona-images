@@ -30,6 +30,7 @@
             "type": "virtualbox-ovf",
             "vm_name": "Percona Server for MySQL 5.7 [{{isotime \"2006-01-02\"}}]",
             "export_opts": [
+                "--manifest",
                 "--vsys", "0",
                 "--product", "Percona Server for MySQL 5.7",
                 "--producturl", "https://www.percona.com/software/mysql-database/percona-server",
@@ -52,6 +53,12 @@
         }
     ],
     "post-processors": [
+        {
+            "type": "shell-local",
+            "inline": [
+                "sed -i '' -e 's/[(].*.ovf[)]/(box.ovf)/' *-virtualbox-ovf/*.mf"
+            ]
+        },
         {
             "type": "vagrant",
             "output": "Percona-Server-{{isotime \"2006-01-02\"}}.ova",
