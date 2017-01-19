@@ -1,18 +1,24 @@
 ---
 # Common things for all cloud images
 
+    - name: Data partition             | list
+      command: ls /dev/sdb /dev/xvdb
+      register: available_drives
+      failed_when: available_drives.stdout_lines|length == 0
+      changed_when: False
+
     - name: Data partition             | Format
       filesystem:
         fstype: btrfs
-        dev: /dev/sdb
+        dev: "{{ available_drives.stdout_lines[0] }}"
         opts: -m single -L DATA
 
     - name: Data partition             | Mount
       mount:
-        name: /opt/pmm
+        name: /srv
         src: LABEL=DATA
         fstype: btrfs
-        state: present
+        state: mounted
 
     - name: System Log                 | stat /boot/grub/grub.conf
       stat: path=/boot/grub/grub.conf

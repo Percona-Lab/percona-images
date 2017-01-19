@@ -38,8 +38,12 @@ platforms:
       region: us-east-1
       associate_public_ip: true
       tags:
-        Name: test-kitchen
         created-by: test-kitchen
+      block_device_mappings:
+        - device_name: /dev/sdb
+          ebs:
+            volume_size: 1
+            delete_on_termination: true
     transport:
       username: centos
 
