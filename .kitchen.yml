@@ -51,6 +51,12 @@ suites:
   - name: mysql57
     provisioner:
       playbook: ansible/mysql57/main.yml
+    driver:
+      tags:
+        Name: test-kitchen-mysql57
   - name: pmm
     provisioner:
       playbook: ansible/pmm/main.yml
+    driver:
+      tags:
+        Name: test-kitchen-pmm
