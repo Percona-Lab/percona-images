@@ -100,12 +100,12 @@
         - nginx
 
     - name: PMM                        | Check dashboards version
-      stat: path=/var/lib/grafana/PERCONA_DASHBOARDS_VERSION
+      stat: path=/srv/grafana/PERCONA_DASHBOARDS_VERSION
       register: dashboards_file
 
     - name: PMM                        | Import dashboards
       when: not dashboards_file.stat.exists
-      command: /usr/share/percona-dashboards/import-dashboards.py
+      command: /usr/share/percona-dashboards/import-dashboards.py /srv/grafana
 
     - name: PMM                        | Add firewalld rule
       when: ansible_os_family == 'RedHat'
