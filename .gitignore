@@ -4,5 +4,5 @@
 .kitchen.local.yml
 .cache/
 ansible/tmp/
-pmm-ovf/
-mysql57-ovf/
+*-virtualbox-ovf/
+*.ova
