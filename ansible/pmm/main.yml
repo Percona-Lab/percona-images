@@ -30,7 +30,6 @@
       yum: name={{ item }} state=installed enablerepo=pmm-server-x86_64
       with_items:
         - nginx
-        - shellinabox
         - percona-consul
         - percona-grafana
         - percona-prometheus
@@ -164,19 +163,6 @@
         option: enabled
         value: true
 
-    - name: Shell In A Box             | Configure sysconfig
-      lineinfile:
-        dest: /etc/sysconfig/shellinaboxd
-        regexp: '^OPTS='
-        line: OPTS="--disable-ssl-menu --disable-ssl -s '/terminal:shellinabox:shellinabox:/var/lib/shellinabox:/bin/bash' --css white-on-black.css --localhost-only"
-
-    - name: Shell In A Box             | Configure sudoers
-      copy:
-        content: |
-          shellinabox ALL=(ALL) NOPASSWD:ALL
-        dest: /etc/sudoers.d/90-shellinabox
-        mode: 0440
-
     - name: PMM                        | Start services
       service: name={{ item }} state=started enabled=yes
       with_items:
@@ -187,7 +173,6 @@
         - grafana-server
         - percona-qan-api
         - nginx
-        - shellinaboxd
 
     - name: PMM                        | Check dashboards version
       stat: path=/srv/grafana/PERCONA_DASHBOARDS_VERSION
