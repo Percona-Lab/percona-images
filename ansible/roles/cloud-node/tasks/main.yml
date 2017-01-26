@@ -95,12 +95,6 @@
         - /etc/systemd/system/getty@.service.d
         - /opt/pmm
 
-    - name: cloud-init                 | Fix start-up sequence
-      replace:
-        dest: /usr/lib/systemd/system/cloud-final.service
-        regexp: 'After=network.target'
-        replace: 'After=mysqld.service network.target'
-
     - name: cloud-init                 | Disable console cleanup
       copy:
         content: |

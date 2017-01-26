@@ -31,3 +31,9 @@
           - 3306/tcp
           - 42000-42005/tcp
 
+    - name: cloud-init                 | Fix start-up sequence
+      replace:
+        dest: /usr/lib/systemd/system/cloud-final.service
+        regexp: 'After=network.target'
+        replace: 'After=mysqld.service network.target'
+
