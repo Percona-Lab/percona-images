@@ -107,6 +107,10 @@
       command: passwd --delete root
       changed_when: False
 
+    - name: cloud-init                 | Disable root password
+      command: passwd --lock root
+      changed_when: False
+
     - name: cloud-init                 | Change cloud user
       copy:
         content: |
