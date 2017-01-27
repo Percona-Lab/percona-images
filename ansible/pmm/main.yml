@@ -185,17 +185,24 @@
     - name: PMM                        | Start services
       service: name={{ item }} state=started enabled=yes
       with_items:
+        - grafana-server
         - consul
         - node_exporter
         - prometheus
         - orchestrator
-        - grafana-server
         - percona-qan-api
         - nginx
 
     - name: PMM                        | Check dashboards version
       stat: path=/srv/grafana/PERCONA_DASHBOARDS_VERSION
       register: dashboards_file
+
+    - name: PMM                        | Wait for Grafana start
+      wait_for:
+        port: 3000
+        state: present
+        delay: 30
+        timeout: 60
 
     - name: PMM                        | Import dashboards
       when: not dashboards_file.stat.exists
