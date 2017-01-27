@@ -103,12 +103,17 @@
         dest: /etc/systemd/system/getty@.service.d/nodisallocate.conf
         mode: 0644
 
+    - name: cloud-init                 | Disable root password
+      command: passwd --delete root
+      changed_when: False
+
     - name: cloud-init                 | Change cloud user
       copy:
         content: |
           disable_root: true
           runcmd:
             - [ userdel, -r, centos ]
+            - [ userdel, -r, vagrant ]
         dest: /etc/cloud/cloud.cfg.d/90_disable-user.cfg
         mode: 0644
 
