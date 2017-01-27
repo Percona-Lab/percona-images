@@ -15,6 +15,7 @@
         - vim
         - wget
         - lsof
+        - telnet
 
     - name: Install Percona tools
       when: ansible_os_family == 'RedHat'

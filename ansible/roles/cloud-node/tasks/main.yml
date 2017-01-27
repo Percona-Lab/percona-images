@@ -18,6 +18,7 @@
         name: /srv
         src: LABEL=DATA
         fstype: btrfs
+        opts: defaults,nofail
         state: mounted
 
     - name: System Log                 | stat /boot/grub/grub.conf
@@ -93,7 +94,6 @@
         - /var/lib/cloud/scripts/per-once
         - /var/lib/cloud/scripts/per-boot
         - /etc/systemd/system/getty@.service.d
-        - /opt/pmm
 
     - name: cloud-init                 | Disable console cleanup
       copy:

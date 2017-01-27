@@ -85,6 +85,9 @@
         {
             "type": "ansible-local",
             "playbook_file": "ansible/pmm/main.yml",
+            "extra_arguments": [
+                "-v"
+            ],
             "role_paths": [
                 "ansible/roles/cloud-node",
                 "ansible/roles/mysql-init"
