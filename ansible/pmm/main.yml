@@ -7,6 +7,25 @@
     - mysql-init
 
   tasks:
+    - name: cloud-init                 | Change cloud user
+      replace:
+        dest: /etc/cloud/cloud.cfg
+        regexp: 'name: centos'
+        replace: 'name: pmmadmin'
+
+    - name: cloud-init                 | Change cloud user
+      copy:
+        content: |
+          users:
+            - name: pmmadmin
+              lock_passwd: true
+              gecos: Cloud User
+              groups: [wheel, adm, systemd-journal]
+              sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+              shell: /bin/bash
+        dest: /etc/cloud/cloud.cfg.d/90_pmmadmin.cfg
+        mode: 0644
+
     - name: MySQL password             | Generate
       when: not root_mycnf_file.stat.exists
       command: /var/lib/cloud/scripts/per-once/init-mysql-password
