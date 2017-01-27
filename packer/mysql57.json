@@ -72,6 +72,15 @@
             "only": [
                 "virtualbox-ovf"
             ]
+        },
+        {
+            "type": "shell-local",
+            "inline": [
+                "rm -rf mysql-virtualbox-ovf"
+            ],
+            "only": [
+                "virtualbox-ovf"
+            ]
         }
     ],
     "provisioners": [
@@ -85,6 +94,9 @@
         {
             "type": "ansible-local",
             "playbook_file": "ansible/mysql57/main.yml",
+            "extra_arguments": [
+                "-v"
+            ],
             "role_paths": [
                 "ansible/roles/cloud-node",
                 "ansible/roles/mysql-init"

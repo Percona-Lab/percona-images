@@ -72,6 +72,15 @@
             "only": [
                 "virtualbox-ovf"
             ]
+        },
+        {
+            "type": "shell-local",
+            "inline": [
+                "rm -rf pmm-virtualbox-ovf"
+            ],
+            "only": [
+                "virtualbox-ovf"
+            ]
         }
     ],
     "provisioners": [
