@@ -25,7 +25,7 @@
     - name: PMM                        | Add PMM Server YUM repository
       when: ansible_os_family == 'RedHat'
       yum_repository:
-        name: pmm-server-x86_64
+        name: pmm
         description: PMM Server YUM repository - x86_64
         baseurl: https://repo.percona.com/pmm/7/RPMS/x86_64/
         gpgcheck: no
@@ -33,7 +33,7 @@
 
     - name: PMM                        | Install RPMs
       when: ansible_os_family == 'RedHat'
-      yum: name={{ item }} state=installed enablerepo=pmm-server-x86_64
+      yum: name={{ item }} state=installed enablerepo=pmm
       with_items:
         - nginx
         - percona-consul
