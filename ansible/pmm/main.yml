@@ -11,7 +11,7 @@
       replace:
         dest: /etc/cloud/cloud.cfg
         regexp: 'name: centos'
-        replace: 'name: pmmadmin'
+        replace: 'name: admin'
 
     - name: MySQL password             | Generate
       when: not root_mycnf_file.stat.exists
