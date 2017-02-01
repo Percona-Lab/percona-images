@@ -6,3 +6,4 @@
 ansible/tmp/
 *-virtualbox-ovf/
 *.ova
+.DS_Store
