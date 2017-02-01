@@ -46,6 +46,7 @@
         - percona-toolkit
         - percona-dashboards
         - pmm-server
+        - pmm-manage
 
     - name: Disable SELinux
       selinux:
@@ -178,6 +179,7 @@
         - prometheus
         - orchestrator
         - percona-qan-api
+        - pmm-manage
         - nginx
 
     - name: PMM                        | Check dashboards version
