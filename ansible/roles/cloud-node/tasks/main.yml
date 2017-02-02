@@ -111,7 +111,7 @@
       command: passwd --lock root
       changed_when: False
 
-    - name: cloud-init                 | Change cloud user
+    - name: cloud-init                 | Delete centos, vagrant users
       copy:
         content: |
           disable_root: true
@@ -120,4 +120,18 @@
             - [ userdel, -r, vagrant ]
         dest: /etc/cloud/cloud.cfg.d/90_disable-user.cfg
         mode: 0644
+
+    - name: cloud-init                 | Add admin user
+      user:
+        name: admin
+        comment: Cloud User
+        groups: wheel,adm,systemd-journal
+        shell: /bin/bash
+
+    - name: cloud-init                 | Add sudo for admin user
+      copy:
+        content: |
+          admin ALL=(ALL) NOPASSWD: ALL
+        dest: /etc/sudoers.d/90-admin-user
+        mode: 0440
 
