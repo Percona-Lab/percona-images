@@ -4,7 +4,7 @@
   gather_facts: yes
 
   tasks:
-    - name: cloud-init                 | Hide ssh field
+    - name: cloud-init                 | Hide ssh field on web
       replace:
         dest: /usr/share/pmm-server/password-page/index.html
         regexp: 'input-group ssh'
