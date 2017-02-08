@@ -28,8 +28,9 @@
         name: pmm
         description: PMM Server YUM repository - x86_64
         baseurl: https://repo.percona.com/pmm/7/RPMS/x86_64/
-        gpgcheck: no
+        gpgcheck: yes
         enabled: no
+        gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Percona
 
     - name: PMM                        | Install RPMs
       when: ansible_os_family == 'RedHat'
