@@ -112,14 +112,13 @@
       command: passwd --lock root
       changed_when: False
 
-    - name: cloud-init                 | Delete centos, vagrant users
+    - name: cloud-init                 | Delete centos user
       copy:
         content: |
           disable_root: true
           runcmd:
             - [ userdel, -r, centos ]
-            - [ userdel, -r, vagrant ]
-        dest: /etc/cloud/cloud.cfg.d/90_disable-user.cfg
+        dest: /etc/cloud/cloud.cfg.d/90_disable-centos.cfg
         mode: 0644
 
     - name: cloud-init                 | Add admin user

@@ -238,3 +238,12 @@
         dest: /var/lib/cloud/scripts/per-boot/show-pmm-url
         mode: 0755
 
+    - name: cloud-init                 | Delete vagrant user
+      copy:
+        content: |
+          disable_root: true
+          runcmd:
+            - [ userdel, -r, vagrant ]
+        dest: /etc/cloud/cloud.cfg.d/90_disable-vagrant.cfg
+        mode: 0644
+
