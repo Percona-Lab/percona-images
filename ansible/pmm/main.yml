@@ -48,6 +48,7 @@
         - percona-dashboards
         - pmm-server
         - pmm-manage
+        - pmm-update
 
     - name: Disable SELinux
       selinux:

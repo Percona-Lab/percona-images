@@ -71,6 +71,7 @@
       when: ansible_os_family == 'RedHat'
       yum: name={{ item }} state=installed
       with_items:
+        - screen
         - yum-utils
         - cloud-init
         - firewalld
