@@ -28,7 +28,7 @@
         },
         {
             "type": "virtualbox-ovf",
-            "vm_name": "PMM Server [{{isotime \"2006-01-02\"}}]",
+            "vm_name": "PMM-Server-{{isotime \"2006-01-02\"}}",
             "export_opts": [
                 "--manifest",
                 "--vsys", "0",
@@ -39,6 +39,7 @@
                 "--version", "{{isotime \"2006-01-02\"}}",
                 "--description", "Percona Monitoring and Management (PMM) is an open-source platform for managing and monitoring MySQL and MongoDB performance"
             ],
+            "format": "ova",
             "guest_additions_mode": "disable",
             "headless": true,
             "output_directory": "pmm-virtualbox-ovf",
@@ -52,34 +53,6 @@
                 [ "createhd", "--format", "VMDK", "--filename", "/tmp/{{.Name}}-disk2.vmdk", "--variant", "STREAM", "--size", "409600" ],
                 [ "storagectl", "{{.Name}}", "--name", "SATA Controller", "--add", "sata", "--controller", "IntelAHCI"],
                 [ "storageattach", "{{.Name}}", "--storagectl", "SATA Controller", "--port", "1", "--type", "hdd", "--medium", "/tmp/{{.Name}}-disk2.vmdk" ]
-            ]
-        }
-    ],
-    "post-processors": [
-        {
-            "type": "shell-local",
-            "inline": [
-                "sed -i '' -e 's/[(].*.ovf[)]/(box.ovf)/' *-virtualbox-ovf/*.mf"
-            ],
-            "only": [
-                "virtualbox-ovf"
-            ]
-        },
-        {
-            "type": "vagrant",
-            "output": "PMM-Server-{{isotime \"2006-01-02\"}}.ova",
-            "compression_level": "0",
-            "only": [
-                "virtualbox-ovf"
-            ]
-        },
-        {
-            "type": "shell-local",
-            "inline": [
-                "rm -rf pmm-virtualbox-ovf"
-            ],
-            "only": [
-                "virtualbox-ovf"
             ]
         }
     ],

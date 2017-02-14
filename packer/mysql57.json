@@ -21,14 +21,14 @@
             ],
             "region": "us-east-1",
             "security_group_id": "sg-4378343e",
-            "source_ami": "ami-6d1c2007",
+            "source_ami": "ami-84b17092",
             "ssh_pty": "true",
             "ssh_username": "centos",
             "subnet_id": "subnet-4765a930"
         },
         {
             "type": "virtualbox-ovf",
-            "vm_name": "Percona Server for MySQL 5.7 [{{isotime \"2006-01-02\"}}]",
+            "vm_name": "Percona-Server-for-MySQL57-{{isotime \"2006-01-02\"}}",
             "export_opts": [
                 "--manifest",
                 "--vsys", "0",
@@ -39,6 +39,7 @@
                 "--version", "{{isotime \"2006-01-02\"}}",
                 "--description", "Percona Server for MySQL is a free, fully compatible, enhanced, open source drop-in replacement for MySQL that provides superior performance, scalability and instrumentation"
             ],
+            "format": "ova",
             "guest_additions_mode": "disable",
             "headless": true,
             "output_directory": "mysql-virtualbox-ovf",
@@ -52,34 +53,6 @@
                 [ "createhd", "--format", "VMDK", "--filename", "/tmp/{{.Name}}-disk2.vmdk", "--variant", "STREAM", "--size", "409600" ],
                 [ "storagectl", "{{.Name}}", "--name", "SATA Controller", "--add", "sata", "--controller", "IntelAHCI"],
                 [ "storageattach", "{{.Name}}", "--storagectl", "SATA Controller", "--port", "1", "--type", "hdd", "--medium", "/tmp/{{.Name}}-disk2.vmdk" ]
-            ]
-        }
-    ],
-    "post-processors": [
-        {
-            "type": "shell-local",
-            "inline": [
-                "sed -i '' -e 's/[(].*.ovf[)]/(box.ovf)/' *-virtualbox-ovf/*.mf"
-            ],
-            "only": [
-                "virtualbox-ovf"
-            ]
-        },
-        {
-            "type": "vagrant",
-            "output": "Percona-Server-{{isotime \"2006-01-02\"}}.ova",
-            "compression_level": "0",
-            "only": [
-                "virtualbox-ovf"
-            ]
-        },
-        {
-            "type": "shell-local",
-            "inline": [
-                "rm -rf mysql-virtualbox-ovf"
-            ],
-            "only": [
-                "virtualbox-ovf"
             ]
         }
     ],
