@@ -136,3 +136,9 @@
         dest: /etc/sudoers.d/90-admin-user
         mode: 0440
 
+    - name: cloud-init                 | Change cloud user
+      replace:
+        dest: /etc/cloud/cloud.cfg
+        regexp: 'name: centos'
+        replace: 'name: admin'
+

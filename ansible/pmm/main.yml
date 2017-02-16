@@ -7,12 +7,6 @@
     - mysql-init
 
   tasks:
-    - name: cloud-init                 | Change cloud user
-      replace:
-        dest: /etc/cloud/cloud.cfg
-        regexp: 'name: centos'
-        replace: 'name: admin'
-
     - name: MySQL password             | Generate
       when: not root_mycnf_file.stat.exists
       command: /var/lib/cloud/scripts/per-once/init-mysql-password
@@ -239,7 +233,7 @@
         dest: /var/lib/cloud/scripts/per-boot/show-pmm-url
         mode: 0755
 
-    - name: cloud-init                 | Delete vagrant user
+    - name: PMM                        | Delete vagrant user
       copy:
         content: |
           disable_root: true
