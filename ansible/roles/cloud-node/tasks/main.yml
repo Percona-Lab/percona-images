@@ -74,6 +74,7 @@
         - screen
         - yum-utils
         - cloud-init
+        - yum-cron
         - firewalld
 
     - name: Firewalld                  | Start
@@ -141,4 +142,16 @@
         dest: /etc/cloud/cloud.cfg
         regexp: 'name: centos'
         replace: 'name: admin'
+
+    - name: cloud-init                 | Configure yum-cron
+      replace:
+        dest: /etc/yum/yum-cron-hourly.conf
+        regexp: 'update_cmd = default'
+        replace: 'update_cmd = minimal-security'
+
+    - name: cloud-init                 | Configure yum-cron
+      replace:
+        dest: /etc/yum/yum-cron.conf
+        regexp: 'update_cmd = default'
+        replace: 'update_cmd = minimal-security'
 
