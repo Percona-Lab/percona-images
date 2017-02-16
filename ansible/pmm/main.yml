@@ -242,3 +242,15 @@
         dest: /etc/cloud/cloud.cfg.d/90_disable-vagrant.cfg
         mode: 0644
 
+    - name: PMM                        | Create pmm-update dirs
+      file: path={{ item }} state=directory
+      with_items:
+        - /srv/update
+
+    - name: PMM                        | Check pmm-update
+      stat: path=/srv/update/main.yml
+      register: pmm_update_file
+
+    - name: PMM                        | Run pmm-update
+      when: not pmm_update_file.stat.exists
+      command: /usr/bin/pmm-update-stage2
