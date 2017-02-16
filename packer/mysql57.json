@@ -1,11 +1,9 @@
 {
-    "builders": [
-        {
+    "builders": [{
             "type": "amazon-ebs",
             "ami_name": "Percona Server for MySQL 5.7 [{{isotime \"2006-01-02\"}}]",
             "instance_type": "t2.micro",
-            "launch_block_device_mappings": [
-                {
+            "launch_block_device_mappings": [{
                     "delete_on_termination": true,
                     "device_name": "/dev/sda1",
                     "volume_size": 8,
@@ -49,15 +47,14 @@
             "ssh_pty": true,
             "ssh_username": "vagrant",
             "vboxmanage": [
-                [ "modifyvm", "{{.Name}}", "--memory", "1024" ],
-                [ "createhd", "--format", "VMDK", "--filename", "/tmp/{{.Name}}-disk2.vmdk", "--variant", "STREAM", "--size", "409600" ],
-                [ "storagectl", "{{.Name}}", "--name", "SATA Controller", "--add", "sata", "--controller", "IntelAHCI"],
-                [ "storageattach", "{{.Name}}", "--storagectl", "SATA Controller", "--port", "1", "--type", "hdd", "--medium", "/tmp/{{.Name}}-disk2.vmdk" ]
+                ["modifyvm", "{{.Name}}", "--memory", "1024"],
+                ["createhd", "--format", "VMDK", "--filename", "/tmp/{{.Name}}-disk2.vmdk", "--variant", "STREAM", "--size", "409600"],
+                ["storagectl", "{{.Name}}", "--name", "SATA Controller", "--add", "sata", "--controller", "IntelAHCI"],
+                ["storageattach", "{{.Name}}", "--storagectl", "SATA Controller", "--port", "1", "--type", "hdd", "--medium", "/tmp/{{.Name}}-disk2.vmdk"]
             ]
         }
     ],
-    "provisioners": [
-        {
+    "provisioners": [{
             "type": "shell",
             "inline": [
                 "sudo yum -y install epel-release",
@@ -67,9 +64,7 @@
         {
             "type": "ansible-local",
             "playbook_file": "ansible/mysql57/main.yml",
-            "extra_arguments": [
-                "-v"
-            ],
+            "extra_arguments": ["-v"],
             "role_paths": [
                 "ansible/roles/cloud-node",
                 "ansible/roles/mysql-init"
@@ -78,9 +73,7 @@
         {
             "type": "ansible-local",
             "playbook_file": "ansible/related-to/ovf.yml",
-            "only": [
-                "virtualbox-ovf"
-            ]
+            "only": ["virtualbox-ovf"]
         },
         {
             "type": "file",
