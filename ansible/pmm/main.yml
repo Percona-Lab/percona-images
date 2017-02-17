@@ -254,3 +254,14 @@
     - name: PMM                        | Run pmm-update
       when: not pmm_update_file.stat.exists
       command: /usr/bin/pmm-update-stage2
+
+    - name: PMM                        | Gather AWS EC2 facts
+      ec2_facts:
+
+    - name: PMM                        | Show ssh field on web
+      when: ansible_virtualization_type == "virtualbox"
+      replace:
+        dest: /usr/share/pmm-server/password-page/index.html
+        regexp: 'input-group hidden ssh'
+        replace: 'input-group ssh'
+
