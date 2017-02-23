@@ -30,7 +30,7 @@
       firewalld: port={{ item }} permanent=true state=enabled immediate=yes
       with_items:
           - 3306/tcp
-          - 42000-42005/tcp
+          - 42000-42010/tcp
 
     - name: cloud-init                 | Fix start-up sequence
       replace:
