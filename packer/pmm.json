@@ -1,7 +1,7 @@
 {
     "builders": [{
             "type": "amazon-ebs",
-            "ami_name": "PMM Server [{{isotime \"2006-01-02\"}}]",
+            "ami_name": "PMM Server [{{isotime \"2006-01-02 0304\"}}]",
             "instance_type": "t2.micro",
             "launch_block_device_mappings": [{
                     "delete_on_termination": true,
@@ -26,7 +26,7 @@
         },
         {
             "type": "virtualbox-ovf",
-            "vm_name": "PMM-Server-{{isotime \"2006-01-02\"}}",
+            "vm_name": "PMM-Server-{{isotime \"2006-01-02-0304\"}}",
             "export_opts": [
                 "--manifest",
                 "--vsys", "0",
