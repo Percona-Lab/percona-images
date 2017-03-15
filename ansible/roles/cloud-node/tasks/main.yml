@@ -2,7 +2,7 @@
 # Common things for all cloud images
 
     - name: Data partition             | list
-      command: ls /dev/sdb /dev/xvdb
+      shell: ls /dev/sda /dev/sdb /dev/xvdb | grep -v ^$(pvdisplay -s | cut -d '"' -f 2 | sed 's/[0-9]$//')$
       register: available_drives
       failed_when: available_drives.stdout_lines|length == 0
       changed_when: False
