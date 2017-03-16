@@ -1,7 +1,7 @@
 {
     "builders": [{
             "type": "amazon-ebs",
-            "ami_name": "Percona Server for MySQL 5.7 [{{isotime \"2006-01-02\"}}]",
+            "ami_name": "Percona Server for MySQL 5.7 [{{isotime \"2006-01-02 0304\"}}]",
             "instance_type": "t2.micro",
             "launch_block_device_mappings": [{
                     "delete_on_termination": true,
@@ -12,9 +12,8 @@
                 {
                     "delete_on_termination": false,
                     "device_name": "/dev/sdb",
-                    "iops": 5000,
-                    "volume_size": 400,
-                    "volume_type": "io1"
+                    "volume_size": 50,
+                    "volume_type": "gp2"
                 }
             ],
             "region": "us-east-1",
@@ -26,7 +25,7 @@
         },
         {
             "type": "virtualbox-ovf",
-            "vm_name": "Percona-Server-for-MySQL57-{{isotime \"2006-01-02\"}}",
+            "vm_name": "Percona-Server-for-MySQL57-{{isotime \"2006-01-02-0304\"}}",
             "export_opts": [
                 "--manifest",
                 "--vsys", "0",

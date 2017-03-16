@@ -12,6 +12,5 @@
 
 @test 'Check firewalld rules' {
   firewall-cmd --list-ports --permanent | grep '3306/tcp'
-  firewall-cmd --list-ports --permanent | grep '42000-42005/tcp'
+  firewall-cmd --list-ports --permanent | grep '42000-42010/tcp'
 }
-
