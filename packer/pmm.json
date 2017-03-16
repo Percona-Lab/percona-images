@@ -12,9 +12,8 @@
                 {
                     "delete_on_termination": false,
                     "device_name": "/dev/sdb",
-                    "iops": 5000,
-                    "volume_size": 400,
-                    "volume_type": "io1"
+                    "volume_size": 16,
+                    "volume_type": "gp2"
                 }
             ],
             "region": "us-east-1",
