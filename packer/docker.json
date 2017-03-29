@@ -1,0 +1,41 @@
+{
+    "builders": [{
+            "type": "virtualbox-ovf",
+            "vm_name": "Docker-Server-{{isotime \"2006-01-02-0304\"}}",
+            "export_opts": [
+                "--manifest",
+                "--vsys", "0",
+                "--product", "Docker Server",
+                "--version", "{{isotime \"2006-01-02\"}}"
+            ],
+            "format": "ova",
+            "guest_additions_mode": "upload",
+            "headless": true,
+            "output_directory": "docker-virtualbox-ovf",
+            "shutdown_command": "cat /dev/zero > zero.fill; sync; sleep 1; sync; rm -f zero.fill; sudo shutdown -P now",
+            "source_path": ".cache/CentOS-7-x86_64-170201.ova",
+            "ssh_private_key_file": ".cache/id_rsa_vagrant",
+            "ssh_pty": true,
+            "ssh_username": "vagrant",
+            "vboxmanage": [
+                ["modifyvm", "{{.Name}}", "--memory", "1536"]
+            ]
+        }
+    ],
+    "provisioners": [{
+            "type": "shell",
+            "inline": [
+                "sudo yum -y install epel-release",
+                "sudo yum -y install ansible bats"
+            ]
+        },
+        {
+            "type": "ansible-local",
+            "playbook_file": "ansible/docker/main.yml",
+            "extra_arguments": ["-v"],
+            "role_paths": [
+                "ansible/roles/cloud-node"
+            ]
+        }
+    ]
+}

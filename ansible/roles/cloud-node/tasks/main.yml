@@ -4,16 +4,18 @@
     - name: Data partition             | list
       shell: ls /dev/sda /dev/sdb /dev/xvdb | grep -v ^$(pvdisplay -s | cut -d '"' -f 2 | sed 's/[0-9]$//')$
       register: available_drives
-      failed_when: available_drives.stdout_lines|length == 0
+      failed_when: available_drives.stdout_lines|length > 1
       changed_when: False
 
     - name: Data partition             | Format
+      when: available_drives.stdout_lines|length == 1
       filesystem:
         fstype: btrfs
         dev: "{{ available_drives.stdout_lines[0] }}"
         opts: -m single -L DATA
 
     - name: Data partition             | Mount
+      when: available_drives.stdout_lines|length == 1
       mount:
         name: /srv
         src: LABEL=DATA

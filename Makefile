@@ -15,6 +15,9 @@ fetch:
 	test -f .cache/CentOS-7-x86_64-Vagrant-1611_01.VirtualBox.ova \
         || wget https://atlas.hashicorp.com/centos/boxes/7/versions/1611.01/providers/virtualbox.box \
 		-O .cache/CentOS-7-x86_64-Vagrant-1611_01.VirtualBox.ova
+	test -f .cache/CentOS-7-x86_64-170201.ova \
+		|| wget https://atlas.hashicorp.com/centos/boxes/7/versions/1702.01/providers/virtualbox.box \
+		-O .cache/CentOS-7-x86_64-170201.ova
 	chmod 600 .cache/id_rsa_vagrant
 
 deps:
@@ -37,4 +40,7 @@ mysql57-ovf: fetch
 
 mysql57-ami:
 	packer build -only amazon-ebs packer/mysql57.json
+
+docker-ovf: fetch
+	packer build -only virtualbox-ovf packer/docker.json
 

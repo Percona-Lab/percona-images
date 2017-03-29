@@ -20,7 +20,7 @@ platforms:
         memory: 1024
         createhd:
           filename: /tmp/some_random_name.vmdk
-          size: 512
+          size: 1024
         storageattach:
           storagectl: IDE
           port: 1
@@ -60,3 +60,9 @@ suites:
     driver:
       tags:
         Name: test-kitchen-pmm
+  - name: docker
+    provisioner:
+      playbook: ansible/docker/main.yml
+    driver:
+      tags:
+        Name: test-kitchen-docker
