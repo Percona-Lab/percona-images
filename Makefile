@@ -8,17 +8,16 @@ clean-all: clean
 	rm -rf .cache
 
 fetch:
-	mkdir -p .cache || :
+	mkdir -p .cache/170201 || :
 	test -f .cache/id_rsa_vagrant \
 	    || curl -L https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant \
 		-o .cache/id_rsa_vagrant
-	test -f .cache/CentOS-7-x86_64-Vagrant-1611_01.VirtualBox.ova \
-        || wget https://atlas.hashicorp.com/centos/boxes/7/versions/1611.01/providers/virtualbox.box \
-		-O .cache/CentOS-7-x86_64-Vagrant-1611_01.VirtualBox.ova
+	chmod 600 .cache/id_rsa_vagrant
 	test -f .cache/CentOS-7-x86_64-170201.ova \
 		|| wget https://atlas.hashicorp.com/centos/boxes/7/versions/1702.01/providers/virtualbox.box \
 		-O .cache/CentOS-7-x86_64-170201.ova
-	chmod 600 .cache/id_rsa_vagrant
+	test -f .cache/170201/box.ovf \
+		|| tar -C .cache/170201 -xf .cache/CentOS-7-x86_64-170201.ova
 
 deps:
 	gem install bundler || :
