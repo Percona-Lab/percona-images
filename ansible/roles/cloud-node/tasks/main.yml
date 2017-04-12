@@ -116,13 +116,14 @@
       command: passwd --lock root
       changed_when: False
 
-    - name: cloud-init                 | Delete centos user
+    - name: cloud-init                 | Delete centos user on Amazon
+      when: ansible_virtualization_type == "xen"
       copy:
         content: |
           disable_root: true
           runcmd:
-            - [ userdel, -r, centos ]
-        dest: /etc/cloud/cloud.cfg.d/90_disable-centos.cfg
+            - [ 'sh', '-c', 'userdel -r centos || :' ]
+        dest: /etc/cloud/cloud.cfg.d/00_disable-centos.cfg
         mode: 0644
 
     - name: cloud-init                 | Add admin user
