@@ -263,27 +263,9 @@
       stat: path=/srv/update/main.yml
       register: pmm_update_file
 
-    - name: don't remove centos user during packer run | Stage 1
-      lineinfile:
-        dest: /usr/share/pmm-update/ansible/v010102/main.yml
-        regexp: 'name: centos'
-        line: '        name: tmp-centos'
-
     - name: PMM                        | Run pmm-update
       when: not pmm_update_file.stat.exists
       command: /usr/bin/pmm-update-stage2
-
-    - name: don't remove centos user during packer run | Stage 2.1
-      lineinfile:
-        dest: /usr/share/pmm-update/ansible/v010102/main.yml
-        regexp: 'name: tmp-centos'
-        line: '        name: centos'
-
-    - name: don't remove centos user during packer run | Stage 2.2
-      lineinfile:
-        dest: /srv/update/main.yml
-        regexp: 'name: tmp-centos'
-        line: '        name: centos'
 
     - name: PMM                        | Gather AWS EC2 facts
       ec2_facts:
