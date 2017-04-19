@@ -62,6 +62,24 @@
         - bats
         - git
         - wget
+        - sysbench
+        - nodejs
+        - java-1.8.0-openjdk
+
+    - name: Install test dependencies | npm protractor
+      npm:
+        name: protractor
+        global: yes
+
+    - name: Install test dependencies | npm jasmine-reporters
+      npm:
+        name: jasmine-reporters
+        global: yes
+
+    - name: Install test dependencies | npm protractor-jasmine2-screenshot-reporter
+      npm:
+        name: protractor-jasmine2-screenshot-reporter
+        global: yes
 
     - name: Checkout Percona QA repo
       git:
