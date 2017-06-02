@@ -158,5 +158,6 @@
         regexp: 'update_cmd = default'
         replace: 'update_cmd = minimal-security'
 
+    - include: security.yml
     - include: ovf.yml
 
