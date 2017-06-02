@@ -263,9 +263,27 @@
       stat: path=/srv/update/main.yml
       register: pmm_update_file
 
+    - name: PMM                        | Temporary disable centos user deletion
+      replace:
+        dest: /usr/share/pmm-update/ansible/v010104/main.yml
+        regexp: 'name: centos$'
+        replace: 'name: centos-temp'
+
     - name: PMM                        | Run pmm-update
       when: not pmm_update_file.stat.exists
       command: /usr/bin/pmm-update-stage2
+
+    - name: PMM                        | Temporary disable centos user deletion
+      replace:
+        dest: /usr/share/pmm-update/ansible/v010104/main.yml
+        regexp: 'name: centos-temp'
+        replace: 'name: centos'
+
+    - name: PMM                        | Temporary disable centos user deletion
+      replace:
+        dest: /srv/update/main.yml
+        regexp: 'name: centos-temp'
+        replace: 'name: centos'
 
     - name: PMM                        | Gather AWS EC2 facts
       ec2_facts:
