@@ -1,32 +1,33 @@
 export PACKER_CACHE_DIR := .cache
+export CENTOS_ISO := 1705.01
 
 clean:
 	rm -rf .kitchen/ Gemfile.lock ansible/{Ansiblefile.lock,tmp} *.ova *-virtualbox-ovf
 	find . -name "*~" -delete
 
 clean-all: clean
-	rm -rf .cache
+	rm -rf ${PACKER_CACHE_DIR}
 
 fetch:
-	mkdir -p .cache/170201 || :
-	test -f .cache/id_rsa_vagrant \
+	mkdir -p ${PACKER_CACHE_DIR}/${CENTOS_ISO} || :
+	test -f ${PACKER_CACHE_DIR}/id_rsa_vagrant \
 	    || curl -L https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant \
-		-o .cache/id_rsa_vagrant
-	chmod 600 .cache/id_rsa_vagrant
-	test -f .cache/CentOS-7-x86_64-170201.ova \
-		|| wget https://atlas.hashicorp.com/centos/boxes/7/versions/1702.01/providers/virtualbox.box \
-		-O .cache/CentOS-7-x86_64-170201.ova
-	test -f .cache/170201/box.ovf \
-		|| tar -C .cache/170201 -xf .cache/CentOS-7-x86_64-170201.ova
+		-o ${PACKER_CACHE_DIR}/id_rsa_vagrant
+	chmod 600 ${PACKER_CACHE_DIR}/id_rsa_vagrant
+	test -f ${PACKER_CACHE_DIR}/${CENTOS_ISO}/CentOS7.ova \
+		|| wget https://atlas.hashicorp.com/centos/boxes/7/versions/${CENTOS_ISO}/providers/virtualbox.box \
+		-O ${PACKER_CACHE_DIR}/${CENTOS_ISO}/CentOS7.ova
+	test -f ${PACKER_CACHE_DIR}/${CENTOS_ISO}/box.ovf \
+		|| tar -C ${PACKER_CACHE_DIR}/${CENTOS_ISO} -xf ${PACKER_CACHE_DIR}/${CENTOS_ISO}/CentOS7.ova
 
 deps:
 	gem install bundler || :
 	bundle install
 	cd ansible && \
 	    librarian-ansible install
-	mkdir -p .cache || :
-	curl https://releases.hashicorp.com/packer/0.12.1/packer_0.12.1_linux_amd64.zip > .cache/packer.zip
-	unzip -o .cache/packer.zip -d ~/bin
+	mkdir -p ${PACKER_CACHE_DIR} || :
+	curl https://releases.hashicorp.com/packer/0.12.3/packer_0.12.3_linux_amd64.zip -o ${PACKER_CACHE_DIR}/packer.zip
+	unzip -o ${PACKER_CACHE_DIR}/packer.zip -d ~/bin
 
 pmm-ovf: fetch
 	packer build -only virtualbox-ovf packer/pmm.json

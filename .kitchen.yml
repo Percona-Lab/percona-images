@@ -14,7 +14,7 @@ platforms:
     driver:
       name: vagrant
       box: centos/7
-      box_version: 1611.01
+      box_version: 1705.01
       cache_directory: false
       customize:
         memory: 1024
@@ -30,7 +30,7 @@ platforms:
   - name: ami
     driver:
       name: ec2
-      image_id: ami-6d1c2007
+      image_id: ami-84b17092
       instance_type: t2.micro
       aws_ssh_key_id: mykola
       security_group_ids: ["sg-4378343e"]
