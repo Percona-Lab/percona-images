@@ -1,4 +1,7 @@
 {
+    "variables": {
+        "cloud_token": "{{ env `VAGRANT_CLOUD_TOKEN` }}"
+    },
     "builders": [{
             "type": "amazon-ebs",
             "ami_name": "Percona Server for MySQL 5.7 [{{isotime \"2006-01-02 0304\"}}]",
@@ -81,5 +84,20 @@
                 "sudo bats /tmp/bats/*.bats"
             ]
         }
+    ],
+    "post-processors": [
+        [{
+                "type": "vagrant",
+                "only": ["virtualbox-ovf"],
+                "vagrantfile_template": "packer/mysql57.Vagrantfile"
+            },
+            {
+                "type": "vagrant-cloud",
+                "only": ["virtualbox-ovf"],
+                "box_tag": "delgod/percona-server",
+                "access_token": "{{user `cloud_token`}}",
+                "version": "{{isotime \"2006010203\"}}"
+            }
+        ]
     ]
 }
