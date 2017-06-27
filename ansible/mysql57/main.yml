@@ -12,10 +12,24 @@
       yum: name={{ item }} state=installed
       with_items:
         - screen
-        - vim
         - wget
-        - lsof
         - telnet
+        - curl
+        - qpress
+        - yum-utils
+        - cronie
+        - policycoreutils
+        - policycoreutils-python
+        - python-boto
+        - python-setuptools
+        - python-requests
+        - rsync
+        - sysstat
+        - net-tools
+        - lsof
+        - vim
+        - tmux
+        - innotop
 
     - name: Install Percona tools
       when: ansible_os_family == 'RedHat'
@@ -24,6 +38,21 @@
         - percona-toolkit
         - percona-xtrabackup
         - pmm-client
+
+    - name: Add mydumper repository
+      when: ansible_os_family == 'RedHat'
+      yum_repository:
+        name: twindb_main
+        description: twindb_main
+        baseurl: https://packagecloud.io/twindb/main/el/7/$basearch
+        gpgkey: https://packagecloud.io/twindb/main/gpgkey
+        gpgcheck: no
+
+    - name: Install mydumper
+      when: ansible_os_family == 'RedHat'
+      yum: name={{ item }} state=installed
+      with_items:
+        - mydumper
 
     - name: Add firewalld rule
       when: ansible_os_family == 'RedHat'
