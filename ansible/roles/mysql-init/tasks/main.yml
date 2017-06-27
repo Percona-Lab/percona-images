@@ -64,11 +64,30 @@
           mysql "-p${TEMP_PASS}" --connect-expired-password -e "SET PASSWORD = PASSWORD('$NEW_PASS');"
           echo "[client]
           password = '$NEW_PASS'" > /root/.my.cnf
+
+          SOURCE=$(
+              cat /var/lib/cloud/data/status.json 2>/dev/null \
+                  | python -c 'import json, sys; print json.load(sys.stdin)["v1"]["datasource"];' 2>/dev/null
+          )
+          IP=$(ip route get 1 2>/dev/null | awk '{print $NF;exit}')
+          if [ "x$SOURCE" = "xDataSourceEc2" ]; then
+              IP=$(curl --connect-timeout 5 -s http://169.254.169.254/latest/meta-data/public-ipv4)
+          fi
+          if [ -z "$IP" ]; then
+              IP=$(ip addr show up | grep 'inet ' | awk '{print$2}' | cut -d '/' -f 1 | grep -v '^127.')
+          fi
+
           echo "
-          ++++++++++++++++++++++++++ Percona Server for MySQL ++++++++++++++++++++++++++
-            Setting password for root@localhost user: $NEW_PASS
-          ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-          " | tee -a /var/log/mysqld.log
+
+          +++++++++++++++++++++++++++ Percona Server for MySQL +++++++++++++++++++++++++++
+
+                URL:      https://${IP}/
+                User:     root
+                Password: ${NEW_PASS}
+
+          ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+          " | tee -a /dev/tty0 /var/log/mysqld.log
+
         dest: /var/lib/cloud/scripts/per-once/init-mysql-password
         mode: 0755
 
