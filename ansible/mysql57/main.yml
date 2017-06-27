@@ -5,6 +5,7 @@
   roles:
     - cloud-node
     - mysql-init
+    - phpmyadmin
 
   tasks:
     - name: Install console tools
