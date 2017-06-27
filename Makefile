@@ -26,7 +26,7 @@ deps:
 	cd ansible && \
 	    librarian-ansible install
 	mkdir -p ${PACKER_CACHE_DIR} || :
-	curl https://releases.hashicorp.com/packer/0.12.3/packer_0.12.3_linux_amd64.zip -o ${PACKER_CACHE_DIR}/packer.zip
+	curl https://releases.hashicorp.com/packer/1.0.1/packer_1.0.1_linux_amd64.zip -o ${PACKER_CACHE_DIR}/packer.zip
 	unzip -o ${PACKER_CACHE_DIR}/packer.zip -d ~/bin
 
 pmm-ovf: fetch
