@@ -37,7 +37,7 @@
                 "--version", "{{isotime \"2006-01-02\"}}",
                 "--description", "Percona Monitoring and Management (PMM) is an open-source platform for managing and monitoring MySQL and MongoDB performance"
             ],
-            "format": "ova",
+            "format": "ovf",
             "guest_additions_mode": "disable",
             "headless": true,
             "output_directory": "pmm-virtualbox-ovf",
@@ -80,6 +80,28 @@
             "type": "shell",
             "inline": [
                 "sudo bats /tmp/bats/*.bats"
+            ]
+        }
+    ],
+    "post-processors": [
+        {
+            "type": "shell-local",
+            "only": ["virtualbox-ovf"],
+            "inline_shebang": "/bin/bash",
+            "inline": [
+                "set -o errexit",
+                "set -o xtrace",
+                "pushd pmm-virtualbox-ovf",
+                "    NAME=$(ls *.ovf | sed -e 's/.ovf//')",
+                "    sed -i'' -e 's/virtualbox-2.2/vmx-10/'        *.ovf",
+                "    sed -i'' -e 's/ovf:id=\"80\"/ovf:id=\"102\"/' *.ovf",
+                "    sed -i'' -e 's/>RedHat_64</>otherGuest</'     *.ovf",
+                "    sha1sum *.ovf *.vmdk \\",
+                "        | sed -E 's/^([^ ]+)  ([^ ]+)$/SHA1 (\\2)= \\1/' \\",
+                "        > ${NAME}.mf",
+                "    tar -cpf ${NAME}.ova *.ovf *.mf *-disk001.vmdk *-disk002.vmdk",
+                "    rm -rf               *.ovf *.mf *-disk001.vmdk *-disk002.vmdk",
+                "popd"
             ]
         }
     ]
