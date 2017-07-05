@@ -1,4 +1,5 @@
 export PACKER_CACHE_DIR := .cache
+export PACKER_VERSION := 1.0.2
 export CENTOS_ISO := 1705.01
 
 clean:
@@ -15,7 +16,7 @@ fetch:
 		-o ${PACKER_CACHE_DIR}/id_rsa_vagrant
 	chmod 600 ${PACKER_CACHE_DIR}/id_rsa_vagrant
 	test -f ${PACKER_CACHE_DIR}/${CENTOS_ISO}/CentOS7.ova \
-		|| wget https://atlas.hashicorp.com/centos/boxes/7/versions/${CENTOS_ISO}/providers/virtualbox.box \
+		|| wget --progress=dot:giga https://atlas.hashicorp.com/centos/boxes/7/versions/${CENTOS_ISO}/providers/virtualbox.box \
 		-O ${PACKER_CACHE_DIR}/${CENTOS_ISO}/CentOS7.ova
 	test -f ${PACKER_CACHE_DIR}/${CENTOS_ISO}/box.ovf \
 		|| tar -C ${PACKER_CACHE_DIR}/${CENTOS_ISO} -xf ${PACKER_CACHE_DIR}/${CENTOS_ISO}/CentOS7.ova
@@ -26,7 +27,7 @@ deps:
 	cd ansible && \
 	    librarian-ansible install
 	mkdir -p ${PACKER_CACHE_DIR} || :
-	curl https://releases.hashicorp.com/packer/1.0.1/packer_1.0.1_linux_amd64.zip -o ${PACKER_CACHE_DIR}/packer.zip
+	curl https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip -o ${PACKER_CACHE_DIR}/packer.zip
 	unzip -o ${PACKER_CACHE_DIR}/packer.zip -d ~/bin
 
 pmm-ovf: fetch
