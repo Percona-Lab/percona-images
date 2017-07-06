@@ -1,4 +1,4 @@
-export PACKER_CACHE_DIR := .cache
+ export PACKER_CACHE_DIR := .cache
 export PACKER_VERSION := 1.0.2
 export CENTOS_ISO := 1705.01
 
@@ -45,3 +45,8 @@ mysql57-ami:
 docker-ovf: fetch
 	packer build -only virtualbox-ovf packer/docker.json
 
+mongo34-ovf: fetch
+	packer build -only virtualbox-ovf packer/mongo34.json
+
+mongo34-ami:
+	packer build -only amazon-ebs packer/mongo34.json
