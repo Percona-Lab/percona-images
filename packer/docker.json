@@ -3,6 +3,7 @@
         "type": "virtualbox-ovf",
         "vm_name": "Docker-Server-{{isotime \"2006-01-02-0304\"}}",
         "export_opts": [
+            "--ovf10",
             "--manifest",
             "--vsys", "0",
             "--product", "Docker Server",
@@ -18,7 +19,8 @@
         "ssh_pty": true,
         "ssh_username": "vagrant",
         "vboxmanage": [
-            ["modifyvm", "{{.Name}}", "--memory", "1536"]
+            ["modifyvm", "{{.Name}}", "--memory", "1536"],
+            ["modifyvm", "{{.Name}}", "--audio", "none"]
         ]
     }],
     "provisioners": [{
