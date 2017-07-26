@@ -58,6 +58,7 @@
       yum: name={{ item }} state=installed
       with_items:
         - Percona-Server-client-57
+        - perl-Data-Dumper
         - lynx
         - bats
         - git
