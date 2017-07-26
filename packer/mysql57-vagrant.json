@@ -96,7 +96,7 @@
             {
                 "type": "vagrant-cloud",
                 "only": ["virtualbox-ovf"],
-                "box_tag": "delgod/percona-server",
+                "box_tag": "perconalab/percona-server",
                 "access_token": "{{user `cloud_token`}}",
                 "version": "{{isotime \"2006010203\"}}"
             }
