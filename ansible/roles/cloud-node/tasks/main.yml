@@ -160,4 +160,5 @@
 
     - include: security.yml
     - include: ovf.yml
+    - include: VBoxGuestAdditions.yml
 
