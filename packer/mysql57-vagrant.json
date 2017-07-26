@@ -41,10 +41,10 @@
                 "--description", "Percona Server for MySQL is a free, fully compatible, enhanced, open source drop-in replacement for MySQL that provides superior performance, scalability and instrumentation"
             ],
             "format": "ova",
-            "guest_additions_mode": "disable",
+            "guest_additions_mode": "upload",
             "headless": true,
-            "output_directory": "mysql57-virtualbox-ovf",
-            "shutdown_command": "rm -rf ~/.ssh/authorized_keys; cat /dev/zero > zero.fill; sync; sleep 1; sync; rm -f zero.fill; sudo shutdown -P now",
+            "output_directory": "mysql57-vagrant",
+            "shutdown_command": "cat /dev/zero > zero.fill; sync; sleep 1; sync; rm -f zero.fill; sudo shutdown -P now",
             "source_path": ".cache/1706.02/box.ovf",
             "ssh_private_key_file": ".cache/id_rsa_vagrant",
             "ssh_pty": true,
