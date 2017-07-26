@@ -52,6 +52,7 @@
       when: ansible_os_family == 'RedHat'
       yum: name={{ item }} state=installed
       with_items:
+        - Percona-Server-devel-57
         - mydumper
 
     - name: Add firewalld rule
