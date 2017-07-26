@@ -13,7 +13,7 @@
             "headless": true,
             "output_directory": "docker-virtualbox-ovf",
             "shutdown_command": "cat /dev/zero > zero.fill; sync; sleep 1; sync; rm -f zero.fill; sudo shutdown -P now",
-            "source_path": ".cache/CentOS-7-x86_64-170201.ova",
+            "source_path": ".cache/1706.02/box.ovf",
             "ssh_private_key_file": ".cache/id_rsa_vagrant",
             "ssh_pty": true,
             "ssh_username": "vagrant",
