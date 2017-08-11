@@ -5,6 +5,7 @@
   roles:
     - cloud-node
     - mysql-init
+    - nginx
 
   tasks:
     - name: Install console tools
@@ -68,3 +69,13 @@
         regexp: 'After=network.target'
         replace: 'After=mysqld.service network.target'
 
+    - name: Configurator               | Install RPMs
+      when: ansible_os_family == 'RedHat'
+      yum: name={{ item }} state=installed enablerepo=percona-testing-x86_64
+      with_items:
+        - image-configurator
+
+    - name: PMM                        | Start services
+      service: name={{ item }} state=started enabled=yes
+      with_items:
+        - image-configurator

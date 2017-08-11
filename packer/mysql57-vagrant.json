@@ -72,7 +72,7 @@
             "role_paths": [
                 "ansible/roles/cloud-node",
                 "ansible/roles/mysql-init",
-                "ansible/roles/phpmyadmin"
+                "ansible/roles/nginx"
             ]
         },
         {
