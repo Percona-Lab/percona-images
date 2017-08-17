@@ -75,7 +75,16 @@
       with_items:
         - image-configurator
 
-    - name: PMM                        | Start services
+    - name: Configurator               | Start services
       service: name={{ item }} state=started enabled=yes
       with_items:
         - image-configurator
+
+    - name: Configurator               | Delete empty authorized_keys
+      copy:
+        content: |
+          runcmd:
+            - [ 'chmod', 'o+x', '/home/admin', '/home/admin/.ssh' ]
+            - [ 'sh', '-c', 'test -s /home/admin/.ssh/authorized_keys || rm -f /home/admin/.ssh/authorized_keys' ]
+        dest: /etc/cloud/cloud.cfg.d/80_delete-empty-authorized-keys.cfg
+        mode: 0644
