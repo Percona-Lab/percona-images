@@ -129,6 +129,12 @@
       command: passwd --lock root
       changed_when: False
 
+    - name: cloud-init                 | Fix start-up sequence
+      replace:
+        dest: /usr/lib/systemd/system/chronyd.service
+        regexp: 'After='
+        replace: 'After=cloud-final.service '
+
     - name: cloud-init                 | Delete centos user on Amazon
       when: ansible_virtualization_type == "xen"
       copy:
