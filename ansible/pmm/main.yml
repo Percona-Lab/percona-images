@@ -266,7 +266,7 @@
 
     - name: PMM                        | Temporary disable centos user deletion
       replace:
-        dest: /usr/share/pmm-update/ansible/v010201/main.yml
+        dest: /usr/share/pmm-update/ansible/v010202/main.yml
         regexp: 'name: centos$'
         replace: 'name: centos-temp'
 
@@ -276,7 +276,7 @@
 
     - name: PMM                        | Temporary disable centos user deletion
       replace:
-        dest: /usr/share/pmm-update/ansible/v010201/main.yml
+        dest: /usr/share/pmm-update/ansible/v010202/main.yml
         regexp: 'name: centos-temp'
         replace: 'name: centos'
 
