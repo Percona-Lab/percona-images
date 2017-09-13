@@ -53,6 +53,7 @@
         - percona-dashboards
         - pmm-server
         - pmm-manage
+        - pmm-managed
         - pmm-update
 
     - name: Disable SELinux
@@ -187,6 +188,7 @@
         - orchestrator
         - percona-qan-api
         - pmm-manage
+        - pmm-managed
         - nginx
 
     - name: PMM                        | Check dashboards version
