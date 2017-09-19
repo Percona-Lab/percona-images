@@ -54,6 +54,7 @@
         - pmm-manage
         - pmm-managed
         - pmm-update
+        - pmm-client
 
     - name: Disable SELinux
       selinux:
