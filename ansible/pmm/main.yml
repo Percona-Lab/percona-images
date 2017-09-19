@@ -48,7 +48,6 @@
         - percona-node_exporter
         - percona-qan-api
         - percona-qan-app
-        - percona-qan-app2
         - percona-toolkit
         - percona-dashboards
         - pmm-server
