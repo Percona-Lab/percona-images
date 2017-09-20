@@ -212,6 +212,7 @@
       with_items:
           - 80/tcp
           - 443/tcp
+          - 42000-42022/tcp
 
     - name: PMM                        | Add script which show PMM URL
       copy:
