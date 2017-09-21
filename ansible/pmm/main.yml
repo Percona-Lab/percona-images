@@ -289,6 +289,25 @@
         regexp: 'name: centos-temp'
         replace: 'name: centos'
 
+    - name: PMM                        | Start services
+      service: name={{ item }} state=stopped enabled=yes
+      with_items:
+        - grafana-server
+        - consul
+        - node_exporter
+        - prometheus
+        - orchestrator
+        - percona-qan-api
+        - pmm-manage
+        - pmm-managed
+        - nginx
+
+    - name: PMM                        | Cleanup logs
+      file: path={{ item }} state=absent
+      with_items:
+        - /srv/consul
+        - /srv/prometheus
+
     - name: PMM                        | Gather AWS EC2 facts
       ec2_facts:
 
