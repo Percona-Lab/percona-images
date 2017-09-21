@@ -302,11 +302,14 @@
         - pmm-managed
         - nginx
 
-    - name: PMM                        | Cleanup logs
+    - name: PMM                        | Cleanup data dirs
       file: path={{ item }} state=absent
       with_items:
         - /srv/consul
         - /srv/prometheus
+
+    - name: PMM                        | Create tmp dirs
+      command: /usr/bin/systemd-tmpfiles --create --remove --boot --exclude-prefix=/dev
 
     - name: PMM                        | Gather AWS EC2 facts
       ec2_facts:
