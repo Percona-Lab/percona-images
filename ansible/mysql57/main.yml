@@ -66,8 +66,8 @@
     - name: cloud-init                 | Fix start-up sequence
       replace:
         dest: /usr/lib/systemd/system/cloud-final.service
-        regexp: 'After=network.target'
-        replace: 'After=mysqld.service network.target'
+        regexp: 'After='
+        replace: 'After=mysqld.service '
 
     - name: Configurator               | Install RPMs
       when: ansible_os_family == 'RedHat'

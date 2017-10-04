@@ -133,7 +133,7 @@
       replace:
         dest: /usr/lib/systemd/system/chronyd.service
         regexp: 'After='
-        replace: 'After=cloud-final.service '
+        replace: 'Before=cloud-config.target\nAfter=network-online.target '
 
     - name: cloud-init                 | Delete centos user on Amazon
       when: ansible_virtualization_type == "xen"

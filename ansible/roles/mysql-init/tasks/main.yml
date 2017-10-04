@@ -44,6 +44,18 @@
         option: datadir
         value: /srv/mysql
 
+    - name: cloud-init                 | Fix start-up sequence
+      replace:
+        dest: /usr/lib/systemd/system/mysqld.service
+        regexp: 'After=syslog.target'
+        replace: 'After=chronyd.service syslog.target'
+
+    - name: cloud-init                 | Wait for sync time
+      replace:
+        dest: /usr/lib/systemd/system/mysqld.service
+        regexp: 'ExecStartPre=/usr/bin/mysqld_pre_systemd'
+        replace: 'ExecStartPre=/usr/bin/sleep 10\nExecStartPre=/usr/bin/mysqld_pre_systemd'
+
     - name: Percona Server for MySQL   | Start service
       service: name={{ item }} state=started enabled=yes
       with_items:
