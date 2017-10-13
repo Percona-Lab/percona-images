@@ -120,12 +120,12 @@
       changed_when: False
 
     - name: Root                       | Disable root password
-      when: ansible_virtualization_type != "virtualbox"
+      when: ansible_virtualization_type == "xen"
       command: passwd --delete root
       changed_when: False
 
     - name: Root                       | Disable root password
-      when: ansible_virtualization_type != "virtualbox"
+      when: ansible_virtualization_type == "xen"
       command: passwd --lock root
       changed_when: False
 
