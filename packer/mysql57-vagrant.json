@@ -15,7 +15,7 @@
                 {
                     "delete_on_termination": false,
                     "device_name": "/dev/sdb",
-                    "volume_size": 50,
+                    "volume_size": 1,
                     "volume_type": "gp2"
                 }
             ],
