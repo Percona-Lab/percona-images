@@ -177,7 +177,7 @@
         regexp: 'update_cmd = default'
         replace: 'update_cmd = minimal-security'
 
-    - include: security.yml
-    - include: ovf.yml
-    - include: VBoxGuestAdditions.yml
+    - import_tasks: security.yml
+    - import_tasks: ovf.yml
+    - import_tasks: VBoxGuestAdditions.yml
 

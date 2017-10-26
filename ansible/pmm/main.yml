@@ -307,9 +307,6 @@
     - name: PMM                        | Create tmp dirs
       command: /usr/bin/systemd-tmpfiles --create --remove --boot --exclude-prefix=/dev
 
-    - name: PMM                        | Gather AWS EC2 facts
-      ec2_facts:
-
     - name: PMM                        | Show ssh field on web
       when: ansible_virtualization_type == "virtualbox"
       replace:
