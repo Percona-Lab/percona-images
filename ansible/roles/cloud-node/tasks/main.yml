@@ -1,25 +1,45 @@
 ---
 # Common things for all cloud images
 
+    - name: Packages                   | Install OS tools
+      when: ansible_os_family == 'RedHat'
+      yum: name={{ item }} state=installed
+      with_items:
+        - lvm2
+
     - name: Data partition             | list
-      shell: ls /dev/sda /dev/sdb /dev/xvdb | grep -v ^$(pvdisplay -s | cut -d '"' -f 2 | sed 's/[0-9]$//')$
+      shell: ls /dev/sda /dev/sdb /dev/xvdb | grep -v ^$(pvdisplay -c | grep ':VolGroup00:' | cut -d ':' -f 1 | tr -d '[:space:]' | sed 's/[0-9]$//')$
       register: available_drives
       failed_when: available_drives.stdout_lines|length > 1
       changed_when: False
 
+    - name: Data partition             | Create Volume Group
+      lvg:
+        vg: DataVG
+        pvs: "{{ available_drives.stdout_lines[0] }}"
+
+    - name: Data partition             | Create Thin Pool
+      register: thin_pool
+      failed_when: "thin_pool | failed and 'Sorry, no shrinking of DataLV to 0 permitted' not in thin_pool.msg"
+      lvol:
+        lv: DataLV
+        vg: DataVG
+        size: 100%FREE
+        opts: --thinpool ThinPool -V 1G
+
     - name: Data partition             | Format
       when: available_drives.stdout_lines|length == 1
       filesystem:
-        fstype: btrfs
-        dev: "{{ available_drives.stdout_lines[0] }}"
-        opts: -m single -L DATA
+        fstype: xfs
+        dev: /dev/DataVG/DataLV
+        opts: -L DATA
 
     - name: Data partition             | Mount
       when: available_drives.stdout_lines|length == 1
       mount:
         name: /srv
         src: LABEL=DATA
-        fstype: btrfs
+        fstype: xfs
         opts: defaults,nofail
         state: mounted
 
