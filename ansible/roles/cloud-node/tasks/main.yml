@@ -197,6 +197,20 @@
         regexp: 'update_cmd = default'
         replace: 'update_cmd = minimal-security'
 
+    - name: Data partition             | Auto resize
+      copy:
+        content: |
+          #!/bin/sh
+
+          set -o errexit
+
+          pvresize $(ls /dev/sda /dev/sdb /dev/xvdb 2>/dev/null | grep -v ^$(pvdisplay -c | grep ':VolGroup00:' | cut -d ':' -f 1 | tr -d '[:space:]' | sed 's/[0-9]$//')$)
+          lvextend -l '100%VG' /dev/DataVG/ThinPool
+          lvextend -l '80%VG' /dev/DataVG/DataLV
+          xfs_growfs -d /srv
+        dest: /var/lib/cloud/scripts/per-boot/resize-xfs
+        mode: 0755
+
     - import_tasks: security.yml
     - import_tasks: ovf.yml
     - import_tasks: VBoxGuestAdditions.yml
