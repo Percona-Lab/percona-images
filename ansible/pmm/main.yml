@@ -261,17 +261,6 @@
         dest: /var/lib/cloud/scripts/per-boot/show-pmm-url
         mode: 0755
 
-    - name: PMM                        | Delete vagrant user on VirtualBox
-      when: ansible_virtualization_type == "virtualbox"
-      copy:
-        content: |
-          no_ssh_fingerprints: true
-          disable_root: true
-          runcmd:
-            - [ 'sh', '-c', 'userdel -r vagrant || :' ]
-        dest: /etc/cloud/cloud.cfg.d/00_disable-vagrant.cfg
-        mode: 0644
-
     - name: PMM                        | Create pmm-update dirs
       file: path={{ item }} state=directory
       with_items:
@@ -313,4 +302,10 @@
         dest: /usr/share/pmm-server/password-page/index.html
         regexp: 'input-group hidden ssh'
         replace: 'input-group ssh'
+
+    - name: PMM                        | Delete centos
+      shell: cd /tmp; nohup sh -c "trap 'userdel -r centos' EXIT; sleep 600" </dev/null >/dev/null 2>&1 &
+
+    - name: PMM                        | Delete vagrant
+      shell: cd /tmp; nohup sh -c "trap 'userdel -r vagrant' EXIT; sleep 600" </dev/null >/dev/null 2>&1 &
 

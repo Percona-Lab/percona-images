@@ -155,14 +155,12 @@
         regexp: 'After='
         replace: 'Before=cloud-config.target\nAfter=network-online.target '
 
-    - name: cloud-init                 | Delete centos user on Amazon
-      when: ansible_virtualization_type == "xen"
+    - name: cloud-init                 | Disable root user
       copy:
         content: |
+          no_ssh_fingerprints: true
           disable_root: true
-          runcmd:
-            - [ 'sh', '-c', 'userdel -r centos || :' ]
-        dest: /etc/cloud/cloud.cfg.d/00_disable-centos.cfg
+        dest: /etc/cloud/cloud.cfg.d/00_disable-root.cfg
         mode: 0644
 
     - name: cloud-init                 | Add admin user
