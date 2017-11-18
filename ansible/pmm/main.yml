@@ -326,6 +326,13 @@
         regexp: 'input-group hidden ssh'
         replace: 'input-group ssh'
 
+    - name: PMM                        | Show Instance ID field on web
+      when: ansible_virtualization_type == "xen"
+      replace:
+        dest: /usr/share/pmm-server/password-page/index.html
+        regexp: 'isInstanceIDFlag = false'
+        replace: 'isInstanceIDFlag = true'
+
     - name: PMM                        | Delete centos
       shell: cd /tmp; nohup sh -c "trap 'userdel -r centos' EXIT; sleep 600" </dev/null >/dev/null 2>&1 &
 
