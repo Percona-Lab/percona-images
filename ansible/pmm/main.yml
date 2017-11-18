@@ -54,6 +54,7 @@
         - pmm-managed
         - pmm-update
         - pmm-client
+        - rds_exporter
 
     - name: Disable SELinux
       selinux:
