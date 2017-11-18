@@ -89,6 +89,20 @@
         encrypted: yes
         state: present
 
+    - name: pmm-managed                | Create MySQL database
+      mysql_db:
+        name: pmm-managed
+        state: present
+
+    - name: pmm-managed                | Create MySQL user
+      mysql_user:
+        name: pmm-managed
+        host: localhost
+        password: '*816FFB19BC44AC2749D546E48FA0DF957EDB2C5A'
+        priv: 'pmm-managed.*:ALL'
+        encrypted: yes
+        state: present
+
     - name: qan-api                    | Create MySQL database
       mysql_db:
         name: pmm
