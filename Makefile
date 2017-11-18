@@ -1,6 +1,6 @@
 export PACKER_CACHE_DIR := .cache
-export PACKER_VERSION := 1.1.0
-export CENTOS_ISO := 1708.01
+export PACKER_VERSION := 1.1.2
+export CENTOS_ISO := 1710.01
 
 clean:
 	rm -rf .kitchen/ Gemfile.lock ansible/{Ansiblefile.lock,tmp} *.ova *-virtualbox-ovf
