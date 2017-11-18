@@ -291,6 +291,7 @@
       with_items:
         - /srv/consul
         - /srv/prometheus
+        - /srv/collect_info
 
     - name: PMM                        | Create tmp dirs
       command: /usr/bin/systemd-tmpfiles --create --remove --boot --exclude-prefix=/dev
