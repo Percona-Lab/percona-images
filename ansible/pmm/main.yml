@@ -75,6 +75,13 @@
         regexp: '^TELEMETRY_OS='
         line: 'TELEMETRY_OS=AMI'
 
+    - name: cloud-init                 | Set TELEMETRY_OS
+      when: ansible_virtualization_type == "kvm"
+      lineinfile:
+        path: /etc/sysconfig/pmm-managed
+        regexp: '^TELEMETRY_OS='
+        line: 'TELEMETRY_OS=GCP'
+
     - name: Orchestrator               | Create MySQL database
       mysql_db:
         name: orchestrator

@@ -8,17 +8,19 @@
         - lvm2
 
     - name: Data partition             | list
-      shell: ls /dev/sda /dev/sdb /dev/xvdb | grep -v ^$(pvdisplay -c | grep ':VolGroup00:' | cut -d ':' -f 1 | tr -d '[:space:]' | sed 's/[0-9]$//')$
+      shell: ls /dev/sda /dev/sdb /dev/xvdb | grep -v ^$(pvdisplay -c | grep ':VolGroup00:' | cut -d ':' -f 1 | tr -d '[:space:]' | sed 's/[0-9]$//')$ | grep -v ^$(df -P | grep ' /$' | awk '{print$1}' | sed 's/[0-9]$//')$
       register: available_drives
       failed_when: available_drives.stdout_lines|length > 1
       changed_when: False
 
     - name: Data partition             | Create Volume Group
+      when: available_drives.stdout_lines|length == 1
       lvg:
         vg: DataVG
         pvs: "{{ available_drives.stdout_lines[0] }}"
 
     - name: Data partition             | Create Thin Pool
+      when: available_drives.stdout_lines|length == 1
       register: thin_pool
       failed_when: "thin_pool | failed and 'Sorry, no shrinking of DataLV to 0 permitted' not in thin_pool.msg"
       lvol:
@@ -140,12 +142,12 @@
       changed_when: False
 
     - name: Root                       | Disable root password
-      when: ansible_virtualization_type == "xen"
+      when: ansible_virtualization_type != "virtualbox"
       command: passwd --delete root
       changed_when: False
 
     - name: Root                       | Disable root password
-      when: ansible_virtualization_type == "xen"
+      when: ansible_virtualization_type != "virtualbox"
       command: passwd --lock root
       changed_when: False
 

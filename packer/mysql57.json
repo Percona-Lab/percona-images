@@ -24,6 +24,18 @@
             "subnet_id": "subnet-4765a930"
         },
         {
+            "type": "googlecompute",
+            "account_file": "dev-services-43d9399a40fc.json",
+            "project_id": "dev-services-186815",
+            "source_image_family": "centos-7",
+            "zone": "us-central1-a",
+            "ssh_username": "centos",
+            "preemptible": "true",
+            "image_name": "percona-server-v{{isotime \"200601020304\"}}",
+            "image_family": "percona-server",
+            "image_description": "Percona Server for MySQL 5.7 [{{isotime \"2006-01-02 0304\"}}]"
+        },
+        {
             "type": "virtualbox-ovf",
             "vm_name": "Percona-Server-for-MySQL57-{{isotime \"2006-01-02-0304\"}}",
             "export_opts": [

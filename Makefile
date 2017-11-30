@@ -36,11 +36,17 @@ pmm-ovf: fetch
 pmm-ami:
 	packer build -only amazon-ebs packer/pmm.json
 
+pmm-gcp:
+	packer build -only googlecompute packer/pmm.json
+
 mysql57-ovf: fetch
 	packer build -only virtualbox-ovf packer/mysql57.json
 
 mysql57-ami:
 	packer build -only amazon-ebs packer/mysql57.json
+
+mysql57-gcp:
+	packer build -only googlecompute packer/mysql57.json
 
 docker-ovf: fetch
 	packer build -only virtualbox-ovf packer/docker.json
