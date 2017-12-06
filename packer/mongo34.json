@@ -21,7 +21,7 @@
             ],
             "region": "us-east-1",
             "security_group_id": "sg-4378343e",
-            "source_ami": "ami-84b17092",
+            "source_ami": "ami-2f600755",
             "ssh_pty": "true",
             "ssh_username": "centos",
             "subnet_id": "subnet-4765a930"
