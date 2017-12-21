@@ -1,5 +1,5 @@
 export PACKER_CACHE_DIR := .cache
-export PACKER_VERSION := 1.1.2
+export PACKER_VERSION := 1.1.3
 export CENTOS_ISO := 1710.01
 
 clean:
@@ -22,10 +22,6 @@ fetch:
 		|| tar -C ${PACKER_CACHE_DIR}/${CENTOS_ISO} -xf ${PACKER_CACHE_DIR}/${CENTOS_ISO}/CentOS7.ova
 
 deps:
-	gem install bundler || :
-	bundle install
-	cd ansible && \
-	    librarian-ansible install
 	mkdir -p ${PACKER_CACHE_DIR} || :
 	curl https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip -o ${PACKER_CACHE_DIR}/packer.zip
 	unzip -o ${PACKER_CACHE_DIR}/packer.zip -d ~/bin
