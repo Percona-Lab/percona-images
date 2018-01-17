@@ -22,7 +22,7 @@ fetch:
 		|| tar -C ${PACKER_CACHE_DIR}/${CENTOS_ISO} -xf ${PACKER_CACHE_DIR}/${CENTOS_ISO}/CentOS7.ova
 
 deps:
-	mkdir -p ${PACKER_CACHE_DIR} || :
+	mkdir -p ${PACKER_CACHE_DIR} ~/bin || :
 	curl https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip -o ${PACKER_CACHE_DIR}/packer.zip
 	unzip -o ${PACKER_CACHE_DIR}/packer.zip -d ~/bin
 
