@@ -17,11 +17,11 @@
                 }
             ],
             "region": "us-east-1",
-            "security_group_id": "sg-4378343e",
+            "security_group_id": "sg-688c2b1c",
             "source_ami": "ami-2f600755",
             "ssh_pty": "true",
             "ssh_username": "centos",
-            "subnet_id": "subnet-4765a930"
+            "subnet_id": "subnet-ee06e8e1"
         },
         {
             "type": "googlecompute",
