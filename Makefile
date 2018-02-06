@@ -1,6 +1,6 @@
 export PACKER_CACHE_DIR := .cache
 export PACKER_VERSION := 1.1.3
-export CENTOS_ISO := 1710.01
+export CENTOS_ISO := 1801.02
 
 clean:
 	rm -rf .kitchen/ Gemfile.lock ansible/{Ansiblefile.lock,tmp} *.ova *-virtualbox-ovf
@@ -16,7 +16,7 @@ fetch:
 		-o ${PACKER_CACHE_DIR}/id_rsa_vagrant
 	chmod 600 ${PACKER_CACHE_DIR}/id_rsa_vagrant
 	test -f ${PACKER_CACHE_DIR}/${CENTOS_ISO}/CentOS7.ova \
-		|| wget --progress=dot:giga https://atlas.hashicorp.com/centos/boxes/7/versions/${CENTOS_ISO}/providers/virtualbox.box \
+		|| wget --progress=dot:giga https://app.vagrantup.com/centos/boxes/7/versions/${CENTOS_ISO}/providers/virtualbox.box \
 		-O ${PACKER_CACHE_DIR}/${CENTOS_ISO}/CentOS7.ova
 	test -f ${PACKER_CACHE_DIR}/${CENTOS_ISO}/box.ovf \
 		|| tar -C ${PACKER_CACHE_DIR}/${CENTOS_ISO} -xf ${PACKER_CACHE_DIR}/${CENTOS_ISO}/CentOS7.ova
