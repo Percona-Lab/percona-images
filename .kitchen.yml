@@ -30,11 +30,11 @@ platforms:
   - name: ami
     driver:
       name: ec2
-      image_id: ami-84b17092
+      image_id: ami-2f600755
       instance_type: t2.micro
       aws_ssh_key_id: mykola
-      security_group_ids: ["sg-4378343e"]
-      subnet_id: subnet-4765a930
+      security_group_ids: ["sg-688c2b1c"]
+      subnet_id: subnet-ee06e8e1
       region: us-east-1
       associate_public_ip: true
       tags:
