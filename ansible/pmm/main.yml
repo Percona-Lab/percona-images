@@ -222,30 +222,6 @@
         option: enabled
         value: true
 
-    - name: Grafana                    | Set snapshot server
-      when: not grafana_db.stat.exists
-      ini_file:
-        dest: /etc/grafana/grafana.ini
-        section: snapshots
-        option: external_enabled
-        value: true
-
-    - name: Grafana                    | Set snapshot server
-      when: not grafana_db.stat.exists
-      ini_file:
-        dest: /etc/grafana/grafana.ini
-        section: snapshots
-        option: external_snapshot_url
-        value: https://snapshots.secure.percona.com
-
-    - name: Grafana                    | Set snapshot server
-      when: not grafana_db.stat.exists
-      ini_file:
-        dest: /etc/grafana/grafana.ini
-        section: snapshots
-        option: external_snapshot_name
-        value: Share with Percona Team at snapshots.secure.percona.com
-
     - name: PMM                        | Start services
       service: name={{ item }} state=started enabled=yes
       with_items:
