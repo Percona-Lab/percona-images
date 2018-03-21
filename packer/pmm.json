@@ -21,7 +21,13 @@
             "source_ami": "ami-2f600755",
             "ssh_pty": "true",
             "ssh_username": "centos",
-            "subnet_id": "subnet-ee06e8e1"
+            "subnet_id": "subnet-ee06e8e1",
+            "run_tags": {
+                "iit-billing-tag": "pmm-ami"
+            },
+            "run_volume_tags": {
+                "iit-billing-tag": "pmm-ami"
+            }
         },
         {
             "type": "googlecompute",
