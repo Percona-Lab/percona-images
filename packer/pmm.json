@@ -1,7 +1,7 @@
 {
     "builders": [{
             "type": "amazon-ebs",
-            "ami_name": "PMM Server [{{isotime \"2006-01-02 0304\"}}]",
+            "ami_name": "PMM Server [{{isotime \"2006-01-02 1504\"}}]",
             "instance_type": "t2.micro",
             "launch_block_device_mappings": [{
                     "delete_on_termination": true,
@@ -37,13 +37,13 @@
             "zone": "us-central1-a",
             "ssh_username": "centos",
             "preemptible": "true",
-            "image_name": "pmm-server-v{{isotime \"200601020304\"}}",
+            "image_name": "pmm-server-v{{isotime \"200601021504\"}}",
             "image_family": "pmm-server",
             "image_description": "Percona Monitoring and Management (PMM) is an open-source platform for managing and monitoring MySQL and MongoDB performance"
         },
         {
             "type": "virtualbox-ovf",
-            "vm_name": "PMM-Server-{{isotime \"2006-01-02-0304\"}}",
+            "vm_name": "PMM-Server-{{isotime \"2006-01-02-1504\"}}",
             "export_opts": [
                 "--ovf10",
                 "--manifest",
