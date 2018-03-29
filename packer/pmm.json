@@ -20,6 +20,7 @@
             "security_group_id": "sg-688c2b1c",
             "source_ami": "ami-2f600755",
             "ssh_pty": "true",
+            "ena_support": "true",
             "ssh_username": "centos",
             "subnet_id": "subnet-ee06e8e1",
             "run_tags": {
