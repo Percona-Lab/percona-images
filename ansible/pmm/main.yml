@@ -253,7 +253,6 @@
         - consul
         - node_exporter
         - prometheus
-        - orchestrator
         - percona-qan-api
         - pmm-manage
         - pmm-managed
@@ -343,7 +342,6 @@
         - consul
         - node_exporter
         - prometheus
-        - orchestrator
         - percona-qan-api
         - pmm-manage
         - pmm-managed
