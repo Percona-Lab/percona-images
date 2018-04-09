@@ -10,6 +10,19 @@ transport:
   max_ssh_sessions: 5
 
 platforms:
+  - name: azure
+    driver:
+      name: azurerm
+      subscription_id: '41000701-4126-4674-9219-da03b1f9bb58'
+      location: 'East US'
+      machine_size: 'Standard_A1'
+      image_urn: OpenLogic:CentOS:7.4:latest
+      os_disk_size_gb: 30
+      data_disks:
+        - lun: 0
+          disk_size_gb: 1
+    transport:
+      ssh_key: ~/.ssh/id_rsa_percona
   - name: ovf
     driver:
       name: vagrant

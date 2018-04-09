@@ -35,6 +35,10 @@ pmm-ami:
 pmm-gcp:
 	packer build -only googlecompute packer/pmm.json
 
+pmm-az:
+	az storage container delete --account-name percona --name images
+	packer build -only azure-arm packer/pmm.json
+
 mysql57-ovf: fetch
 	packer build -only virtualbox-ovf packer/mysql57.json
 
@@ -43,6 +47,10 @@ mysql57-ami:
 
 mysql57-gcp:
 	packer build -only googlecompute packer/mysql57.json
+
+mysql57-az:
+	az storage container delete --account-name percona --name images
+	packer build -only azure-arm packer/mysql57.json
 
 docker-ovf: fetch
 	packer build -only virtualbox-ovf packer/docker.json

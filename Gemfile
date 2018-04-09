@@ -5,8 +5,8 @@ gem "test-kitchen"
 gem "kitchen-ansible"
 gem "librarian-ansible"
 
-gem "vagrant"
-gem "kitchen-vagrant"
-#gem "kitchen-vagrant", :git => "https://github.com/test-kitchen/kitchen-vagrant.git", :ref => "4152db8f"
-
 gem "kitchen-ec2"
+gem "kitchen-azurerm"
+gem "kitchen-vagrant"
+
+gem "vagrant-wrapper"

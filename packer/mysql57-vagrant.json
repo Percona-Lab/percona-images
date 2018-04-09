@@ -23,12 +23,48 @@
             "security_group_id": "sg-688c2b1c",
             "source_ami": "ami-6f12ce10",
             "ssh_pty": "true",
+            "ena_support": "true",
             "ssh_username": "centos",
-            "subnet_id": "subnet-ee06e8e1"
+            "subnet_id": "subnet-ee06e8e1",
+            "run_tags": {
+                "iit-billing-tag": "mysql57-ami"
+            },
+            "run_volume_tags": {
+                "iit-billing-tag": "mysql57-ami"
+            }
+        },
+        {
+            "type": "azure-arm",
+            "subscription_id": "41000701-4126-4674-9219-da03b1f9bb58",
+            "resource_group_name": "percona",
+            "storage_account": "percona",
+            "location": "East US",
+
+            "os_type": "Linux",
+            "image_publisher": "OpenLogic",
+            "image_offer": "CentOS",
+            "image_sku": "7.4",
+
+            "capture_container_name": "percona",
+            "capture_name_prefix": "percona-server",
+            "os_disk_size_gb": "30",
+            "disk_additional_size": [50]
+        },
+        {
+            "type": "googlecompute",
+            "account_file": "packer/dev-services-43d9399a40fc.json",
+            "project_id": "dev-services-186815",
+            "source_image_family": "centos-7",
+            "zone": "us-central1-a",
+            "ssh_username": "centos",
+            "preemptible": "true",
+            "image_name": "percona-server-v{{isotime \"200601021504\"}}",
+            "image_family": "percona-server",
+            "image_description": "Percona Server for MySQL 5.7 [{{isotime \"2006-01-02 1504\"}}]"
         },
         {
             "type": "virtualbox-ovf",
-            "vm_name": "Percona-Server-for-MySQL57-{{isotime \"2006-01-02-0304\"}}",
+            "vm_name": "Percona-Server-for-MySQL57-{{isotime \"2006-01-02-1504\"}}",
             "export_opts": [
                 "--ovf10",
                 "--manifest",
