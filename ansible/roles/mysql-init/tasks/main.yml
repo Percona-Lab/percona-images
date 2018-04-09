@@ -21,13 +21,10 @@
         - MySQL-python
 
     - name: Percona Server for MySQL   | Fix selinux
-      #sefcontext:
-      #  target: '/srv/mysql(/.*)?'
-      #  setype: mysqld_db_t
-      #  state: present
-      # WORKAROUND for https://github.com/ansible/ansible-modules-extras/pull/3569
-      command: semanage fcontext -a -t mysqld_db_t "/srv/mysql(/.*)?"
-      changed_when: False
+      sefcontext:
+        target: '/srv/mysql(/.*)?'
+        setype: mysqld_db_t
+        state: present
 
     - name: Percona Server for MySQL   | Create directory
       file:
