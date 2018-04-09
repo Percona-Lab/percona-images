@@ -1,0 +1,48 @@
+{
+    "builders": [{
+            "type": "amazon-ebssurrogate",
+            "ami_name": "CentOS [{{isotime \"2006-01-02 1504\"}}]",
+            "ami_virtualization_type": "hvm",
+            "instance_type": "t2.micro",
+            "launch_block_device_mappings": [{
+                    "snapshot_id": "snap-088636c344ba7cfe8",
+                    "delete_on_termination": true,
+                    "device_name": "/dev/xvds",
+                    "volume_size": 8,
+                    "volume_type": "gp2"
+                },
+                {
+                    "delete_on_termination": false,
+                    "device_name": "/dev/xvdd",
+                    "volume_size": 8,
+                    "volume_type": "gp2"
+                }
+            ],
+            "region": "us-east-1",
+            "security_group_id": "sg-688c2b1c",
+            "source_ami": "ami-b81dbfc5",
+            "ena_support": "true",
+            "ssh_username": "centos",
+            "subnet_id": "subnet-ee06e8e1",
+            "run_tags": {
+                "iit-billing-tag": "pmm-ami"
+            },
+            "run_volume_tags": {
+                "iit-billing-tag": "pmm-ami"
+            },
+            "ami_root_device": {
+                "source_device_name": "/dev/xvdd",
+                "delete_on_termination": true,
+                "device_name": "/dev/sda1",
+                "volume_size": 16,
+                "volume_type": "gp2"
+            }
+        }
+    ],
+    "provisioners": [{
+            "type": "shell",
+            "inline": [
+                "sudo dd if=/dev/xvds of=/dev/xvdd bs=1M"
+            ]
+    }]
+}

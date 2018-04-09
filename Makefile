@@ -1,6 +1,6 @@
 export PACKER_CACHE_DIR := .cache
-export PACKER_VERSION := 1.1.3
-export CENTOS_ISO := 1801.02
+export PACKER_VERSION := 1.2.2
+export CENTOS_ISO := 1802.01
 
 clean:
 	rm -rf .kitchen/ Gemfile.lock ansible/{Ansiblefile.lock,tmp} *.ova *-virtualbox-ovf
@@ -52,3 +52,6 @@ mongo34-ovf: fetch
 
 mongo34-ami:
 	packer build -only amazon-ebs packer/mongo34.json
+
+centos-ami:
+	packer build packer/centos-ami.json

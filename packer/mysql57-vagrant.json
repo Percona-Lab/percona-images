@@ -21,7 +21,7 @@
             ],
             "region": "us-east-1",
             "security_group_id": "sg-688c2b1c",
-            "source_ami": "ami-2f600755",
+            "source_ami": "ami-6f12ce10",
             "ssh_pty": "true",
             "ssh_username": "centos",
             "subnet_id": "subnet-ee06e8e1"
@@ -45,7 +45,7 @@
             "headless": true,
             "output_directory": "mysql57-vagrant",
             "shutdown_command": "sudo systemctl disable image-configurator nginx; cat /dev/zero > zero.fill; sync; sleep 1; sync; rm -f zero.fill; sudo shutdown -P now",
-            "source_path": ".cache/1801.02/box.ovf",
+            "source_path": ".cache/1802.01/box.ovf",
             "ssh_private_key_file": ".cache/id_rsa_vagrant",
             "ssh_pty": true,
             "ssh_username": "vagrant",

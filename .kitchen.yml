@@ -14,7 +14,7 @@ platforms:
     driver:
       name: vagrant
       box: centos/7
-      box_version: 1710.01
+      box_version: 1802.01
       cache_directory: false
       customize:
         memory: 1024
