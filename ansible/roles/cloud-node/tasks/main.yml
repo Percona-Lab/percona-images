@@ -10,17 +10,17 @@
     - name: Data partition             | list
       shell: ls /dev/sda /dev/sdb /dev/xvdb | grep -v ^$(pvdisplay -c | grep ':VolGroup00:' | cut -d ':' -f 1 | tr -d '[:space:]' | sed 's/[0-9]$//')$ | grep -v ^$(df -P | grep ' /$' | awk '{print$1}' | sed 's/[0-9]$//')$
       register: available_drives
-      failed_when: available_drives.stdout_lines|length > 1
+      failed_when: available_drives.stdout_lines|length != 1
       changed_when: False
 
     - name: Data partition             | Create Volume Group
-      when: available_drives.stdout_lines|length == 1
+      when: ansible_virtualization_type != "VirtualPC"
       lvg:
         vg: DataVG
         pvs: "{{ available_drives.stdout_lines[0] }}"
 
     - name: Data partition             | Create Thin Pool
-      when: available_drives.stdout_lines|length == 1
+      when: ansible_virtualization_type != "VirtualPC"
       register: thin_pool
       failed_when: "thin_pool | failed and 'Sorry, no shrinking of DataLV to 0 permitted' not in thin_pool.msg"
       lvol:
@@ -30,14 +30,14 @@
         opts: --thinpool ThinPool -V 1G
 
     - name: Data partition             | Format
-      when: available_drives.stdout_lines|length == 1
+      when: ansible_virtualization_type != "VirtualPC"
       filesystem:
         fstype: xfs
         dev: /dev/DataVG/DataLV
         opts: -L DATA
 
     - name: Data partition             | Mount
-      when: available_drives.stdout_lines|length == 1
+      when: ansible_virtualization_type != "VirtualPC"
       mount:
         name: /srv
         src: LABEL=DATA
