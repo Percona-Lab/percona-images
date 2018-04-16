@@ -8,9 +8,12 @@
       when: iso_file.stat.exists and ansible_os_family == 'RedHat'
       yum: name={{ item }} state=installed
       with_items:
-        - kernel-devel
         - dkms
         - gcc
+
+    - name: VBoxGuestAdditions         | Install build deps
+      when: iso_file.stat.exists and ansible_os_family == 'RedHat'
+      shell: yum -y install kernel-devel-$(uname -r)
 
     - name: VBoxGuestAdditions         | Mount
       when: iso_file.stat.exists

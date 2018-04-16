@@ -73,11 +73,11 @@
                 "--version", "{{isotime \"2006-01-02\"}}",
                 "--description", "Percona Server for MySQL is a free, fully compatible, enhanced, open source drop-in replacement for MySQL that provides superior performance, scalability and instrumentation"
             ],
-            "format": "ovf",
-            "guest_additions_mode": "disable",
+            "format": "ova",
+            "guest_additions_mode": "upload",
             "headless": true,
-            "output_directory": "mysql57-virtualbox-ovf",
-            "shutdown_command": "rm -rf ~/.ssh/authorized_keys; cat /dev/zero > zero.fill; sync; sleep 1; sync; rm -f zero.fill; sudo shutdown -P now",
+            "output_directory": "mysql57-vagrant",
+            "shutdown_command": "cat /dev/zero > zero.fill; sync; sleep 1; sync; rm -f zero.fill; sudo shutdown -P now",
             "source_path": ".cache/1802.01/box.ovf",
             "ssh_private_key_file": ".cache/id_rsa_vagrant",
             "ssh_pty": true,
@@ -122,24 +122,16 @@
     ],
     "post-processors": [
         [{
-            "type": "shell-local",
-            "only": ["virtualbox-ovf"],
-            "inline_shebang": "/bin/bash",
-            "inline": [
-                "set -o errexit",
-                "set -o xtrace",
-                "pushd mysql57-virtualbox-ovf",
-                "    NAME=$(ls *.ovf | sed -e 's/.ovf//')",
-                "    sed -i'' -e 's/virtualbox-2.2/vmx-10/'        *.ovf",
-                "    sed -i'' -e 's/ovf:id=\"80\"/ovf:id=\"102\"/' *.ovf",
-                "    sed -i'' -e 's/>RedHat_64</>otherGuest</'     *.ovf",
-                "    sha1sum *.ovf *.vmdk \\",
-                "        | sed -E 's/^([^ ]+)  ([^ ]+)$/SHA1 (\\2)= \\1/' \\",
-                "        > ${NAME}.mf",
-                "    tar -cpf ${NAME}.ova *.ovf *.mf *-disk001.vmdk *-disk002.vmdk",
-                "    rm -rf               *.ovf *.mf *-disk001.vmdk *-disk002.vmdk",
-                "popd"
-            ]
-        }]
+                "type": "vagrant",
+                "only": ["virtualbox-ovf"],
+                "vagrantfile_template": "packer/mysql57.Vagrantfile"
+            },
+            {
+                "type": "vagrant-cloud",
+                "only": ["virtualbox-ovf"],
+                "box_tag": "perconalab/percona-server",
+                "version": "{{isotime \"2006010215\"}}"
+            }
+        ]
     ]
 }
