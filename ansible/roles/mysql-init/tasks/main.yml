@@ -53,11 +53,6 @@
         regexp: 'ExecStartPre=/usr/bin/mysqld_pre_systemd'
         replace: 'ExecStartPre=/usr/bin/sleep 10\nExecStartPre=/usr/bin/mysqld_pre_systemd'
 
-    - name: Percona Server for MySQL   | Start service
-      service: name={{ item }} state=started enabled=yes
-      with_items:
-        - mysqld
-
     - name: Percona Server for MySQL   | stat /root/.my.cnf
       stat: path=/root/.my.cnf
       register: root_mycnf_file
@@ -73,6 +68,7 @@
           mysql "-p${TEMP_PASS}" --connect-expired-password -e "SET PASSWORD = PASSWORD('$NEW_PASS');"
           echo "[client]
           password = '$NEW_PASS'" > /root/.my.cnf
+          sed -e "s/${TEMP_PASS}/${NEW_PASS}/" -i'' /var/log/mysqld.log
 
           SOURCE=$(
               cat /var/lib/cloud/data/status.json 2>/dev/null \
@@ -90,7 +86,7 @@
 
           +++++++++++++++++++++++++++ Percona Server for MySQL +++++++++++++++++++++++++++
 
-                URL:      https://${IP}/
+                IP:      ${IP}
 
           ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
           " | tee -a /dev/tty0
