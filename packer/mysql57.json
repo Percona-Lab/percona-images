@@ -99,6 +99,16 @@
             ]
         },
         {
+            "type": "shell",
+            "only": ["virtualbox-ovf"],
+            "expect_disconnect": "true",
+            "inline": [
+                "sudo yum -y install kernel kexec-tools",
+                "sudo kexec -l $(ls /boot/vmlinuz-* | sort -u | tail -1) --initrd=$(ls /boot/initramfs-* | sort -u | tail -1) --reuse-cmdline",
+                "sudo systemctl kexec"
+            ]
+        },
+        {
             "type": "ansible-local",
             "only": ["virtualbox-ovf"],
             "playbook_file": "ansible/mysql57/main.yml",
