@@ -14,13 +14,13 @@
       changed_when: False
 
     - name: Data partition             | Create Volume Group
-      when: enable_lvm == true
+      when: enable_lvm == "true"
       lvg:
         vg: DataVG
         pvs: "{{ available_drives.stdout_lines[0] }}"
 
     - name: Data partition             | Create Thin Pool
-      when: enable_lvm == true
+      when: enable_lvm == "true"
       register: thin_pool
       failed_when: "thin_pool | failed and 'Sorry, no shrinking of DataLV to 0 permitted' not in thin_pool.msg"
       lvol:
@@ -30,14 +30,14 @@
         opts: --thinpool ThinPool -V 1G
 
     - name: Data partition             | Format LVM
-      when: enable_lvm == true
+      when: enable_lvm == "true"
       filesystem:
         fstype: xfs
         dev: /dev/DataVG/DataLV
         opts: -L DATA
 
     - name: Data partition             | Format Device
-      when: enable_lvm != true
+      when: enable_lvm != "true"
       filesystem:
         fstype: xfs
         dev: "{{ available_drives.stdout_lines[0] }}"
@@ -172,7 +172,7 @@
         mode: 0644
 
     - name: cloud-init                 | Add admin user
-      when: ansible_virtualization_type != "VirtualPC"
+      when: create_admin == "true"
       user:
         name: admin
         comment: Cloud User
@@ -180,7 +180,7 @@
         shell: /bin/bash
 
     - name: cloud-init                 | Add sudo for admin user
-      when: ansible_virtualization_type != "VirtualPC"
+      when: create_admin == "true"
       copy:
         content: |
           admin ALL=(ALL) NOPASSWD: ALL
@@ -188,7 +188,7 @@
         mode: 0440
 
     - name: cloud-init                 | Change cloud user
-      when: ansible_virtualization_type != "VirtualPC"
+      when: create_admin == "true"
       replace:
         dest: /etc/cloud/cloud.cfg
         regexp: 'name: centos'
@@ -207,7 +207,7 @@
         replace: 'update_cmd = minimal-security'
 
     - name: Data partition             | Auto resize LVM
-      when: enable_lvm == true
+      when: enable_lvm == "true"
       copy:
         content: |
           #!/bin/sh
@@ -222,7 +222,7 @@
         mode: 0755
 
     - name: Data partition             | Auto resize device
-      when: enable_lvm != true
+      when: enable_lvm != "true"
       copy:
         content: |
           #!/bin/sh

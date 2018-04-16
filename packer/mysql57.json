@@ -100,8 +100,29 @@
         },
         {
             "type": "ansible-local",
+            "only": ["virtualbox-ovf"],
             "playbook_file": "ansible/mysql57/main.yml",
-            "extra_arguments": ["-v"],
+            "extra_arguments": ["-v", "--extra-vars \"create_admin=false enable_lvm=true\""],
+            "role_paths": [
+                "ansible/roles/cloud-node",
+                "ansible/roles/mysql-init"
+            ]
+        },
+        {
+            "type": "ansible-local",
+            "only": ["amazon-ebs"],
+            "playbook_file": "ansible/mysql57/main.yml",
+            "extra_arguments": ["-v", "--extra-vars \"create_admin=true enable_lvm=false\""],
+            "role_paths": [
+                "ansible/roles/cloud-node",
+                "ansible/roles/mysql-init"
+            ]
+        },
+        {
+            "type": "ansible-local",
+            "only": ["azure-arm"],
+            "playbook_file": "ansible/mysql57/main.yml",
+            "extra_arguments": ["-v", "--extra-vars \"create_admin=false enable_lvm=false\""],
             "role_paths": [
                 "ansible/roles/cloud-node",
                 "ansible/roles/mysql-init"

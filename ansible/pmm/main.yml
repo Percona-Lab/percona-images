@@ -4,7 +4,8 @@
   gather_facts: yes
   vars:
     data_partition: "/srv"
-    enable_lvm: true
+    create_admin: "true"
+    enable_lvm: "true"
   roles:
     - cloud-node
     - mysql-init
