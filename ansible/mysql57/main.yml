@@ -70,6 +70,13 @@
         regexp: 'After='
         replace: 'After=mysqld.service '
 
+    - name: cloud-init                 | Change cloud user
+      when: ansible_virtualization_type == "virtualbox"
+      replace:
+        dest: /etc/cloud/cloud.cfg
+        regexp: 'name: centos'
+        replace: 'name: vagrant'
+
     - name: PMM                        | Delete centos user
       shell: cd /tmp; nohup sh -c "trap 'userdel -r centos && sync' EXIT; sleep 600" </dev/null >/dev/null 2>&1 &
 
