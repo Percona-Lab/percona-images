@@ -60,7 +60,7 @@
       replace:
         dest: /boot/grub/grub.conf
         regexp: 'console=hvc0'
-        replace: 'console=ttyS0 xen_emul_unplug=unnecessary'
+        replace: 'console=ttyS0,115200n8 earlyprintk=ttyS0,115200 rootdelay=300 xen_emul_unplug=unnecessary'
 
     - name: System Log                 | stat /boot/grub2/grub.cfg
       stat: path=/boot/grub2/grub.cfg
@@ -71,7 +71,7 @@
       replace:
         dest: /etc/default/grub
         regexp: 'rhgb'
-        replace: 'console=ttyS0 xen_emul_unplug=unnecessary'
+        replace: 'console=ttyS0,115200n8 earlyprintk=ttyS0,115200 rootdelay=300 xen_emul_unplug=unnecessary'
       register: grub2_var
 
     - name: System Log                 | run grub2-mkconfig
@@ -172,6 +172,7 @@
         mode: 0644
 
     - name: cloud-init                 | Add admin user
+      when: ansible_virtualization_type != "VirtualPC"
       user:
         name: admin
         comment: Cloud User
@@ -179,6 +180,7 @@
         shell: /bin/bash
 
     - name: cloud-init                 | Add sudo for admin user
+      when: ansible_virtualization_type != "VirtualPC"
       copy:
         content: |
           admin ALL=(ALL) NOPASSWD: ALL
@@ -186,6 +188,7 @@
         mode: 0440
 
     - name: cloud-init                 | Change cloud user
+      when: ansible_virtualization_type != "VirtualPC"
       replace:
         dest: /etc/cloud/cloud.cfg
         regexp: 'name: centos'
@@ -229,6 +232,38 @@
           xfs_growfs -d {{ data_partition }}
         dest: /var/lib/cloud/scripts/per-boot/resize-xfs
         mode: 0755
+
+    - name: cloud-init                 | stat /etc/waagent.conf
+      stat: path=/etc/waagent.conf
+      register: waagent_conf
+
+    - name: cloud-init                 | Enable cloud-init for Azure
+      when: waagent_conf.stat.exists
+      replace:
+        dest: /etc/waagent.conf
+        regexp: 'Provisioning.UseCloudInit=n'
+        replace: 'Provisioning.UseCloudInit=y'
+
+    - name: cloud-init                 | Enable swap for Azure
+      when: waagent_conf.stat.exists
+      replace:
+        dest: /etc/waagent.conf
+        regexp: 'ResourceDisk.EnableSwap=n'
+        replace: 'ResourceDisk.EnableSwap=y'
+
+    - name: cloud-init                 | Enable swap for Azure
+      when: waagent_conf.stat.exists
+      replace:
+        dest: /etc/waagent.conf
+        regexp: 'ResourceDisk.SwapSizeMB=0'
+        replace: 'ResourceDisk.SwapSizeMB=1024'
+
+    - name: cloud-init                 | Fix cloud-init cleanup
+      when: waagent_conf.stat.exists
+      replace:
+        dest: /usr/lib/python2.7/site-packages/azurelinuxagent/pa/deprovision/default.py
+        regexp:  'warnings, actions, deluser=deluser'
+        replace: 'warnings, actions, include_once=False, deluser=deluser'
 
     - import_tasks: security.yml
     - import_tasks: ovf.yml
