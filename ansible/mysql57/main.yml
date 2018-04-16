@@ -8,7 +8,6 @@
   roles:
     - cloud-node
     - mysql-init
-    - nginx
 
   tasks:
     - name: Install console tools
@@ -71,60 +70,6 @@
         dest: /usr/lib/systemd/system/cloud-final.service
         regexp: 'After='
         replace: 'After=mysqld.service '
-
-    - name: Configurator               | Install RPMs
-      when: ansible_os_family == 'RedHat'
-      yum: name={{ item }} state=installed enablerepo=percona-testing-x86_64
-      with_items:
-        - image-configurator
-
-    - name: Configurator               | Start services
-      when: ansible_virtualization_type == "virtualbox"
-      service: name={{ item }} state=started enabled=yes
-      with_items:
-        - image-configurator
-        - nginx
-
-    - name: Configurator               | Delete empty authorized_keys
-      copy:
-        content: |
-          runcmd:
-            - [ 'chmod', 'o+x', '/home/admin', '/home/admin/.ssh' ]
-            - [ 'sh', '-c', 'test -s /home/admin/.ssh/authorized_keys || rm -f /home/admin/.ssh/authorized_keys' ]
-        dest: /etc/cloud/cloud.cfg.d/80_delete-empty-authorized-keys.cfg
-        mode: 0644
-
-    - name: Configurator               | Config
-      copy:
-        content: |
-            server {
-                listen                  80;
-                listen                  443 ssl;
-                server_name             _;
-                server_tokens           off;
-                root                    /usr/share/image-configurator/landing-page;
-
-                ssl_certificate         /srv/nginx/certificate.crt;
-                ssl_certificate_key     /srv/nginx/certificate.key;
-                ssl_trusted_certificate /srv/nginx/ca-certs.pem;
-                ssl_dhparam             /srv/nginx/dhparam.pem;
-
-                # Configurator
-                location /configurator {
-                    if (!-f /home/admin/.ssh/authorized_keys) {
-                        proxy_pass      http://127.0.0.1:7777;
-                    }
-                    proxy_read_timeout  86400;
-                }
-            }
-        dest: /etc/nginx/conf.d/configurator.conf
-        mode: 0644
-
-    - name: Configurator               | Allow NGINX SELinux
-      seboolean:
-        name: httpd_read_user_content
-        state: yes
-        persistent: yes
 
     - name: PMM                        | Delete centos user
       shell: cd /tmp; nohup sh -c "trap 'userdel -r centos && sync' EXIT; sleep 600" </dev/null >/dev/null 2>&1 &
