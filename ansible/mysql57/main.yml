@@ -2,6 +2,9 @@
 - hosts: all
   become: yes
   gather_facts: yes
+  vars:
+    data_partition: "/data"
+    enable_lvm: false
   roles:
     - cloud-node
     - mysql-init

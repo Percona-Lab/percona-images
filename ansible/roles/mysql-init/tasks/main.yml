@@ -22,13 +22,13 @@
 
     - name: Percona Server for MySQL   | Fix selinux
       sefcontext:
-        target: '/srv/mysql(/.*)?'
+        target: "{{ data_partition }}/mysql(/.*)?"
         setype: mysqld_db_t
         state: present
 
     - name: Percona Server for MySQL   | Create directory
       file:
-        path: /srv/mysql
+        path: "{{ data_partition }}/mysql"
         mode: 0751
         owner: mysql
         group: mysql
@@ -39,7 +39,7 @@
         dest: /etc/percona-server.conf.d/mysqld.cnf
         section: mysqld
         option: datadir
-        value: /srv/mysql
+        value: "{{ data_partition }}/mysql"
 
     - name: cloud-init                 | Fix start-up sequence
       replace:
