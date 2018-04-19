@@ -231,6 +231,14 @@
         option: enabled
         value: true
 
+    - name: Grafana                    | Enable Anonymous access
+      when: not grafana_db.stat.exists
+      ini_file:
+        dest: /etc/grafana/grafana.ini
+        section: auth.anonymous
+        option: org_role
+        value: Editor
+
     - name: Grafana                    | Set snapshot server
       when: not grafana_db.stat.exists
       ini_file:
