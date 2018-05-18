@@ -5,7 +5,7 @@
             "ami_virtualization_type": "hvm",
             "instance_type": "t2.micro",
             "launch_block_device_mappings": [{
-                    "snapshot_id": "snap-088636c344ba7cfe8",
+                    "snapshot_id": "snap-0cb1c6de98a99e5c8",
                     "delete_on_termination": true,
                     "device_name": "/dev/xvds",
                     "volume_size": 8,
@@ -20,7 +20,7 @@
             ],
             "region": "us-east-1",
             "security_group_id": "sg-688c2b1c",
-            "source_ami": "ami-b81dbfc5",
+            "source_ami": "ami-d5bf2caa",
             "ena_support": "true",
             "ssh_username": "centos",
             "subnet_id": "subnet-ee06e8e1",
