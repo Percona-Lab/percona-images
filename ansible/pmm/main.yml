@@ -397,3 +397,8 @@
     - name: PMM                        | Delete Azure user
       shell: cd /tmp; nohup sh -c "trap '/usr/sbin/waagent -force -deprovision+user && sync' EXIT; sleep 600" </dev/null >/dev/null 2>&1 &
 
+    - name: cloud-init                 | Cleanup security logs
+      file: path={{ item }} state=absent
+      with_items:
+        - /var/log/secure
+        - /var/log/wtmp
