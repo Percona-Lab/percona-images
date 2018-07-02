@@ -214,7 +214,7 @@
 
           set -o errexit
 
-          pvresize $(ls /dev/sda /dev/sdb /dev/sdc /dev/xvdb 2>/dev/null | grep -v ^$(pvdisplay -c | grep ':VolGroup00:' | cut -d ':' -f 1 | tr -d '[:space:]' | sed 's/[0-9]$//')$ | grep -v ^$(findmnt -f -n -o SOURCE / | sed 's/[0-9]$//')$ | grep -v ^$(findmnt -f -n -o SOURCE /mnt/resource | sed 's/[0-9]$//')$)
+          pvresize $(ls /dev/sda /dev/sdb /dev/sdc /dev/xvdb /dev/nvme1n1 2>/dev/null | grep -v ^$(pvdisplay -c | grep ':VolGroup00:' | cut -d ':' -f 1 | tr -d '[:space:]' | sed 's/[0-9]$//')$ | grep -v ^$(findmnt -f -n -o SOURCE / | sed 's/[0-9]$//')$ | grep -v ^$(findmnt -f -n -o SOURCE /mnt/resource | sed 's/[0-9]$//')$)
           lvextend -l '100%VG' /dev/DataVG/ThinPool
           lvextend -l '80%VG' /dev/DataVG/DataLV
           xfs_growfs -d {{ data_partition }}
