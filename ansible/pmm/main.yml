@@ -53,6 +53,7 @@
         - percona-consul
         - percona-grafana
         - percona-prometheus
+        - percona-prometheus1
         - percona-orchestrator
         - percona-qan-api
         - percona-qan-app
@@ -270,6 +271,7 @@
         - consul
         - node_exporter
         - prometheus
+        - prometheus1
         - percona-qan-api
         - pmm-manage
         - pmm-managed
@@ -358,6 +360,7 @@
         - consul
         - node_exporter
         - prometheus
+        - prometheus1
         - percona-qan-api
         - pmm-manage
         - pmm-managed
@@ -368,6 +371,7 @@
       with_items:
         - /srv/consul
         - /srv/prometheus
+        - /srv/prometheus2
         - /srv/collect_info
 
     - name: PMM                        | Create tmp dirs
