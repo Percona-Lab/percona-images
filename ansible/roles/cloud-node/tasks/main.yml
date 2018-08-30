@@ -267,5 +267,6 @@
 
     - import_tasks: security.yml
     - import_tasks: ovf.yml
+    - import_tasks: ami.yml
     - import_tasks: VBoxGuestAdditions.yml
 
