@@ -380,14 +380,14 @@
     - name: PMM                        | Switch password-page type
       when: ansible_virtualization_type == "virtualbox"
       replace:
-        dest: /usr/share/pmm-server/password-page/dist/main.js
+        dest: /usr/share/pmm-server/password-page/main.js
         regexp: "installationType: 'docker'"
         replace: "installationType: 'ovf'"
 
     - name: PMM                        | Switch password-page type
       when: ansible_virtualization_type == "xen"
       replace:
-        dest: /usr/share/pmm-server/password-page/dist/main.js
+        dest: /usr/share/pmm-server/password-page/main.js
         regexp: "installationType: 'docker'"
         replace: "installationType: 'ami'"
 
