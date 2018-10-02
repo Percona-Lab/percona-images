@@ -377,19 +377,27 @@
     - name: PMM                        | Create tmp dirs
       command: /usr/bin/systemd-tmpfiles --create --remove --boot --exclude-prefix=/dev
 
+    - name: PMM                        | Find the main js file
+      find:
+        paths: "/usr/share/pmm-server/password-page"
+        patterns: "main.*.js"
+      register: jsresult
+
     - name: PMM                        | Switch password-page type
       when: ansible_virtualization_type == "virtualbox"
       replace:
-        dest: /usr/share/pmm-server/password-page/main.js
+        dest: "{{ jsresult.files[0].path }}"
         regexp: "installationType: 'docker'"
         replace: "installationType: 'ovf'"
+      with_items: "{{ jsresult.files }}"
 
     - name: PMM                        | Switch password-page type
       when: ansible_virtualization_type == "xen"
       replace:
-        dest: /usr/share/pmm-server/password-page/main.js
+        dest: "{{ jsresult.files[0].path }}"
         regexp: "installationType: 'docker'"
         replace: "installationType: 'ami'"
+      with_items: "{{ jsresult.files }}"
 
     - name: PMM                        | Delete centos
       shell: cd /tmp; nohup sh -c "trap 'userdel -r centos' EXIT; sleep 600" </dev/null >/dev/null 2>&1 &
