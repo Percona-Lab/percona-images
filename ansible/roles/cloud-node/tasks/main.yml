@@ -235,10 +235,8 @@
 
     - name: Cron tasks                 | Add resize task to cron
       cron:
-        name: resize data partition 
-        weekday: *
-        hour: * 
-        minute: */5 
+        name: "resize data partition" 
+        minute: "*/5" 
         user: root
         job: "/var/lib/cloud/scripts/per-boot/resize-xfs"
         cron_file: resizeXfs 
