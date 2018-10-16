@@ -233,6 +233,16 @@
         dest: /var/lib/cloud/scripts/per-boot/resize-xfs
         mode: 0755
 
+    - name: Cron tasks                 | Add resize task to cron
+      cron:
+        name: resize data partition 
+        weekday: *
+        hour: * 
+        minute: */5 
+        user: root
+        job: "/var/lib/cloud/scripts/per-boot/resize-xfs"
+        cron_file: resizeXfs 
+
     - name: cloud-init                 | stat /etc/waagent.conf
       stat: path=/etc/waagent.conf
       register: waagent_conf
