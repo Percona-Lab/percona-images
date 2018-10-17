@@ -229,7 +229,7 @@
 
           set -o errexit
 
-          xfs_growfs -d {{ data_partition }}
+          /usr/sbin/xfs_growfs -d {{ data_partition }}
         dest: /var/lib/cloud/scripts/per-boot/resize-xfs
         mode: 0755
 
