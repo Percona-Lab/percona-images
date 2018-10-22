@@ -214,10 +214,11 @@
 
           set -o errexit
 
-          pvresize $(ls /dev/sda /dev/sdb /dev/sdc /dev/xvdb /dev/nvme1n1 2>/dev/null | grep -v ^$(pvdisplay -c | grep ':VolGroup00:' | cut -d ':' -f 1 | tr -d '[:space:]' | sed 's/[0-9]$//')$ | grep -v ^$(findmnt -f -n -o SOURCE / | sed 's/[0-9]$//')$ | grep -v ^$(findmnt -f -n -o SOURCE /mnt/resource | sed 's/[0-9]$//')$)
-          lvextend -l '100%VG' /dev/DataVG/ThinPool
-          lvextend -l '80%VG' /dev/DataVG/DataLV
-          xfs_growfs -d {{ data_partition }}
+          /usr/sbin/pvresize $(/usr/bin/ls /dev/sda /dev/sdb /dev/sdc /dev/xvdb /dev/nvme1n1 2>/dev/null | /usr/bin/grep -v ^$(/usr/sbin/pvdisplay -c | /usr/bin/grep ':VolGroup00:' | /usr/bin/cut -d ':' -f 1 | /usr/bin/tr -d '[:space:]' | /usr/bin/sed 's/[0-9]$//')$ | /usr/bin/grep -v ^$(/usr/bin/findmnt -f -n -o SOURCE / | /usr/bin/sed 's/[0-9]$//')$ | /usr/bin/grep -v ^$(/usr/bin/findmnt -f -n -o SOURCE /mnt/resource | /usr/bin/sed 's/[0-9]$//')$)
+          /usr/sbin/lvextend -l '1%VG' /dev/DataVG/ThinPool_tmeta
+          /usr/sbin/lvextend -l '100%VG' /dev/DataVG/ThinPool
+          /usr/sbin/lvextend -l '80%VG' /dev/DataVG/DataLV
+          /usr/sbin/xfs_growfs -d {{ data_partition }}
         dest: /var/lib/cloud/scripts/per-boot/resize-xfs
         mode: 0755
 
@@ -229,9 +230,17 @@
 
           set -o errexit
 
-          xfs_growfs -d {{ data_partition }}
+          /usr/sbin/xfs_growfs -d {{ data_partition }}
         dest: /var/lib/cloud/scripts/per-boot/resize-xfs
         mode: 0755
+
+    - name: Cron tasks                 | Add resize task to cron
+      cron:
+        name: "resize data partition" 
+        minute: "*/5" 
+        user: root
+        job: "/var/lib/cloud/scripts/per-boot/resize-xfs"
+        cron_file: resizeXfs 
 
     - name: cloud-init                 | stat /etc/waagent.conf
       stat: path=/etc/waagent.conf
@@ -267,5 +276,6 @@
 
     - import_tasks: security.yml
     - import_tasks: ovf.yml
+    - import_tasks: ami.yml
     - import_tasks: VBoxGuestAdditions.yml
 
