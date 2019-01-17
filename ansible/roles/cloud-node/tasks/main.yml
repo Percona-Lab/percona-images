@@ -87,8 +87,12 @@
     - name: Packages                   | Add Percona repository
       when: ansible_os_family == 'RedHat'
       yum:
-        name: https://www.percona.com/redir/downloads/percona-release/redhat/0.1-4/percona-release-0.1-4.noarch.rpm
+        name: https://repo.percona.com/yum/percona-release-0.1-7.noarch.rpm
         state: installed
+
+    - rpm_key:
+        state: present
+        key: /etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY
 
     - name: Packages                   | Update OS
       when: ansible_os_family == 'RedHat'
