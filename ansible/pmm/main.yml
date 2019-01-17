@@ -33,7 +33,7 @@
         baseurl: https://repo.percona.com/pmm/7/RPMS/x86_64/
         gpgcheck: yes
         enabled: no
-        gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Percona
+        gpgkey: file:///etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY
 
     - name: PMM                        | Add PMM Server YUM repository
       when: ansible_os_family == 'RedHat'
@@ -43,7 +43,7 @@
         baseurl: https://repo.percona.com/laboratory/7/RPMS/x86_64/
         gpgcheck: yes
         enabled: no
-        gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Percona
+        gpgkey: file:///etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY
 
     - name: PMM                        | Install RPMs
       when: ansible_os_family == 'RedHat'
