@@ -32,6 +32,12 @@ pmm-ovf: fetch
 pmm-ami:
 	packer build -only amazon-ebs packer/pmm.json
 
+pmm2-ovf: fetch
+	packer build -only virtualbox-ovf packer/pmm2.json
+
+pmm2-ami:
+	packer build -only amazon-ebs packer/pmm2.json
+
 pmm-gcp:
 	packer build -only googlecompute packer/pmm.json
 
