@@ -111,7 +111,7 @@
        path: /etc/supervisord.d/pmm.ini
        section: supervisord
        state: absent
-    
+
     - name: Disable SELinux
       selinux:
         policy: targeted
@@ -328,7 +328,7 @@
 
     - name: PMM                        | Show ClickHouse database
       command: clickhouse-client --host 127.0.0.1 --query="SHOW DATABASES"
-    
+
     - name: PMM                        | Add script which show PMM URL
       copy:
         content: |
@@ -385,6 +385,15 @@
 
     - name: PMM                        | Create tmp dirs
       command: /usr/bin/systemd-tmpfiles --create --remove --boot --exclude-prefix=/dev
+
+    - name: PMM                        | Setup pmm-agent
+      command: >
+        pmm-agent setup
+        --config-file=/usr/local/percona/pmm-agent.yaml
+        --skip-registration
+        --id=/agent_id/pmm-server
+        --server-address=127.0.0.1:443
+        --server-insecure-tls
 
     - name: PMM                        | Find the main js file
       find:
