@@ -75,24 +75,24 @@
     - name: PMM                        | Install RPMs
       when: ansible_os_family == 'RedHat'
       yum:
-       name:
-         - nginx-1.15.8
-         - percona-grafana
-         - percona-prometheus
-         - percona-qan-api2
-         - percona-qan-app
-         - percona-dashboards
-         - pmm-server
-         - pmm-manage
-         - pmm-managed
-         - pmm-update
-         - rds_exporter
-         - percona-clickhouse-client
-         - percona-clickhouse-server
-         - pmm2-client
-         - unzip
-       state: installed
-       enablerepo: "pmm-laboratory"
+        name:
+          - nginx-1.15.8
+          - percona-grafana
+          - percona-prometheus
+          - percona-qan-api2
+          - percona-qan-app
+          - percona-dashboards
+          - pmm-server
+          - pmm-manage
+          - pmm-managed
+          - pmm-update
+          - rds_exporter
+          - percona-clickhouse-client
+          - percona-clickhouse-server
+          - pmm2-client
+          - unzip
+        state: installed
+        enablerepo: "pmm-laboratory"
 
     - name: PMM                        | Prometheus METRICS_RETENTION
       command: sh -c 'sed -i "s/ENV_METRICS_RETENTION/${METRICS_RETENTION:-720h}/" /etc/supervisord.d/pmm.ini'
@@ -108,9 +108,9 @@
 
     - name: Remove supervisord block
       ini_file:
-       path: /etc/supervisord.d/pmm.ini
-       section: supervisord
-       state: absent
+        path: /etc/supervisord.d/pmm.ini
+        section: supervisord
+        state: absent
 
     - name: Disable SELinux
       selinux:
@@ -290,6 +290,11 @@
         priv: 'ALL'
         expires: infinity
         state: present
+
+    - name: pmm-managed                | Create pg_stat_statements PostgreSQL extension
+      postgresql_ext:
+        db: pmm-managed
+        name: pg_stat_statements
 
     - name: PMM                        | Wait for Grafana start
       wait_for:
