@@ -106,6 +106,7 @@
         - cloud-init
         - yum-cron
         - firewalld
+        - python2-pip
 
     - name: Firewalld                  | Start
       when: ansible_os_family == 'RedHat'
