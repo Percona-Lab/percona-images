@@ -14,6 +14,11 @@
     - name: Packages                   | Install supervisor
       when: ansible_os_family == 'RedHat'
       pip:
+        yum: name=supervisor state=installed
+
+    - name: Packages                   | Update supervisor
+      when: ansible_os_family == 'RedHat'
+      pip:
         name: supervisor==3.4.0
 
     - name: supervisor                 | Fix credentials
