@@ -78,6 +78,22 @@
         dest: /etc/logrotate.d/supervisor
         mode: 0644
 
+    - name: Configure supervisor       | Add supervisord.service
+      copy:
+        content: |
+          [Unit]
+          Description=Process Monitoring and Control Daemon
+          After=rc-local.service nss-user-lookup.target
+
+          [Service]
+          Type=forking
+          ExecStart=/usr/bin/supervisord -c /etc/supervisord.conf
+
+          [Install]
+          WantedBy=multi-user.target
+        dest: /usr/lib/systemd/system/supervisord.service
+        mode: 0644
+
     - name: supervisor                 | Fix credentials
       ini_file:
         dest: /etc/supervisord.conf
