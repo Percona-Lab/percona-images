@@ -66,6 +66,13 @@
         mode: '0755'
         state: directory
 
+    - name: Configure supervisor       | Add /etc/tmpfiles.d/supervisor.conf config
+      copy:
+        content: |
+          D /var/run/supervisor 0775 root root -
+        dest: /etc/tmpfiles.d/supervisor.conf
+        mode: 0644
+
     - name: Configure supervisor       | Add logrotate.d config
       copy:
         content: |
