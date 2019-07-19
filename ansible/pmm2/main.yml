@@ -203,27 +203,6 @@
         policy: targeted
         state: permissive
 
-    - name: cloud-init                 | Set TELEMETRY_OS
-      when: ansible_virtualization_type == "virtualbox"
-      lineinfile:
-        path: /etc/sysconfig/pmm-managed
-        regexp: '^TELEMETRY_OS='
-        line: 'TELEMETRY_OS=OVF'
-
-    - name: cloud-init                 | Set TELEMETRY_OS
-      when: ansible_virtualization_type == "xen"
-      lineinfile:
-        path: /etc/sysconfig/pmm-managed
-        regexp: '^TELEMETRY_OS='
-        line: 'TELEMETRY_OS=AMI'
-
-    - name: cloud-init                 | Set TELEMETRY_OS
-      when: ansible_virtualization_type == "kvm"
-      lineinfile:
-        path: /etc/sysconfig/pmm-managed
-        regexp: '^TELEMETRY_OS='
-        line: 'TELEMETRY_OS=GCP'
-
     - name: PMM                        | Fix nginx config
       replace:
         dest: /etc/nginx/nginx.conf
