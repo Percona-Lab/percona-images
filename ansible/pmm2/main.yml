@@ -287,21 +287,13 @@
     - name: PMM                        | Fix path to grafana.db
       command: sh -c 'sed -i "s|/var/lib/grafana/grafana.db|/srv/grafana/grafana.db|" /etc/supervisord.d/pmm.ini'
 
-    - name: Grafana                    | Enable Anonymous access
+    - name: Grafana                    | Disable Anonymous access
       when: not grafana_db.stat.exists
       ini_file:
         dest: /etc/grafana/grafana.ini
         section: auth.anonymous
         option: enabled
-        value: true
-
-    - name: Grafana                    | Enable Anonymous access
-      when: not grafana_db.stat.exists
-      ini_file:
-        dest: /etc/grafana/grafana.ini
-        section: auth.anonymous
-        option: org_role
-        value: Editor
+        value: 'false'
 
     - name: Grafana                    | Set snapshot server
       when: not grafana_db.stat.exists
@@ -309,7 +301,7 @@
         dest: /etc/grafana/grafana.ini
         section: snapshots
         option: external_enabled
-        value: true
+        value: 'true'
 
     - name: Grafana                    | Set snapshot server
       when: not grafana_db.stat.exists
@@ -343,7 +335,7 @@
         dest: /etc/grafana/grafana.ini
         section: server
         option: enable_gzip
-        value: true
+        value: 'true'
 
     - name: Postgres                   | Create Postgres log file
       copy:
