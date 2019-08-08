@@ -204,12 +204,6 @@
         policy: targeted
         state: permissive
 
-    - name: PMM                        | Fix nginx config
-      replace:
-        dest: /etc/nginx/nginx.conf
-        regexp: '^(\s*)listen'
-        replace: '\1#listen'
-
     - name: NGINX SSL Certificate      | Add script
       copy:
         content: |
