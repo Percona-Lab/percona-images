@@ -1,11 +1,16 @@
 ---
 # Initialize Postgres
 
-    - name: Packages                   | Add Postgres repository
+# !!! WARNING _experimental_ has to be replaced by _release_ after GA
+    - name: Postgres                   | Add PostgreSQL YUM repository
       when: ansible_os_family == 'RedHat'
-      yum:
-        name: https://repo.percona.com/ppg-11/yum/experimental/7/RPMS/x86_64/percona-postgresql11-11.5-1.el7.x86_64.rpm
-        state: installed
+      yum_repository:
+        name: percona-ppg-11-experimental
+        description: PostgreSQL YUM repository - x86_64
+        baseurl: http://repo.percona.com/ppg-11/yum/experimental/7/RPMS/x86_64
+        gpgcheck: yes
+        enabled: yes
+        gpgkey: file:///etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY
 
     - name: Postgres                   | Install Postgres
       when: ansible_os_family == 'RedHat'
