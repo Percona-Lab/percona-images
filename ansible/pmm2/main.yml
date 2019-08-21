@@ -116,6 +116,12 @@
         option: password
         value: dummy
 
+    - name: supervisor 
+      debug: var=item
+      with_file:
+        - "/etc/supervisord.conf"
+        - "/etc/supervisord.d/pmm.ini"
+
     - name: Packages                   | Add Nginx repository
       yum_repository:
         name: nginx
