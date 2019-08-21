@@ -116,12 +116,6 @@
         option: password
         value: dummy
 
-    - name: supervisor 
-      debug: var=item
-      with_file:
-        - "/etc/supervisord.conf"
-        - "/etc/supervisord.d/pmm.ini"
-
     - name: Packages                   | Add Nginx repository
       yum_repository:
         name: nginx
@@ -324,6 +318,12 @@
         group: postgres
         owner: postgres
         mode: 0644
+
+    - name: Postgres                   | Fix Postgres service path 
+      replace:
+        path: /etc/supervisord.d/pmm.ini
+        regexp: 'pgsql-10'
+        replace: 'pgsql-11'
 
     - name: PMM                        | Start services
       service: name=supervisord state=started enabled=yes
