@@ -319,12 +319,6 @@
         owner: postgres
         mode: 0644
 
-    - name: Postgres                   | Fix Postgres service path 
-      replace:
-        path: /etc/supervisord.d/pmm.ini
-        regexp: 'pgsql-10'
-        replace: 'pgsql-11'
-
     - name: PMM                        | Start services
       service: name=supervisord state=started enabled=yes
 
