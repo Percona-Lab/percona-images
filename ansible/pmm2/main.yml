@@ -301,6 +301,7 @@
       file: path={{ item }} state=directory owner=pmm
       with_items:
         - /srv/prometheus/data
+        - /srv/prometheus/rules
         - /srv/logs
 
     - name: Grafana                    | Enable gzip
