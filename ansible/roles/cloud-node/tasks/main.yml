@@ -1,118 +1,27 @@
 ---
 # Common things for all cloud images
-
-    - name: Packages                   | Install OS tools
-      when: ansible_os_family == 'RedHat'
-      yum: name={{ item }} state=installed
-      with_items:
-        - lvm2
-
-    - name: Data partition             | list
-      shell: ls /dev/sda /dev/sdb /dev/sdc /dev/xvdb | grep -v ^$(pvdisplay -c | grep ':VolGroup00:' | cut -d ':' -f 1 | tr -d '[:space:]' | sed 's/[0-9]$//')$ | grep -v ^$(findmnt -f -n -o SOURCE / | sed 's/[0-9]$//')$ | grep -v ^$(findmnt -f -n -o SOURCE /mnt/resource | sed 's/[0-9]$//')$
-      register: available_drives
-      failed_when: available_drives.stdout_lines|length != 1
-      changed_when: False
-
-    - name: Data partition             | Create Volume Group
-      when: enable_lvm == "true"
-      lvg:
-        vg: DataVG
-        pvs: "{{ available_drives.stdout_lines[0] }}"
-
-    - name: Data partition             | Create Thin Pool
-      when: enable_lvm == "true"
-      register: thin_pool
-      failed_when: "thin_pool | failed and 'Sorry, no shrinking of DataLV to 0 permitted' not in thin_pool.msg"
-      lvol:
-        lv: DataLV
-        vg: DataVG
-        size: 100%FREE
-        opts: --thinpool ThinPool -V 1G
-
-    - name: Data partition             | Format LVM
-      when: enable_lvm == "true"
-      filesystem:
-        fstype: xfs
-        dev: /dev/DataVG/DataLV
-        opts: -L DATA
-
-    - name: Data partition             | Format Device
-      when: enable_lvm != "true"
-      filesystem:
-        fstype: xfs
-        dev: "{{ available_drives.stdout_lines[0] }}"
-        opts: -L DATA
-
-    - name: Data partition             | Mount
-      mount:
-        name: "{{ data_partition }}"
-        src: LABEL=DATA
-        fstype: xfs
-        opts: defaults,nofail
-        state: mounted
-
-    - name: System Log                 | stat /boot/grub/grub.conf
-      stat: path=/boot/grub/grub.conf
-      register: grub1_conf
-
-    - name: System Log                 | change /boot/grub/grub.conf
-      when: grub1_conf.stat.exists
-      replace:
-        dest: /boot/grub/grub.conf
-        regexp: 'console=hvc0'
-        replace: 'console=ttyS0,115200n8 earlyprintk=ttyS0,115200 rootdelay=300 xen_emul_unplug=unnecessary'
-
-    - name: System Log                 | stat /boot/grub2/grub.cfg
-      stat: path=/boot/grub2/grub.cfg
-      register: grub2_conf
-
-    - name: System Log                 | change /etc/default/grub
-      when: grub2_conf.stat.exists
-      replace:
-        dest: /etc/default/grub
-        regexp: 'rhgb'
-        replace: 'console=ttyS0,115200n8 earlyprintk=ttyS0,115200 rootdelay=300 xen_emul_unplug=unnecessary'
-      register: grub2_var
-
-    - name: System Log                 | run grub2-mkconfig
-      when: grub2_var.changed and grub2_conf.stat.exists
-      command: grub2-mkconfig -o /boot/grub2/grub.cfg
-
     - name: Packages                   | Add EPEL repository
       when: ansible_os_family == 'RedHat'
       yum:
         name: https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-11.noarch.rpm
         state: installed
 
-    - name: Packages                   | Add Percona repository
-      when: ansible_os_family == 'RedHat'
-      yum:
-        name: https://repo.percona.com/yum/percona-release-1.0-6.noarch.rpm
-        state: installed
-
-    - name: Packages                   | Update OS
-      when: ansible_os_family == 'RedHat'
-      yum:
-        name: '*'
-        state: latest
-        disablerepo: percona-release-x86_64
-
     - name: Packages                   | Install OS tools
       when: ansible_os_family == 'RedHat'
-      yum: name={{ item }} state=installed
-      with_items:
-        - screen
-        - yum-utils
-        - cloud-init
-        - yum-cron
-        - firewalld
-        - python2-pip
+      yum:
+        name:
+          - screen
+          - yum-utils
+          - cloud-init
+          - firewalld
+          - python2-pip
+          - ansible
 
     - name: Firewalld                  | Start
       when: ansible_os_family == 'RedHat'
       service: name=firewalld state=started enabled=yes
 
-    - name: cloud-init                 | Cleanup cache
+    - name: cleanup cache              | Cleanup cache
       file: path={{ item }} state=absent
       with_items:
         - /var/lib/cloud/sem
@@ -122,12 +31,10 @@
         - /var/log/cloud-init.log
         - /var/log/cloud-init-output.log
 
-    - name: cloud-init                 | Create dirs
-      file: path={{ item }} state=directory
-      with_items:
-        - /var/lib/cloud/scripts/per-once
-        - /var/lib/cloud/scripts/per-boot
-        - /etc/systemd/system/getty@.service.d
+    - name: create dir                 | Create getty@.service.d directory
+      file:
+        path: /etc/systemd/system/getty@.service.d
+        state: directory
 
     - name: cloud-init                 | Disable console cleanup
       copy:
@@ -137,34 +44,34 @@
         dest: /etc/systemd/system/getty@.service.d/nodisallocate.conf
         mode: 0644
 
-    - name: Root                       | Set root password
+    - name: root password              | Set root password
       when: ansible_virtualization_type == "virtualbox"
       user:
         name: root
         password: "$6$J7pGg2a7vuRTbTV5$vORqkiAKdkyomU3iYwr/SPn.yLIkGsl5ludEx5DUvGVASSTquTjOldHt/nUWrFRnJeZyzt6CIOjAcugbcfGtN1"
 
-    - name: Root                       | Set root password
+    - name: root password              | Set root password
       when: ansible_virtualization_type == "virtualbox"
       command: chage -d 0 root
       changed_when: False
 
-    - name: Root                       | Disable root password
+    - name: root password              | Disable root password
       when: ansible_virtualization_type != "virtualbox"
       command: passwd --delete root
       changed_when: False
 
-    - name: Root                       | Disable root password
+    - name: root password              | Disable root password
       when: ansible_virtualization_type != "virtualbox"
       command: passwd --lock root
       changed_when: False
 
-    - name: cloud-init                 | Fix start-up sequence
+    - name: chronyd                    | Fix start-up sequence
       replace:
         dest: /usr/lib/systemd/system/chronyd.service
         regexp: 'After='
         replace: 'Before=cloud-config.target\nAfter=network-online.target '
 
-    - name: cloud-init                 | Disable root user
+    - name: disable root user          | Disable root user
       copy:
         content: |
           no_ssh_fingerprints: true
@@ -172,7 +79,7 @@
         dest: /etc/cloud/cloud.cfg.d/00_disable-root.cfg
         mode: 0644
 
-    - name: cloud-init                 | Add admin user
+    - name: add user                   | Add admin user
       when: create_admin == "true"
       user:
         name: admin
@@ -180,7 +87,7 @@
         groups: wheel,adm,systemd-journal
         shell: /bin/bash
 
-    - name: cloud-init                 | Add sudo for admin user
+    - name: add user                   | Add sudo for admin user
       when: create_admin == "true"
       copy:
         content: |
@@ -188,87 +95,39 @@
         dest: /etc/sudoers.d/90-admin-user
         mode: 0440
 
-    - name: cloud-init                 | Change cloud user
+    - name: change cloud user          | Change cloud user
       when: create_admin == "true"
       replace:
         dest: /etc/cloud/cloud.cfg
         regexp: 'name: centos'
         replace: 'name: admin'
 
-    - name: cloud-init                 | Configure yum-cron
-      replace:
-        dest: /etc/yum/yum-cron-hourly.conf
-        regexp: 'update_cmd = default'
-        replace: 'update_cmd = minimal-security'
-
-    - name: cloud-init                 | Configure yum-cron
-      replace:
-        dest: /etc/yum/yum-cron.conf
-        regexp: 'update_cmd = default'
-        replace: 'update_cmd = minimal-security'
-
-    - name: Data partition             | Auto resize LVM
-      when: enable_lvm == "true"
-      copy:
-        content: |
-          #!/bin/sh
-
-          set -o errexit
-
-          /usr/sbin/pvresize $(/usr/bin/ls /dev/sda /dev/sdb /dev/sdc /dev/xvdb /dev/nvme1n1 2>/dev/null | /usr/bin/grep -v ^$(/usr/sbin/pvdisplay -c | /usr/bin/grep ':VolGroup00:' | /usr/bin/cut -d ':' -f 1 | /usr/bin/tr -d '[:space:]' | /usr/bin/sed 's/[0-9]$//')$ | /usr/bin/grep -v ^$(/usr/bin/findmnt -f -n -o SOURCE / | /usr/bin/sed 's/[0-9]$//')$ | /usr/bin/grep -v ^$(/usr/bin/findmnt -f -n -o SOURCE /mnt/resource | /usr/bin/sed 's/[0-9]$//')$)
-          /usr/sbin/lvextend -l '1%VG' /dev/DataVG/ThinPool_tmeta
-          /usr/sbin/lvextend -l '100%VG' /dev/DataVG/ThinPool
-          /usr/sbin/lvextend -l '80%VG' /dev/DataVG/DataLV
-          /usr/sbin/xfs_growfs -d {{ data_partition }}
-        dest: /var/lib/cloud/scripts/per-boot/resize-xfs
-        mode: 0755
-
-    - name: Data partition             | Auto resize device
-      when: enable_lvm != "true"
-      copy:
-        content: |
-          #!/bin/sh
-
-          set -o errexit
-
-          /usr/sbin/xfs_growfs -d {{ data_partition }}
-        dest: /var/lib/cloud/scripts/per-boot/resize-xfs
-        mode: 0755
-
-    - name: Cron tasks                 | Add resize task to cron
-      cron:
-        name: "resize data partition" 
-        minute: "*/5" 
-        user: root
-        job: "/var/lib/cloud/scripts/per-boot/resize-xfs"
-        cron_file: resizeXfs 
-
-    - name: cloud-init                 | stat /etc/waagent.conf
+    - name: cloud-init configuration   | stat /etc/waagent.conf
       stat: path=/etc/waagent.conf
       register: waagent_conf
 
-    - name: cloud-init                 | Enable cloud-init for Azure
+    - name: cloud-init configuration   | Enable cloud-init for Azure
       when: waagent_conf.stat.exists
       replace:
         dest: /etc/waagent.conf
         regexp: 'Provisioning.UseCloudInit=n'
         replace: 'Provisioning.UseCloudInit=y'
 
-    - name: cloud-init                 | Enable swap for Azure
+    - name: enable swap                | Enable swap for Azure
       when: waagent_conf.stat.exists
       replace:
         dest: /etc/waagent.conf
         regexp: 'ResourceDisk.EnableSwap=n'
         replace: 'ResourceDisk.EnableSwap=y'
 
-    - name: cloud-init                 | Enable swap for Azure
+    - name: enable swap                | Enable swap for Azure
       when: waagent_conf.stat.exists
       replace:
         dest: /etc/waagent.conf
         regexp: 'ResourceDisk.SwapSizeMB=0'
         replace: 'ResourceDisk.SwapSizeMB=1024'
 
-    - name: cloud-init                 | Fix cloud-init cleanup
+    - name: cloud-init configuration   | Fix cloud-init cleanup
       when: waagent_conf.stat.exists
       replace:
         dest: /usr/lib/python2.7/site-packages/azurelinuxagent/pa/deprovision/default.py

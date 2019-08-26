@@ -1,21 +1,28 @@
 ---
 # Initialize Postgres
-
-    - name: Packages                   | Add Postgres repository
-      when: ansible_os_family == 'RedHat'
+    - name: Packages                   | Install percona-release rpm
       yum:
-        name: https://yum.postgresql.org/10/redhat/rhel-6-x86_64/pgdg-redhat10-10-2.noarch.rpm
+        name: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
         state: installed
+
+    - name: Postgres                   | Add PostgreSQL YUM repository
+      yum_repository:
+        name: percona-ppg-11-experimental
+        description: PostgreSQL YUM repository - x86_64
+        baseurl: http://repo.percona.com/ppg-11/yum/{{ ppg_repo_name }}/7/RPMS/x86_64
+        gpgcheck: yes
+        enabled: no
+        gpgkey: file:///etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY
 
     - name: Postgres                   | Install Postgres
-      when: ansible_os_family == 'RedHat'
       yum:
         name:
-          - postgresql10-server
-          - postgresql10-contrib
-          - postgresql10
+          - percona-postgresql11-server
+          - percona-postgresql11-contrib
+          - percona-postgresql11
           - python-psycopg2
         state: installed
+        enablerepo: "percona-ppg-11-experimental"
 
     - name: Postgres                   | Create Postgres data dir
       file: path={{ item }} state=directory owner=postgres group=postgres
@@ -23,4 +30,4 @@
         - /srv/postgres
 
     - name: Postgres                   | Create Postgres data cluster
-      command: su postgres -c "/usr/pgsql-10/bin/initdb -D /srv/postgres"
+      command: su postgres -c "/usr/pgsql-11/bin/initdb -D /srv/postgres"
