@@ -1,0 +1,6 @@
+{{ path_to_logs }}/supervisord.log {
+        missingok
+        weekly
+        notifempty
+        nocompress
+}

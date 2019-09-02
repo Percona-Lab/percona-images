@@ -2,7 +2,7 @@
     "builders": [{
             "type": "amazon-ebs",
             "ami_name": "PMM2 Server [{{isotime \"2006-01-02 1504\"}}]",
-            "instance_type": "t2.micro",
+            "instance_type": "c4.xlarge",
             "launch_block_device_mappings": [{
                     "delete_on_termination": true,
                     "device_name": "/dev/sda1",
@@ -75,8 +75,23 @@
             "extra_arguments": ["-v"],
             "role_paths": [
                 "ansible/roles/cloud-node",
-                "ansible/roles/postgres-init"
+                "ansible/roles/postgres-init",
+                "ansible/roles/lvm-init",
+                "ansible/roles/pmm2-images",
+                "ansible/roles/supervisord-init",
+                "ansible/roles/ami-ovf"
             ]
+        },
+        {
+            "type": "shell",
+            "inline": [
+                "sudo ansible-playbook -vvv -i 'localhost,' -c local /usr/share/pmm-update/ansible/playbook/tasks/update.yml"
+            ]
+        },
+        {
+            "type": "ansible-local",
+            "playbook_file": "ansible/pmm2/post-build-actions.yml",
+            "extra_arguments": ["-v"]
         },
         {
             "type": "file",
