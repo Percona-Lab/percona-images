@@ -3,8 +3,5 @@
   become: yes
   gather_facts: yes
   roles:
-    - cloud-node
-    - lvm-init
     - pmm2-images
-    - ami-ovf
 

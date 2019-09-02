@@ -1,6 +1,6 @@
 ---
 # Common things for all OVF images
-    - name: cloud-init                 | Disable EC2, CloudStack
+    - name: ovf                 | Disable EC2, CloudStack
       when: ansible_virtualization_type == "virtualbox"
       copy:
         content: |

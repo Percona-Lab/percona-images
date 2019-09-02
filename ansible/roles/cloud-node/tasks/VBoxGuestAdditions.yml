@@ -6,11 +6,11 @@
 
     - name: VBoxGuestAdditions         | Install build deps
       when: iso_file.stat.exists and ansible_os_family == 'RedHat'
-      yum: name={{ item }} state=installed
-      with_items:
-        - dkms
-        - gcc
-        - kexec-tools
+      yum:
+        name:
+          - dkms
+          - gcc
+          - kexec-tools
 
     - name: VBoxGuestAdditions         | Install build deps
       when: iso_file.stat.exists and ansible_os_family == 'RedHat'
