@@ -14,7 +14,7 @@
     - name: pmm-agent                  | Setup pmm-agent
       command: >
         pmm-agent setup
-        --config-file=/usr/local/percona/pmm-agent.yaml
+        --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml
         --skip-registration
         --id=pmm-server
         --server-address=127.0.0.1:443
