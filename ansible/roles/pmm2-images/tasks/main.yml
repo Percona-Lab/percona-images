@@ -196,19 +196,19 @@
         dest: /etc/nginx/nginx.conf
         line: 'daemon off;'
 
-    - name: PMM                        | Fix nginx config
+    - name: NGINX                     | Change location of nginx error logs
       replace:
         dest: /etc/nginx/nginx.conf
         regexp: '/var/log/nginx/error\.log'
         replace: '/srv/logs/nginx.error.log'
 
-    - name: PMM                        | Fix nginx config
+    - name: NGINX                     | Change location of nginx access logs
       replace:
         dest: /etc/nginx/nginx.conf
         regexp: '/var/log/nginx/access\.log'
         replace: '/srv/logs/nginx.access.log'
 
-    - name: PMM                        | Fix nginx logrotate
+    - name: NGINX                     | Change location of nginx logs for logrotated
       replace:
         dest: /etc/logrotate.d/nginx
         regexp: '/var/log/nginx/'
