@@ -75,7 +75,7 @@
     - name: Install RPMs               | Install RPMs for PMM2 server
       yum:
         name:
-          - nginx-1.15.8
+          - nginx-1.17.3
           - percona-grafana
           - percona-prometheus
           - percona-qan-api2
