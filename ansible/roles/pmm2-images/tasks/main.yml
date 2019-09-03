@@ -56,6 +56,15 @@
         - /srv/prometheus/rules
         - /srv/logs
 
+    - name: PostgresDB                | Create Postgres log file
+      file:
+        path: /srv/logs/postgresql.log
+        state: touch
+        force: yes
+        group: postgres
+        owner: postgres
+        mode: 0644
+
     - name: Install supervisord
       include_role:
         name: supervisord-init

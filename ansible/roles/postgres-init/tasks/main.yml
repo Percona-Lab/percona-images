@@ -31,3 +31,15 @@
 
     - name: Postgres                   | Create Postgres data cluster
       command: su postgres -c "/usr/pgsql-11/bin/initdb -D /srv/postgres"
+
+    - name: PMM                        | Fix postgresql config
+      replace:
+        dest: /srv/postgres/postgresql.conf
+        regexp: 'log_directory = (.)log'
+        replace: 'log_directory = \1../logs'
+
+    - name: PMM                        | Fix postgresql config
+      replace:
+        dest: /srv/postgres/postgresql.conf
+        regexp: 'log_filename = ''postgresql-%a'
+        replace: 'log_filename = ''postgresql'
