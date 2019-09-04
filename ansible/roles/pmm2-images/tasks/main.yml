@@ -49,12 +49,25 @@
         name: pmm
         comment: John Doe
 
+    - name: Add user to group         | Add the user 'postgres' to group 'pmm'
+      user:
+        name: postgres
+        groups: pmm
+        append: yes
+
     - name: Create directories        | Create dirs
       file: path={{ item }} state=directory owner=pmm group=pmm
       with_items:
         - /srv/prometheus/data
         - /srv/prometheus/rules
-        - /srv/logs
+
+    - name: Create directories        | Create dirs
+      file:
+        path: /srv/logs
+        state: directory
+        owner: pmm
+        group: pmm
+        mode: '0775'
 
     - name: PostgresDB                | Create Postgres log file
       file:
