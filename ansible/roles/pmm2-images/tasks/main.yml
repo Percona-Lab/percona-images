@@ -84,7 +84,7 @@
     - name: Install RPMs               | Install RPMs for PMM2 server
       yum:
         name:
-          - nginx-1.15.8
+          - nginx-1.17.3
           - percona-grafana
           - percona-prometheus
           - percona-qan-api2
@@ -213,6 +213,11 @@
         dest: /etc/logrotate.d/nginx
         regexp: '/var/log/nginx/'
         replace: '/srv/logs/nginx.'
+
+    - name: NGINX                     | Remove '/etc/nginx/conf.d/default.conf'
+      file:
+        path: /etc/nginx/conf.d/default.conf
+        state: absent
 
     - name: Grafana                   | Enable gzip for grafana
       ini_file:
