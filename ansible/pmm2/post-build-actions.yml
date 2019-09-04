@@ -42,7 +42,6 @@
         # - /srv/logs/pmm-configurator.log
         # - /srv/logs/pmm-manage.log
         - /srv/logs/pmm-managed.log
-        - /srv/logs/postgresql.log
         - /srv/logs/postgresql.startup.log
         - /srv/logs/prometheus.log
         - /srv/logs/qan-api2.log
@@ -53,6 +52,9 @@
         - /tmp/RPMS
         - /var/log/secure
         - /var/log/wtmp
+
+    - name: Cleanup logs                | Cleanup logs
+      command: dd if=/dev/null of=/srv/logs/postgresql.log
 
     - name: Create dirs                 | Create dirs
       file: path={{ item }} state=directory owner=pmm group=pmm
