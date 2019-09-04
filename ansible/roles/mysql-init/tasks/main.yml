@@ -1,5 +1,10 @@
 ---
 # Initialize Percona Server for MySQL 5.7
+    - name: Packages                   | Add Percona repository
+      when: ansible_os_family == 'RedHat'
+      yum:
+        name: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+        state: installed
 
     - name: Percona Server for MySQL   | Install Percona Client
       when: ansible_os_family == 'RedHat'
