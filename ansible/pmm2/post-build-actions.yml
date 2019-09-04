@@ -42,13 +42,13 @@
         # - /srv/logs/pmm-configurator.log
         # - /srv/logs/pmm-manage.log
         - /srv/logs/pmm-managed.log
-        - /srv/logs/postgres.log
-        - /srv/logs/postgres.startup.log
+        - /srv/logs/postgresql.log
+        - /srv/logs/postgresql.startup.log
         - /srv/logs/prometheus.log
         - /srv/logs/qan-api2.log
         - /var/log/yum.log
-        - /var/log/grafana/grafana.log
-        - /var/log/supervisor/supervisord.log
+        - /srv/logs/grafana.log
+        - /srv/logs/supervisord.log
         - /srv/prometheus/data
         - /tmp/RPMS
         - /var/log/secure
