@@ -54,9 +54,18 @@
         - /var/log/secure
         - /var/log/wtmp
 
-    - name: Create dirs                 | Create dirs
-      file: path={{ item }} state=directory owner=pmm group=pmm
-      with_items:
-        - /srv/prometheus/data
-        - /srv/logs
+    - name: Create dir                 | Create '/srv/prometheus/data' dir
+      file:
+        path: /srv/prometheus/data
+        state: directory
+        owner: pmm
+        group: pmm
+
+    - name: Create dir                 | Create '/srv/logs' dir
+      file:
+        path: /srv/logs
+        state: directory
+        owner: pmm
+        group: pmm
+        mode: '0775'
 
