@@ -104,6 +104,7 @@
             "extra_arguments": ["-v"],
             "role_paths": [
                 "ansible/roles/cloud-node",
+                "ansible/roles/lvm-init",
                 "ansible/roles/mysql-init"
             ]
         },

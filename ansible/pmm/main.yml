@@ -8,9 +8,47 @@
     enable_lvm: "true"
   roles:
     - cloud-node
+    - lvm-init
     - mysql-init
 
   tasks:
+    - name: Packages                   | Update OS
+      when: ansible_os_family == 'RedHat'
+      yum:
+        name: '*'
+        state: latest
+        disablerepo: percona-release-x86_64
+
+    - name: Packages                   | Install OS tools
+      when: ansible_os_family == 'RedHat'
+      yum: name={{ item }} state=installed
+      with_items:
+        - screen
+        - yum-utils
+        - cloud-init
+        - yum-cron
+        - firewalld
+        - python2-pip
+
+    - name: cloud-init                 | Create dirs
+      file: path={{ item }} state=directory
+      with_items:
+        - /var/lib/cloud/scripts/per-once
+        - /var/lib/cloud/scripts/per-boot
+        - /etc/systemd/system/getty@.service.d
+
+    - name: cloud-init                 | Configure yum-cron
+      replace:
+        dest: /etc/yum/yum-cron-hourly.conf
+        regexp: 'update_cmd = default'
+        replace: 'update_cmd = minimal-security'
+
+    - name: cloud-init                 | Configure yum-cron
+      replace:
+        dest: /etc/yum/yum-cron.conf
+        regexp: 'update_cmd = default'
+        replace: 'update_cmd = minimal-security'
+
     - name: Percona Server for MySQL   | Start service
       service: name={{ item }} state=started enabled=yes
       with_items:
