@@ -39,8 +39,6 @@
         - /srv/logs/grafana.log
         - /srv/logs/nginx.startup.log
         - /srv/logs/pmm-agent.log
-        # - /srv/logs/pmm-configurator.log
-        # - /srv/logs/pmm-manage.log
         - /srv/logs/pmm-managed.log
         - /srv/logs/postgresql.log
         - /srv/logs/postgresql.startup.log
