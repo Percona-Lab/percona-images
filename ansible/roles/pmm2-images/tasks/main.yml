@@ -104,7 +104,6 @@
           - percona-qan-app
           - percona-dashboards
           - pmm-server
-          - pmm-manage
           - pmm-managed
           - pmm-update
           - percona-clickhouse-client
