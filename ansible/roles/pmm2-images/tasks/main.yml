@@ -107,7 +107,6 @@
           - pmm-manage
           - pmm-managed
           - pmm-update
-          - rds_exporter
           - percona-clickhouse-client
           - percona-clickhouse-server
         state: installed
