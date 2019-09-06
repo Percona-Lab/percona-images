@@ -68,11 +68,11 @@
         group: pmm
         mode: '0775'
 
-   - name: Create file                 | Create 'srv/logs/grafana.log' file
-     file:
-       path: /srv/logs/grafana.log
-       state: touch
-       force: yes
-       group: grafana
-       owner: grafana
-       mode: '0644'
+    - name: Create grafana.log file    | Create 'srv/logs/grafana.log' file
+      file:
+        path: /srv/logs/grafana.log
+        state: touch
+        force: yes
+        group: grafana
+        owner: grafana
+        mode: '0644'
