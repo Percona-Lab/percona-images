@@ -37,6 +37,7 @@
         - /srv/logs/cron.log
         - /srv/logs/dashboard-upgrade.log
         - /srv/logs/grafana.log
+        - /srv/logs/grafana.startup.log
         - /srv/logs/nginx.startup.log
         - /srv/logs/pmm-agent.log
         - /srv/logs/pmm-managed.log
@@ -67,3 +68,11 @@
         group: pmm
         mode: '0775'
 
+   - name: Create file                 | Create 'srv/logs/grafana.log' file
+     file:
+       path: /srv/logs/grafana.log
+       state: touch
+       force: yes
+       group: grafana
+       owner: grafana
+       mode: '0644'
