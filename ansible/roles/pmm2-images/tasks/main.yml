@@ -123,6 +123,14 @@
         state: installed
         enablerepo: "{{ pmm_client_repo_name }}"
 
+    - name: Create directories        | Create '/srv/grafana' dir
+      file:
+        path: /srv/grafana
+        state: directory
+        owner: grafana
+        group: grafana
+        mode: '0775'
+
     - name: Grafana                    | Check data dir
       stat: path=/srv/grafana/grafana.db
       register: grafana_db
