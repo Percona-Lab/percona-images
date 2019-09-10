@@ -260,7 +260,3 @@
         path: /srv/update
         state: directory
 
-# It is a workaround until we clean up pmm2-client rpms from pmm2-components repo
-    - name: PMM                        | Disable testing repo for pmm2-client
-      command: percona-release disable {{ pmm_client_repos }}
-
