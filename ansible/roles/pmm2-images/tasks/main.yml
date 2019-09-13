@@ -8,7 +8,7 @@
         enabled: yes
         gpgkey: file:///etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY
 
-# local yum repo for building of pmm server docker image in autobuild jobs
+    # local yum repo for building of pmm server docker image in autobuild jobs
     - name: PMM                        | Add local YUM repository
       when: ansible_virtualization_type == "docker"
       yum_repository:
@@ -31,15 +31,16 @@
           - screen
           - yum-utils
           - yum-cron
+          - yum-changelog
           - logrotate
           - unzip
           - python2-pip
 
-    - name: Create pmm user           | Create pmm  user
+    - name: Create pmm user           | Create pmm user
       when: ansible_virtualization_type != "docker"
       user:
         name: pmm
-        comment: John Doe
+        comment: PMM Server
 
     - name: Add user to group         | Add the user 'postgres' to group 'pmm'
       user:
@@ -259,4 +260,3 @@
       file:
         path: /srv/update
         state: directory
-
