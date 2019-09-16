@@ -3,14 +3,8 @@
 - hosts: localhost
   become: yes
   gather_facts: yes
-  vars:
-     pmm_client_repos: "original testing"
 
   tasks:
-# It is a workaround until we clean up pmm2-client rpms from pmm2-components repo
-#    - name: PMM                        | Enable testing repo for pmm2-client
-#      command: percona-release enable {{ pmm_client_repos }}
-
     - name: pmm-agent                  | Setup pmm-agent
       command: >
         pmm-agent setup
@@ -66,4 +60,3 @@
         owner: pmm
         group: pmm
         mode: '0775'
-

@@ -1,6 +1,5 @@
 ---
-# !!! WARNING _experimental_ has to be replaced by _release_ after GA
-    pmm2_server_repo: laboratory
-    pmm_client_repos: "original testing"
-    pmm_client_repo_name: "percona-testing-x86_64"
+    pmm2_server_repo: release
+    pmm_client_repos: "original release"
+    pmm_client_repo_name: "percona-release-x86_64"
 
