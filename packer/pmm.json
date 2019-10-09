@@ -94,7 +94,6 @@
     "provisioners": [{
             "type": "shell",
             "inline": [
-                "sudo yum clean all",
                 "sudo yum -y install epel-release",
                 "sudo yum -y install ansible bats"
             ]
