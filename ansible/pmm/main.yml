@@ -89,7 +89,7 @@
       with_items:
         - nginx
         - percona-consul
-        - percona-grafana
+        - percona-grafana-5.1.3
         - percona-prometheus
         - percona-prometheus1
         - percona-orchestrator
