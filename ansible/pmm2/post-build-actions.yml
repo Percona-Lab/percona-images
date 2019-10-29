@@ -60,3 +60,8 @@
         owner: pmm
         group: pmm
         mode: '0775'
+
+    - name: Detect distribution        | Create '/tmp/pmm-distribution' file
+      copy:
+        content: "{{ ansible_virtualization_type }}"
+        dest: /tmp/pmm-distribution
