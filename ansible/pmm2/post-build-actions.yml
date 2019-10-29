@@ -64,4 +64,4 @@
     - name: Detect distribution        | Create '/tmp/pmm-distribution' file
       copy:
         content: "{{ ansible_virtualization_type }}"
-        dest: /tmp/pmm-distribution
+        dest: /opt/pmm-distribution
