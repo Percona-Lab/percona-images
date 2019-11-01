@@ -5,6 +5,14 @@
   gather_facts: yes
 
   tasks:
+    - name: Detect distribution        | Create '/srv/pmm-distribution' file
+      copy:
+        content: "{{ ansible_virtualization_type }}"
+        dest: /srv/pmm-distribution
+
+    - name: Add env to supervisor      | Add environment variable of TELEMETRY_OS to supervisord config
+      ini_file: dest=/etc/supervisord.d/pmm.ini section=supervisord option=environment value="TELEMETRY_OS={{ ansible_virtualization_type }}" backup=yes
+
     - name: pmm-agent                  | Setup pmm-agent
       command: >
         pmm-agent setup
@@ -60,8 +68,3 @@
         owner: pmm
         group: pmm
         mode: '0775'
-
-    - name: Detect distribution        | Create '/tmp/pmm-distribution' file
-      copy:
-        content: "{{ ansible_virtualization_type }}"
-        dest: /opt/pmm-distribution
