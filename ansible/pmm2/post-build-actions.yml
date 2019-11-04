@@ -6,6 +6,11 @@
   gather_facts: yes
 
   tasks:
+    - name: Detect distribution        | Create '/srv/pmm-distribution' file
+      copy:
+        content: "{{ ansible_virtualization_type }}"
+        dest: /srv/pmm-distribution
+
     - name: pmm-agent                  | Setup pmm-agent
       command: >
         pmm-agent setup
