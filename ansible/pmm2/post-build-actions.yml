@@ -1,5 +1,6 @@
 ---
-# this playbook is used as a post build actions for all pmm2 images (AMI/OVF/Docker)
+# This playbook is used as a post build actions for all pmm2 images (AMI/OVF/Docker).
+
 - hosts: localhost
   become: yes
   gather_facts: yes
