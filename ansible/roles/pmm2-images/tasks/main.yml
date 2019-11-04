@@ -1,4 +1,7 @@
 ---
+# This role is frozen after 2.0.0 GA release.
+# All new plays should be added into pmm-update playbook. It is invoked after pmm2 playbook.
+
     - name: Packages                   | Add PMM2 Server YUM repository
       yum_repository:
         name: pmm2-server
@@ -231,11 +234,6 @@
         priv: 'ALL'
         expires: infinity
         state: present
-
-    - name: PostgresDB                | Create pg_stat_statements extension
-      postgresql_ext:
-        db: pmm-managed
-        name: pg_stat_statements
 
     - name: Grafana                   | Wait for dashboards
       wait_for:
