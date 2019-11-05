@@ -65,6 +65,7 @@
     "provisioners": [{
             "type": "shell",
             "inline": [
+                "sudo yum -y update",
                 "sudo yum -y install epel-release",
                 "sudo yum -y install ansible bats"
             ]
@@ -72,7 +73,7 @@
         {
             "type": "ansible-local",
             "playbook_file": "ansible/pmm2/main.yml",
-            "extra_arguments": ["-v"],
+            "extra_arguments": ["-v", "--extra-vars", "pmm2_server_repo=laboratory"],
             "role_paths": [
                 "ansible/roles/cloud-node",
                 "ansible/roles/nginx-init",

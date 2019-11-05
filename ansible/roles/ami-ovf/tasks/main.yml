@@ -1,4 +1,23 @@
 ---
+    - name: Packages                   | Remove PMM2 Testing Server repository
+      yum_repository:
+        name: pmm2-server
+        state: absent
+
+    - name: Packages                   | Clean up yum metadata
+      command: yum clean metadata
+      args:
+        warn: no
+
+    - name: Packages                   | Add PMM2 release Server YUM repository
+      yum_repository:
+        name: pmm2-server
+        description: PMM Server YUM repository - x86_64
+        baseurl: https://repo.percona.com/pmm2-components/yum/{{ pmm2_server_repo_final }}/7/RPMS/x86_64/
+        gpgcheck: yes
+        enabled: yes
+        gpgkey: file:///etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY
+
     - name: Disable SELinux
       selinux:
         policy: targeted
