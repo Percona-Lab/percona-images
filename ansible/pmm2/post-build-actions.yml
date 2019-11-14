@@ -6,9 +6,23 @@
   gather_facts: yes
 
   tasks:
-    - name: Detect distribution        | Create '/srv/pmm-distribution' file
+    - name: Detect distribution        | Create '/srv/pmm-distribution' file for Docker
+      when: ansible_virtualization_type == "docker"
       copy:
-        content: "{{ ansible_virtualization_type }}"
+        content: "Docker"
+        dest: /srv/pmm-distribution
+
+    - name: Detect distribution        | Create '/srv/pmm-distribution' file for OVF
+      when: ansible_virtualization_type == "virtualbox"
+      copy:
+        content: "OVF"
+        dest: /srv/pmm-distribution
+
+    # TODO https://jira.percona.com/browse/PMM-4991
+    - name: Detect distribution        | Create '/srv/pmm-distribution' file for AMI
+      when: ansible_virtualization_type == "xen" or ansible_virtualization_type == "kvm"
+      copy:
+        content: "AMI"
         dest: /srv/pmm-distribution
 
     - name: pmm-agent                  | Setup pmm-agent
