@@ -6,23 +6,25 @@
   gather_facts: yes
 
   tasks:
+    # pmm-managed checks that if /srv/pmm-distribution exist, it contains "docker", "ovf", or "ami" (all lowercase)
+
     - name: Detect distribution        | Create '/srv/pmm-distribution' file for Docker
       when: ansible_virtualization_type == "docker"
       copy:
-        content: "Docker"
+        content: "docker"
         dest: /srv/pmm-distribution
 
     - name: Detect distribution        | Create '/srv/pmm-distribution' file for OVF
       when: ansible_virtualization_type == "virtualbox"
       copy:
-        content: "OVF"
+        content: "ovf"
         dest: /srv/pmm-distribution
 
     # TODO https://jira.percona.com/browse/PMM-4991
     - name: Detect distribution        | Create '/srv/pmm-distribution' file for AMI
       when: ansible_virtualization_type == "xen" or ansible_virtualization_type == "kvm"
       copy:
-        content: "AMI"
+        content: "ami"
         dest: /srv/pmm-distribution
 
     - name: pmm-agent                  | Setup pmm-agent
