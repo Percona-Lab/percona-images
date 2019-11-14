@@ -17,7 +17,7 @@
     - name: Data partition             | Create Thin Pool
       when: enable_lvm == "true"
       register: thin_pool
-      failed_when: "thin_pool | failed and 'Sorry, no shrinking of DataLV to 0 permitted' not in thin_pool.msg"
+      failed_when: "thin_pool is failed and 'Sorry, no shrinking of DataLV to 0 permitted' not in thin_pool.msg"
       lvol:
         lv: DataLV
         vg: DataVG
