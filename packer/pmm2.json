@@ -76,12 +76,12 @@
             "extra_arguments": ["-v", "--extra-vars", "pmm2_server_repo=laboratory"],
             "role_paths": [
                 "ansible/roles/cloud-node",
-                "ansible/roles/nginx-init",
-                "ansible/roles/postgres-init",
                 "ansible/roles/lvm-init",
+                "ansible/roles/nginx-init",
+                "ansible/roles/pmm2-ami-ovf",
                 "ansible/roles/pmm2-images",
-                "ansible/roles/supervisord-init",
-                "ansible/roles/ami-ovf"
+                "ansible/roles/postgres-init",
+                "ansible/roles/supervisord-init"
             ]
         },
         {

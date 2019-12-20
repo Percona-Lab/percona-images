@@ -9,4 +9,4 @@
     - cloud-node
     - lvm-init
     - pmm2-images
-    - ami-ovf
+    - pmm2-ami-ovf
