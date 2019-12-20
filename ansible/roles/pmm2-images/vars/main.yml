@@ -1,4 +1,5 @@
 ---
     pmm2_server_repo: release
     pmm2_client_repo: testing
-    pmm_client_repo_name: "percona-testing-x86_64"
+    # the line below is sed'ed by build-server-docker
+    pmm2_client_repo_name: "percona-testing-x86_64"

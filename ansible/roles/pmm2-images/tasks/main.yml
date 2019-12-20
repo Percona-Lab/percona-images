@@ -115,6 +115,7 @@
           - percona-clickhouse-client
           - percona-clickhouse-server
         state: installed
+        # line below is sed'ed at build-server-docker
         enablerepo: "pmm2-server"
 
     - name: PMM                        | Enable repo for pmm2-client
@@ -125,7 +126,7 @@
         name:
           - pmm2-client
         state: installed
-        enablerepo: "{{ pmm_client_repo_name }}"
+        enablerepo: "{{ pmm2_client_repo_name }}"
 
     - name: Create directories        | Create '/srv/grafana' dir
       file:
