@@ -118,7 +118,7 @@
         enablerepo: "pmm2-server"
 
     - name: PMM                        | Enable repo for pmm2-client
-      command: percona-release enable {{ pmm_client_repos }}
+      command: percona-release enable original {{ pmm2_client_repo }}
 
     - name: Install RPMs               | Install pmm2-client rpm
       yum:
