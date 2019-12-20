@@ -6,7 +6,6 @@
   gather_facts: yes
   vars:
     pmm_client_repos: 'original testing'
-    pmm_client_repos_final: 'original release'
 
   tasks:
     # pmm-managed checks that if /srv/pmm-distribution exist, it contains "docker", "ovf", or "ami" (all lowercase)
@@ -34,7 +33,7 @@
       command: percona-release disable {{ pmm_client_repos }}
 
     - name: Enable repo                | Enable release repo for pmm2-client
-      command: percona-release enable {{ pmm_client_repos_final }}
+      command: percona-release enable original release
 
     - name: pmm-agent                  | Setup pmm-agent
       command: >
