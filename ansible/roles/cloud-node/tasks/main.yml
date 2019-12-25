@@ -6,6 +6,12 @@
         name: https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-12.noarch.rpm
         state: installed
 
+    - name: Packages                   | Remove MariaDB Client
+      when: ansible_os_family == 'RedHat'
+      yum:
+        name: mariadb-libs
+        state: absent
+
     - name: Packages                   | Install OS tools
       when: ansible_os_family == 'RedHat'
       yum:
