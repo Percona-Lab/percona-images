@@ -1,4 +1,33 @@
 ---
+    - name: OVF                        | Enable swap on OVF
+      when: ansible_virtualization_type == "virtualbox"
+      command: dd if=/dev/zero of=/var/tmp/swapfile bs=1024 count=1000000
+
+    - name: OVF                        | Enable swap on OVF
+      when: ansible_virtualization_type == "virtualbox"
+      file:
+        path: /var/tmp/swapfile
+        owner: root
+        group: root
+        mode: 0600
+
+    - name: OVF                        | Enable swap on OVF
+      when: ansible_virtualization_type == "virtualbox"
+      command: mkswap /var/tmp/swapfile
+
+    - name: OVF                        | Enable swap on OVF
+      when: ansible_virtualization_type == "virtualbox"
+      mount:
+        path: swap
+        src: /var/tmp/swapfile
+        fstype: swap
+        opts: defaults
+        state: present
+
+    - name: OVF                        | Enable swap on OVF
+      when: ansible_virtualization_type == "virtualbox"
+      command: swapon -a
+
     - name: Packages                   | Remove PMM2 Testing Server repository
       yum_repository:
         name: pmm2-server
