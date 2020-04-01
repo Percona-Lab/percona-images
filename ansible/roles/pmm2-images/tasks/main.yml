@@ -248,6 +248,9 @@
       with_fileglob:
         - "/usr/share/percona-dashboards/panels/*.zip"
 
+    - name: Grafana                   | Rename community panels
+      command: /usr/share/percona-dashbords/fix_panels.py
+
     - name: Cickhouse                 | Create ClickHouse database
       command: clickhouse-client --host 127.0.0.1 --query="CREATE DATABASE IF NOT EXISTS pmm"
 
