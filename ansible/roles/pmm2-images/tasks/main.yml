@@ -250,3 +250,7 @@
       file:
         path: /srv/update
         state: directory
+
+    - name: Check 0 files in  /var/lib/grafana/plugins folder
+      command: "ls -la /var/lib/grafana/plugins"
+
