@@ -206,6 +206,9 @@
       when: ansible_virtualization_type != "docker"
       command: /usr/bin/systemd-tmpfiles --create --remove --boot --exclude-prefix=/dev
 
+    - name: Check 00 files in  /var/lib/grafana/plugins folder
+      command: "ls -la /var/lib/grafana/plugins"
+
     - name: Supervisord start        | Start supervisord service for AMI/OVF
       when: ansible_virtualization_type != "docker"
       service: name=supervisord state=started enabled=yes
@@ -220,6 +223,9 @@
         state: present
         delay: 30
         timeout: 60
+
+    - name: Check 01 files in  /var/lib/grafana/plugins folder
+      command: "ls -la /var/lib/grafana/plugins"
 
     - name: PostgresDB                | Create pmm-managed database
       postgresql_db:
@@ -248,6 +254,8 @@
       with_fileglob:
         - "/usr/share/percona-dashboards/panels/*.zip"
 
+
+
     - name: Cickhouse                 | Create ClickHouse database
       command: clickhouse-client --host 127.0.0.1 --query="CREATE DATABASE IF NOT EXISTS pmm"
 
@@ -259,6 +267,6 @@
         path: /srv/update
         state: directory
 
-    - name: Check 0 files in  /var/lib/grafana/plugins folder
+    - name: Check 02 files in  /var/lib/grafana/plugins folder
       command: "ls -la /var/lib/grafana/plugins"
 
