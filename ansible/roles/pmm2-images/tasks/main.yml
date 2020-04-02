@@ -206,8 +206,6 @@
       when: ansible_virtualization_type != "docker"
       command: /usr/bin/systemd-tmpfiles --create --remove --boot --exclude-prefix=/dev
 
-    - name: Check 00 files in  /var/lib/grafana/plugins folder
-      command: "ls -la /var/lib/grafana/plugins"
 
     - name: Supervisord start        | Start supervisord service for AMI/OVF
       when: ansible_virtualization_type != "docker"
@@ -224,7 +222,7 @@
         delay: 30
         timeout: 60
 
-    - name: Check 01 files in  /var/lib/grafana/plugins folder
+    - name: Check 00 files in  /var/lib/grafana/plugins folder
       command: "ls -la /var/lib/grafana/plugins"
 
     - name: PostgresDB                | Create pmm-managed database
@@ -245,6 +243,9 @@
       wait_for:
         path: /srv/grafana/PERCONA_DASHBOARDS_VERSION
         state: present
+
+    - name: Check 01 files in  /var/lib/grafana/plugins folder
+      command: "ls -la /var/lib/grafana/plugins"
 
     - name: Grafana                   | Add community panels
       unarchive:
