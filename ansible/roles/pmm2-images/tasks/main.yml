@@ -109,6 +109,7 @@
           - percona-qan-api2
           - percona-qan-app
           - percona-dashboards
+          - percona-alertmanager
           - pmm-server
           - pmm-managed
           - pmm-update
