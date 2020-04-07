@@ -56,6 +56,7 @@
       with_items:
         - /srv/prometheus/data
         - /srv/prometheus/rules
+        - /srv/alertmanager
 
     - name: Create directories        | Create dirs
       file:
