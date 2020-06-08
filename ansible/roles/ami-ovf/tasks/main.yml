@@ -28,6 +28,22 @@
       when: ansible_virtualization_type == "virtualbox"
       command: swapon -a
 
+    - name: OVF                        | Create /.pmm-ovf file
+      when: ansible_virtualization_type == "virtualbox"
+      file:
+        path: /.pmm-ovf
+        owner: root
+        group: root
+        mode: 0600
+
+    - name: AMI                        | Create /.pmm-ami file
+      when: ansible_virtualization_type != "virtualbox"
+      file:
+        path: /.pmm-ami
+        owner: root
+        group: root
+        mode: 0600
+
     - name: Packages                   | Remove PMM2 Testing Server repository
       yum_repository:
         name: pmm2-server
