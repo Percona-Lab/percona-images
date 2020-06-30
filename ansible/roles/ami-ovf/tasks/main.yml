@@ -37,7 +37,7 @@
         mode: 0600
 
     - name: AMI                        | Create /.pmm-ami file
-      when: ansible_virtualization_type != "virtualbox"
+      when: ansible_virtualization_type == "xen"
       file:
         path: /.pmm-ami
         owner: root
