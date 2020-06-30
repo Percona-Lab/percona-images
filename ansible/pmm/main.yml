@@ -130,6 +130,22 @@
         regexp: '^TELEMETRY_OS='
         line: 'TELEMETRY_OS=GCP'
 
+    - name: password-page OVF          | Create /.pmm-ovf file
+      when: ansible_virtualization_type == "virtualbox"
+      file:
+        path: /.pmm-ovf
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: password-page AMI          | Create /.pmm-ami file
+      when: ansible_virtualization_type == "xen"
+      file:
+        path: /.pmm-ami
+        owner: root
+        group: root
+        mode: 0644
+
     - name: Orchestrator               | Create MySQL database
       mysql_db:
         name: orchestrator
