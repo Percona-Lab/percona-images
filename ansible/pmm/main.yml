@@ -137,6 +137,7 @@
         owner: root
         group: root
         mode: 0644
+        state: touch
 
     - name: password-page AMI          | Create /.pmm-ami file
       when: ansible_virtualization_type == "xen"
@@ -145,6 +146,7 @@
         owner: root
         group: root
         mode: 0644
+        state: touch
 
     - name: Orchestrator               | Create MySQL database
       mysql_db:
