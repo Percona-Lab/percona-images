@@ -28,7 +28,6 @@
       when: ansible_virtualization_type == "virtualbox"
       command: swapon -a
 
-
     - name: Packages                   | Remove PMM2 Testing Server repository
       yum_repository:
         name: pmm2-server
