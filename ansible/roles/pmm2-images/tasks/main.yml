@@ -19,7 +19,7 @@
         description: Local YUM repository - x86_64
         baseurl: file:///tmp/RPMS
         gpgcheck: no
-        enabled: yes
+        enabled: no
 
     - name: Packages                   | Update OS
       yum:
@@ -35,7 +35,6 @@
           - yum-utils
           - yum-cron
           - yum-changelog
-          - yum-plugin-priorities
           - logrotate
           - unzip
           - python2-pip
