@@ -10,7 +10,6 @@
         gpgcheck: yes
         enabled: yes
         gpgkey: file:///etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY
-        priority: 95
 
     # local yum repo for building of pmm server docker image in autobuild jobs
     - name: PMM                        | Add local YUM repository
@@ -20,8 +19,7 @@
         description: Local YUM repository - x86_64
         baseurl: file:///tmp/RPMS
         gpgcheck: no
-        enabled: no
-        priority: 90
+        enabled: yes
 
     - name: Packages                   | Update OS
       yum:
