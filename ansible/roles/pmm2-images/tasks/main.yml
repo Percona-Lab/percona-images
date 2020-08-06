@@ -117,6 +117,7 @@
           - percona-clickhouse-client
           - percona-clickhouse-server
         state: installed
+        # line below is sed'ed by build-server-docker script
         enablerepo: "pmm2-server"
 
     - name: PMM                        | Enable repo for pmm2-client
