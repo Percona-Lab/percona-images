@@ -116,7 +116,7 @@
           - pmm-update
           - percona-clickhouse-client
           - percona-clickhouse-server
-          -dbaas-tools
+          - dbaas-tools
         state: installed
         # line below is sed'ed by build-server-docker script
         enablerepo: "pmm2-server"
