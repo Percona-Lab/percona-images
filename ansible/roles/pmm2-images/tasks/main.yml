@@ -107,7 +107,7 @@
         name:
           - percona-grafana
           - percona-prometheus
-          - percona-VictoriaMetrics
+          - percona-victoriametrics
           - percona-qan-api2
           - percona-qan-app
           - percona-dashboards
