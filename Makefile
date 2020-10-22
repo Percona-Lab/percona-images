@@ -38,6 +38,9 @@ pmm2-ovf: fetch
 pmm2-ami:
 	packer build -only amazon-ebs packer/pmm2.json
 
+pmm2-digitalocean:
+	packer build -only digitalocean -var 'single_disk=true' packer/pmm2.json
+
 pmm-gcp:
 	packer build -only googlecompute packer/pmm.json
 
