@@ -69,7 +69,7 @@
             "ssh_username": "root",
             "image": "centos-7-x64",
             "region": "nyc3",
-            "size": "s-6vcpu-16gb",
+            "size": "s-4vcpu-8gb",
             "snapshot_name": "PMM2 Server [{{isotime \"2006-01-02 1504\"}}]",
             "ssh_clear_authorized_keys": "true"
         }
