@@ -117,6 +117,14 @@
             "inline": [
                 "sudo bats /tmp/bats/*.bats"
             ]
+        },
+        {
+            "type": "shell",
+            "only": ["digitalocean"],
+            "inline": [
+                "curl -s https://raw.githubusercontent.com/digitalocean/marketplace-partners/master/scripts/img_check.sh -o img_check.sh",
+                "sudo bash ./img_check.sh"
+            ]
         }
     ],
     "post-processors": [
