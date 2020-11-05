@@ -119,6 +119,12 @@
             ]
         },
         {
+            "type": "file",
+            "only": ["digitalocean"],
+            "destination": "/home/admin/digitalocean_add_dbaas",
+            "source": "files/digitalocean/digitalocean_add_dbaas.py"
+        },
+        {
             "type": "shell",
             "only": ["digitalocean"],
             "inline": [
