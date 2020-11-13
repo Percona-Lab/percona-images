@@ -134,12 +134,23 @@
         regexp:  'warnings, actions, deluser=deluser'
         replace: 'warnings, actions, include_once=False, deluser=deluser'
 
-    - name: add machine ip address     | Set Machine IP Address on Login Banner
-      when: ansible_virtualization_type == "virtualbox"
-      lineinfile:
-        dest: /etc/issue
-        line: 'Machine IP Address: \4'
-        state: present
+    - name: PMM URL file               | Add script which show PMM URL
+      copy:
+        src: show-url
+        dest: /opt/show-url
+        mode: 0755        
+
+    - name: PMM URL Service            | Add Service for script which show PMM URL
+      copy:
+        src: banner.service
+        dest: /etc/systemd/system/banner.service
+        mode: 0755         
+
+    - name: Enable PMM URL Service     | Enable PMM URL Service
+      systemd:
+        name: banner
+        state: started
+        enabled: yes
 
     - import_tasks: security.yml
     - import_tasks: ovf.yml
