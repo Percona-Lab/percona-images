@@ -134,14 +134,8 @@
         regexp:  'warnings, actions, deluser=deluser'
         replace: 'warnings, actions, include_once=False, deluser=deluser'
 
-    - name: add machine ip address     | Set Machine IP Address on Login Banner
-      when: ansible_virtualization_type == "virtualbox"
-      lineinfile:
-        dest: /etc/issue
-        line: 'Machine IP Address: \4'
-        state: present
-
     - import_tasks: security.yml
     - import_tasks: ovf.yml
     - import_tasks: ami.yml
     - import_tasks: VBoxGuestAdditions.yml
+
