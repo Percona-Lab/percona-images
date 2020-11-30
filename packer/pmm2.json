@@ -85,7 +85,7 @@
         {
             "type": "ansible-local",
             "playbook_file": "ansible/pmm2/main.yml",
-            "extra_arguments": ["-v", "--extra-vars", "pmm2_server_repo=laboratory", "--extra-vars", "single_disk={{user `single_disk`}}"],
+            "extra_arguments": ["-v", "--extra-vars", "pmm2_server_repo=release", "--extra-vars", "single_disk={{user `single_disk`}}"],
             "role_paths": [
                 "ansible/roles/cloud-node",
                 "ansible/roles/nginx-init",
