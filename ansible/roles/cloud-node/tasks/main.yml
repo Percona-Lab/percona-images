@@ -152,6 +152,12 @@
         state: started
         enabled: yes
 
+    - name: PMM IP in Log              | Add PMM IP in Log file
+      lineinfile:
+          line: 'IP: \4'
+          path: /etc/issue
+          create: yes
+
     - import_tasks: security.yml
     - import_tasks: ovf.yml
     - import_tasks: ami.yml
