@@ -5,8 +5,8 @@
   become: yes
   gather_facts: yes
   vars:
-    pmm_client_repos: 'original testing'
-    pmm_client_repos_final: 'original release'
+    pmm_client_repos: "original testing"
+    pmm_client_repos_final: "original release"
 
   tasks:
     # pmm-managed checks that if /srv/pmm-distribution exist, it contains "docker", "ovf", or "ami" (all lowercase)
@@ -56,24 +56,10 @@
     - name: Cleanup logs               | Cleanup logs
       file: path={{ item }} state=absent
       with_items:
-        - /srv/logs/clickhouse-server.err.log
-        - /srv/logs/clickhouse-server.log
-        - /srv/logs/clickhouse-server.startup.log
-        - /srv/logs/cron.log
-        - /srv/logs/dashboard-upgrade.log
-        - /srv/logs/grafana.log
-        - /srv/logs/nginx.startup.log
-        - /srv/logs/pmm-agent.log
-        - /srv/logs/pmm-managed.log
-        - /srv/logs/postgresql.log
-        - /srv/logs/postgresql.startup.log
-        - /srv/logs/prometheus.log
-        - /srv/logs/qan-api2.log
-        - /var/log/yum.log
-        - /srv/logs/grafana.log
-        - /srv/logs/supervisord.log
+        - /srv/logs
         - /srv/prometheus/data
         - /tmp/RPMS
+        - /var/log/yum.log
         - /var/log/secure
         - /var/log/wtmp
 
@@ -90,4 +76,4 @@
         state: directory
         owner: pmm
         group: pmm
-        mode: '0775'
+        mode: "0775"
