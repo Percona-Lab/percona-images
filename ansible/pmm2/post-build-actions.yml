@@ -53,7 +53,7 @@
       when: ansible_virtualization_type == "docker"
       shell: supervisorctl shutdown
 
-    - name: Cleanup logs               | Cleanup logs
+    - name: Post-build cleanup         | Cleanup build logs and data
       file: path={{ item }} state=absent
       with_items:
         - /srv/logs
