@@ -106,7 +106,6 @@
           - percona-prometheus
           - percona-victoriametrics
           - percona-qan-api2
-          - percona-qan-app
           - percona-dashboards
           - percona-alertmanager
           - pmm-server
