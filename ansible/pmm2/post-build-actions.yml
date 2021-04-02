@@ -63,6 +63,13 @@
         - /var/log/secure
         - /var/log/wtmp
 
+    # https://jira.percona.com/browse/PMM-7827
+    - name: Remove authorized keys     | Remove the ssh keys file for AMI
+      when: ansible_virtualization_type == "xen" or ansible_virtualization_type == "kvm"
+      file:
+        path: /home/centos/.ssh/authorized_keys
+        state: absent
+
     - name: Create dir                 | Create '/srv/prometheus/data' dir
       file:
         path: /srv/prometheus/data
