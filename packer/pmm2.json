@@ -73,7 +73,7 @@
         {
             "type": "ansible-local",
             "playbook_file": "ansible/pmm2/main.yml",
-            "extra_arguments": ["-v", "--extra-vars", "pmm2_server_repo=laboratory"],
+            "extra_arguments": ["-v", "--extra-vars", "pmm2_server_repo=experimental"],
             "role_paths": [
                 "ansible/roles/cloud-node",
                 "ansible/roles/nginx-init",
