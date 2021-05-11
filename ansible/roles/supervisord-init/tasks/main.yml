@@ -81,6 +81,13 @@
         option: password
         value: dummy
 
+    - name: Configure supervisor       | Increase number of open files for jobs
+      ini_file:
+        dest: /etc/supervisord.conf
+        section: supervisord
+        option: minfds
+        value: "1048576"
+
     - name: Configure supervisor       | Add supervisord.service
       when: ansible_virtualization_type != "docker"
       copy:
