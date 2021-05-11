@@ -32,7 +32,6 @@
           - yum-utils
           - yum-cron
           - yum-changelog
-          - logrotate
           - unzip
           - python2-pip
 
