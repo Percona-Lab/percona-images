@@ -30,12 +30,6 @@
         content: "ami"
         dest: /srv/pmm-distribution
 
-    - name: Uninstall obsolete packages
-      yum:
-        name:
-          - logrotate
-        state: absent
-
     - name: Disable repo               | Disable testing repo for pmm2-client
       command: percona-release disable {{ pmm_client_repos }}
 
