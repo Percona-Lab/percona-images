@@ -33,7 +33,7 @@
       command: su postgres -c "/usr/pgsql-11/bin/initdb -D /srv/postgres"
 
     - name: Postgres                   | Disable logging_collector
-      replace:
-        dest: /srv/postgres/postgresql.conf
-        regexp: 'logging_collector = on'
-        replace: 'logging_collector = off'
+      lineinfile:
+        path: /srv/postgres/postgresql.conf
+        regexp: '^logging_collector'
+        line: 'logging_collector = off'
