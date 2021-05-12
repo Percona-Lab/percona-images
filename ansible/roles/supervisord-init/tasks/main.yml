@@ -86,7 +86,7 @@
         dest: /etc/supervisord.conf
         section: supervisord
         option: minfds
-        value: "1000000"
+        value: "800000"
 
     - name: Configure supervisor       | Add supervisord.service
       when: ansible_virtualization_type != "docker"
