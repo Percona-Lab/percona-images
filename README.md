@@ -33,7 +33,3 @@ make pmm-ami
 make mysql57-ovf
 make mysql57-ami
 ```
-
-## License
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FPercona-Lab%2Fpercona-images.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FPercona-Lab%2Fpercona-images?ref=badge_large)
