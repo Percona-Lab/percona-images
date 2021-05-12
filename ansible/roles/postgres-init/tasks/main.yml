@@ -38,8 +38,8 @@
         regexp: 'log_directory = (.)log'
         replace: 'log_directory = \1../logs'
 
-    - name: Postgres                   | Change name of logfiles
+    - name: Postgres                   | Disable logging_collector
       replace:
         dest: /srv/postgres/postgresql.conf
-        regexp: 'log_filename = ''postgresql-%a'
-        replace: 'log_filename = ''postgresql'
+        regexp: 'logging_collector = on'
+        replace: 'logging_collector = off'
