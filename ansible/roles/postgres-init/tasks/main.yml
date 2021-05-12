@@ -32,12 +32,6 @@
     - name: Postgres                   | Create Postgres data cluster
       command: su postgres -c "/usr/pgsql-11/bin/initdb -D /srv/postgres"
 
-    - name: Postgres                   | Change folder for logfiles
-      replace:
-        dest: /srv/postgres/postgresql.conf
-        regexp: 'log_directory = (.)log'
-        replace: 'log_directory = \1../logs'
-
     - name: Postgres                   | Disable logging_collector
       replace:
         dest: /srv/postgres/postgresql.conf
