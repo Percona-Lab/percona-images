@@ -10,7 +10,7 @@
       when: ansible_os_family == 'RedHat'
       yum:
         name:
-          - screen
+          - lsof
           - yum-utils
           - cloud-init
           - firewalld
