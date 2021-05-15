@@ -23,7 +23,7 @@
       when: ansible_os_family == 'RedHat'
       yum: name={{ item }} state=installed
       with_items:
-        - screen
+        - lsof 
         - yum-utils
         - cloud-init
         - yum-cron
