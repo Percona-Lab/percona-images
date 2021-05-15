@@ -15,7 +15,7 @@
     - name: Packages                   | Update OS
       when: ansible_os_family == 'RedHat'
       yum:
-        name: "*"
+        name: '*'
         state: latest
         disablerepo: percona-release-x86_64
 
@@ -23,7 +23,7 @@
       when: ansible_os_family == 'RedHat'
       yum: name={{ item }} state=installed
       with_items:
-        - lsof
+        - screen
         - yum-utils
         - cloud-init
         - yum-cron
@@ -40,14 +40,14 @@
     - name: cloud-init                 | Configure yum-cron
       replace:
         dest: /etc/yum/yum-cron-hourly.conf
-        regexp: "update_cmd = default"
-        replace: "update_cmd = minimal-security"
+        regexp: 'update_cmd = default'
+        replace: 'update_cmd = minimal-security'
 
     - name: cloud-init                 | Configure yum-cron
       replace:
         dest: /etc/yum/yum-cron.conf
-        regexp: "update_cmd = default"
-        replace: "update_cmd = minimal-security"
+        regexp: 'update_cmd = default'
+        replace: 'update_cmd = minimal-security'
 
     - name: Percona Server for MySQL   | Start service
       service: name={{ item }} state=started enabled=yes
@@ -113,22 +113,22 @@
       when: ansible_virtualization_type == "virtualbox"
       lineinfile:
         path: /etc/sysconfig/pmm-managed
-        regexp: "^TELEMETRY_OS="
-        line: "TELEMETRY_OS=OVF"
+        regexp: '^TELEMETRY_OS='
+        line: 'TELEMETRY_OS=OVF'
 
     - name: cloud-init                 | Set TELEMETRY_OS
       when: ansible_virtualization_type == "xen"
       lineinfile:
         path: /etc/sysconfig/pmm-managed
-        regexp: "^TELEMETRY_OS="
-        line: "TELEMETRY_OS=AMI"
+        regexp: '^TELEMETRY_OS='
+        line: 'TELEMETRY_OS=AMI'
 
     - name: cloud-init                 | Set TELEMETRY_OS
       when: ansible_virtualization_type == "kvm"
       lineinfile:
         path: /etc/sysconfig/pmm-managed
-        regexp: "^TELEMETRY_OS="
-        line: "TELEMETRY_OS=GCP"
+        regexp: '^TELEMETRY_OS='
+        line: 'TELEMETRY_OS=GCP'
 
     - name: password-page OVF          | Create /.pmm-ovf file
       when: ansible_virtualization_type == "virtualbox"
@@ -157,8 +157,8 @@
       mysql_user:
         name: orchestrator
         host: localhost
-        password: "*0AD183209365CECFB9275669074B645DFEF2D180"
-        priv: "orchestrator.*:ALL"
+        password: '*0AD183209365CECFB9275669074B645DFEF2D180'
+        priv: 'orchestrator.*:ALL'
         encrypted: yes
         state: present
 
@@ -171,8 +171,8 @@
       mysql_user:
         name: pmm-managed
         host: localhost
-        password: "*816FFB19BC44AC2749D546E48FA0DF957EDB2C5A"
-        priv: "pmm-managed.*:ALL"
+        password: '*816FFB19BC44AC2749D546E48FA0DF957EDB2C5A'
+        priv: 'pmm-managed.*:ALL'
         encrypted: yes
         state: present
 
@@ -193,8 +193,8 @@
       mysql_user:
         name: percona
         host: localhost
-        password: "*25919B3ABBC2A54904C826DF14F11612455A5FAA"
-        priv: "pmm.*:ALL"
+        password: '*25919B3ABBC2A54904C826DF14F11612455A5FAA'
+        priv: 'pmm.*:ALL'
         encrypted: yes
         state: present
 
@@ -202,8 +202,8 @@
       mysql_user:
         name: grafana
         host: localhost
-        password: "*58324E2D77A9BBFD9DD1E904649697615FE74649"
-        priv: "pmm.*:SELECT"
+        password: '*58324E2D77A9BBFD9DD1E904649697615FE74649'
+        priv: 'pmm.*:SELECT'
         encrypted: yes
         state: present
 
@@ -352,8 +352,8 @@
       when: ansible_os_family == 'RedHat'
       firewalld: port={{ item }} permanent=true state=enabled immediate=yes
       with_items:
-        - 80/tcp
-        - 443/tcp
+          - 80/tcp
+          - 443/tcp
 
     - name: PMM                        | Add script which show PMM URL
       copy:

@@ -28,7 +28,7 @@
     - name: Packages                   | Install OS tools
       yum:
         name:
-          - lsof
+          - screen
           - yum-utils
           - yum-cron
           - yum-changelog
