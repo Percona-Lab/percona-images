@@ -7,7 +7,7 @@
     enable_lvm: false
   roles:
     - cloud-node
-    - mysql-init
+    - mysql80-init
 
   tasks:
     - name: Install console tools
@@ -39,8 +39,8 @@
       yum: name={{ item }} state=installed
       with_items:
         - percona-toolkit
-        - percona-xtrabackup-24
-        - Percona-Server-devel-57
+        - percona-xtrabackup-80
+        - percona-server-devel
 
     - name: Add firewalld rule
       when: ansible_os_family == 'RedHat'

@@ -4,51 +4,12 @@
   gather_facts: yes
   vars:
     data_partition: "/srv"
-    create_admin: "true"
-    enable_lvm: "true"
+    enable_lvm: true
   roles:
     - cloud-node
-    - lvm-init
     - mysql-init
 
   tasks:
-    - name: Packages                   | Update OS
-      when: ansible_os_family == 'RedHat'
-      yum:
-        name: '*'
-        state: latest
-        disablerepo: percona-release-x86_64
-
-    - name: Packages                   | Install OS tools
-      when: ansible_os_family == 'RedHat'
-      yum: name={{ item }} state=installed
-      with_items:
-        - screen
-        - yum-utils
-        - cloud-init
-        - yum-cron
-        - firewalld
-        - python2-pip
-
-    - name: cloud-init                 | Create dirs
-      file: path={{ item }} state=directory
-      with_items:
-        - /var/lib/cloud/scripts/per-once
-        - /var/lib/cloud/scripts/per-boot
-        - /etc/systemd/system/getty@.service.d
-
-    - name: cloud-init                 | Configure yum-cron
-      replace:
-        dest: /etc/yum/yum-cron-hourly.conf
-        regexp: 'update_cmd = default'
-        replace: 'update_cmd = minimal-security'
-
-    - name: cloud-init                 | Configure yum-cron
-      replace:
-        dest: /etc/yum/yum-cron.conf
-        regexp: 'update_cmd = default'
-        replace: 'update_cmd = minimal-security'
-
     - name: Percona Server for MySQL   | Start service
       service: name={{ item }} state=started enabled=yes
       with_items:
@@ -71,7 +32,7 @@
         baseurl: https://repo.percona.com/pmm/7/RPMS/x86_64/
         gpgcheck: yes
         enabled: no
-        gpgkey: file:///etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY
+        gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Percona
 
     - name: PMM                        | Add PMM Server YUM repository
       when: ansible_os_family == 'RedHat'
@@ -81,7 +42,7 @@
         baseurl: https://repo.percona.com/laboratory/7/RPMS/x86_64/
         gpgcheck: yes
         enabled: no
-        gpgkey: file:///etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY
+        gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Percona
 
     - name: PMM                        | Install RPMs
       when: ansible_os_family == 'RedHat'
@@ -91,11 +52,10 @@
         - percona-consul
         - percona-grafana
         - percona-prometheus
-        - percona-prometheus1
         - percona-orchestrator
         - percona-qan-api
         - percona-qan-app
-        - percona-toolkit-3.0.10
+        - percona-toolkit
         - percona-dashboards
         - pmm-server
         - pmm-manage
@@ -129,24 +89,6 @@
         path: /etc/sysconfig/pmm-managed
         regexp: '^TELEMETRY_OS='
         line: 'TELEMETRY_OS=GCP'
-
-    - name: password-page OVF          | Create /.pmm-ovf file
-      when: ansible_virtualization_type == "virtualbox"
-      file:
-        path: /.pmm-ovf
-        owner: root
-        group: root
-        mode: 0644
-        state: touch
-
-    - name: password-page AMI          | Create /.pmm-ami file
-      when: ansible_virtualization_type == "xen"
-      file:
-        path: /.pmm-ami
-        owner: root
-        group: root
-        mode: 0644
-        state: touch
 
     - name: Orchestrator               | Create MySQL database
       mysql_db:
@@ -288,14 +230,6 @@
         option: enabled
         value: true
 
-    - name: Grafana                    | Enable Anonymous access
-      when: not grafana_db.stat.exists
-      ini_file:
-        dest: /etc/grafana/grafana.ini
-        section: auth.anonymous
-        option: org_role
-        value: Editor
-
     - name: Grafana                    | Set snapshot server
       when: not grafana_db.stat.exists
       ini_file:
@@ -310,7 +244,7 @@
         dest: /etc/grafana/grafana.ini
         section: snapshots
         option: external_snapshot_url
-        value: https://snapshots-g635.percona.com/graph/
+        value: https://snapshots-g504.percona.com
 
     - name: Grafana                    | Set snapshot server
       when: not grafana_db.stat.exists
@@ -327,7 +261,6 @@
         - consul
         - node_exporter
         - prometheus
-        - prometheus1
         - percona-qan-api
         - pmm-manage
         - pmm-managed
@@ -354,6 +287,7 @@
       with_items:
           - 80/tcp
           - 443/tcp
+          - 42000-42022/tcp
 
     - name: PMM                        | Add script which show PMM URL
       copy:
@@ -399,7 +333,7 @@
 
     - name: PMM                        | Enable testing repo for pmm-client and percona-toolkit
       when: not pmm_update_file.stat.exists
-      command: percona-release enable tools testing
+      command: yum-config-manager --enable percona-testing-x86_64 --enable pmm-laboratory
 
     - name: PMM                        | Run pmm-update
       when: not pmm_update_file.stat.exists
@@ -407,7 +341,7 @@
 
     - name: PMM                        | Enable testing repo for pmm-client and percona-toolkit
       when: not pmm_update_file.stat.exists
-      command: percona-release disable tools testing
+      command: yum-config-manager --disable percona-testing-x86_64 --disable pmm-laboratory
 
     - name: PMM                        | Start services
       service: name={{ item }} state=stopped enabled=yes
@@ -416,7 +350,6 @@
         - consul
         - node_exporter
         - prometheus
-        - prometheus1
         - percona-qan-api
         - pmm-manage
         - pmm-managed
@@ -427,33 +360,24 @@
       with_items:
         - /srv/consul
         - /srv/prometheus
-        - /srv/prometheus2
         - /srv/collect_info
 
     - name: PMM                        | Create tmp dirs
       command: /usr/bin/systemd-tmpfiles --create --remove --boot --exclude-prefix=/dev
 
-    - name: PMM                        | Find the main js file
-      find:
-        paths: "/usr/share/pmm-server/password-page"
-        patterns: "main.*.js"
-      register: jsresult
-
     - name: PMM                        | Switch password-page type
       when: ansible_virtualization_type == "virtualbox"
       replace:
-        dest: "{{ jsresult.files[0].path }}"
+        dest: /usr/share/pmm-server/password-page/main.bundle.js
         regexp: "installationType: 'docker'"
         replace: "installationType: 'ovf'"
-      with_items: "{{ jsresult.files }}"
 
     - name: PMM                        | Switch password-page type
       when: ansible_virtualization_type == "xen"
       replace:
-        dest: "{{ jsresult.files[0].path }}"
+        dest: /usr/share/pmm-server/password-page/main.bundle.js
         regexp: "installationType: 'docker'"
         replace: "installationType: 'ami'"
-      with_items: "{{ jsresult.files }}"
 
     - name: PMM                        | Delete centos
       shell: cd /tmp; nohup sh -c "trap 'userdel -r centos' EXIT; sleep 600" </dev/null >/dev/null 2>&1 &
@@ -464,8 +388,3 @@
     - name: PMM                        | Delete Azure user
       shell: cd /tmp; nohup sh -c "trap '/usr/sbin/waagent -force -deprovision+user && sync' EXIT; sleep 600" </dev/null >/dev/null 2>&1 &
 
-    - name: cloud-init                 | Cleanup security logs
-      file: path={{ item }} state=absent
-      with_items:
-        - /var/log/secure
-        - /var/log/wtmp
