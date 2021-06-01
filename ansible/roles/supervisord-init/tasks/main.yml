@@ -82,6 +82,7 @@
         value: dummy
 
     - name: Configure supervisor       | Increase number of open files for jobs
+      when: ansible_virtualization_type != "docker"
       ini_file:
         dest: /etc/supervisord.conf
         section: supervisord
