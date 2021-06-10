@@ -53,6 +53,9 @@
       when: ansible_virtualization_type == "docker"
       shell: supervisorctl shutdown
 
+    - name: Cleanup yum cache            | Cleanup yum cache
+      command: yum clean all
+
     - name: Post-build cleanup         | Cleanup build logs and data
       file: path={{ item }} state=absent
       with_items:
