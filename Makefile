@@ -32,12 +32,6 @@ pmm-ovf: fetch
 pmm-ami:
 	packer build -only amazon-ebs packer/pmm.json
 
-pmm2-ovf: fetch
-	packer build -only virtualbox-ovf packer/pmm2.json
-
-pmm2-ami:
-	packer build -only amazon-ebs packer/pmm2.json
-
 pmm-gcp:
 	packer build -only googlecompute packer/pmm.json
 
@@ -57,6 +51,32 @@ mysql57-gcp:
 mysql57-az:
 	az storage container delete --account-name percona --name images
 	packer build -only azure-arm packer/mysql57.json
+
+mysql80-ovf: fetch
+	packer build -only virtualbox-ovf packer/mysql80.json
+
+mysql80-ami:
+	packer build -only amazon-ebs packer/mysql80.json
+
+mysql80-gcp:
+	packer build -only googlecompute packer/mysql80.json
+
+mysql80-az:
+	az storage container delete --account-name percona --name images
+	packer build -only azure-arm packer/mysql80.json
+
+pxc80-ovf: fetch
+	packer build -only virtualbox-ovf packer/pxc80.json
+
+pxc80-ami:
+	packer build -only amazon-ebs packer/pxc80.json
+
+pxc80-gcp:
+	packer build -only googlecompute packer/pxc80.json
+
+pxc80-az:
+	az storage container delete --account-name percona --name images
+	packer build -only azure-arm packer/pxc80.json
 
 docker-ovf: fetch
 	packer build -only virtualbox-ovf packer/docker.json

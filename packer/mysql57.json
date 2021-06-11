@@ -12,7 +12,7 @@
                 {
                     "delete_on_termination": false,
                     "device_name": "/dev/sdb",
-                    "volume_size": 1,
+                    "volume_size": 50,
                     "volume_type": "gp2"
                 }
             ],
@@ -43,7 +43,7 @@
             "image_sku": "7.4",
 
             "capture_container_name": "percona",
-            "capture_name_prefix": "percona-server",
+            "capture_name_prefix": "percona-server-5.7.33",
             "os_disk_size_gb": "30",
             "disk_additional_size": [50]
         },
@@ -55,8 +55,8 @@
             "zone": "us-central1-a",
             "ssh_username": "centos",
             "preemptible": "true",
-            "image_name": "percona-server-v{{isotime \"200601021504\"}}",
-            "image_family": "percona-server",
+            "image_name": "percona-server57-v{{isotime \"200601021504\"}}",
+            "image_family": "percona-server57",
             "image_description": "Percona Server for MySQL 5.7 [{{isotime \"2006-01-02 1504\"}}]"
         },
         {
@@ -99,40 +99,9 @@
             ]
         },
         {
-            "type": "shell",
-            "only": ["virtualbox-ovf"],
-            "expect_disconnect": "true",
-            "inline": [
-                "sudo yum -y install kernel kexec-tools",
-                "sudo kexec -l $(ls /boot/vmlinuz-* | sort -u | tail -1) --initrd=$(ls /boot/initramfs-* | sort -u | tail -1) --reuse-cmdline",
-                "sudo systemctl kexec"
-            ]
-        },
-        {
             "type": "ansible-local",
-            "only": ["virtualbox-ovf"],
             "playbook_file": "ansible/mysql57/main.yml",
-            "extra_arguments": ["-v", "--extra-vars \"create_admin=false enable_lvm=true\""],
-            "role_paths": [
-                "ansible/roles/cloud-node",
-                "ansible/roles/mysql-init"
-            ]
-        },
-        {
-            "type": "ansible-local",
-            "only": ["amazon-ebs"],
-            "playbook_file": "ansible/mysql57/main.yml",
-            "extra_arguments": ["-v", "--extra-vars \"create_admin=true enable_lvm=false\""],
-            "role_paths": [
-                "ansible/roles/cloud-node",
-                "ansible/roles/mysql-init"
-            ]
-        },
-        {
-            "type": "ansible-local",
-            "only": ["azure-arm"],
-            "playbook_file": "ansible/mysql57/main.yml",
-            "extra_arguments": ["-v", "--extra-vars \"create_admin=false enable_lvm=false\""],
+            "extra_arguments": ["-v"],
             "role_paths": [
                 "ansible/roles/cloud-node",
                 "ansible/roles/mysql-init"

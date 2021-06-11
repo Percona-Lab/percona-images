@@ -1,7 +1,7 @@
 {
     "builders": [{
             "type": "amazon-ebs",
-            "ami_name": "PMM Server [{{isotime \"2006-01-02 1504\"}}]",
+            "ami_name": "Percona Server for MySQL 8.0 [{{isotime \"2006-01-02 0304\"}}]",
             "instance_type": "t2.micro",
             "launch_block_device_mappings": [{
                     "delete_on_termination": true,
@@ -12,7 +12,7 @@
                 {
                     "delete_on_termination": false,
                     "device_name": "/dev/sdb",
-                    "volume_size": 16,
+                    "volume_size": 50,
                     "volume_type": "gp2"
                 }
             ],
@@ -24,10 +24,10 @@
             "ssh_username": "centos",
             "subnet_id": "subnet-ee06e8e1",
             "run_tags": {
-                "iit-billing-tag": "pmm-ami"
+                "iit-billing-tag": "ps80-ami"
             },
             "run_volume_tags": {
-                "iit-billing-tag": "pmm-ami"
+                "iit-billing-tag": "ps80-ami"
             }
         },
         {
@@ -43,9 +43,9 @@
             "image_sku": "7.4",
 
             "capture_container_name": "percona",
-            "capture_name_prefix": "percona-server",
+            "capture_name_prefix": "percona-server-8.0",
             "os_disk_size_gb": "30",
-            "disk_additional_size": [16]
+            "disk_additional_size": [50]
         },
         {
             "type": "googlecompute",
@@ -55,29 +55,29 @@
             "zone": "us-central1-a",
             "ssh_username": "centos",
             "preemptible": "true",
-            "image_name": "pmm-server-v{{isotime \"200601021504\"}}",
-            "image_family": "pmm-server",
-            "image_description": "Percona Monitoring and Management (PMM) is an open-source platform for managing and monitoring MySQL and MongoDB performance"
+            "image_name": "percona-server-v{{isotime \"200601021504\"}}",
+            "image_family": "percona-server",
+            "image_description": "Percona Server for MySQL 8.0 [{{isotime \"2006-01-02 1504\"}}]"
         },
         {
             "type": "virtualbox-ovf",
-            "vm_name": "PMM-Server-{{isotime \"2006-01-02-1504\"}}",
+            "vm_name": "Percona-Server-for-MySQL80-{{isotime \"2006-01-02-1504\"}}",
             "export_opts": [
                 "--ovf10",
                 "--manifest",
                 "--vsys", "0",
-                "--product", "Percona Monitoring and Management",
-                "--producturl", "https://www.percona.com/software/database-tools/percona-monitoring-and-management",
+                "--product", "Percona Server for MySQL 8.0",
+                "--producturl", "https://www.percona.com/software/mysql-database/percona-server",
                 "--vendor", "Percona",
                 "--vendorurl", "https://www.percona.com",
                 "--version", "{{isotime \"2006-01-02\"}}",
-                "--description", "Percona Monitoring and Management (PMM) is an open-source platform for managing and monitoring MySQL and MongoDB performance"
+                "--description", "Percona Server for MySQL 8.0 is a free, fully compatible, enhanced, open source drop-in replacement for MySQL that provides superior performance, scalability and instrumentation"
             ],
-            "format": "ovf",
-            "guest_additions_mode": "disable",
+            "format": "ova",
+            "guest_additions_mode": "upload",
             "headless": true,
-            "output_directory": "pmm-virtualbox-ovf",
-            "shutdown_command": "rm -rf ~/.ssh/authorized_keys; cat /dev/zero > zero.fill; sync; sleep 1; sync; rm -f zero.fill; sudo shutdown -P now",
+            "output_directory": "mysql80-vagrant",
+            "shutdown_command": "cat /dev/zero > zero.fill; sync; sleep 1; sync; rm -f zero.fill; sudo shutdown -P now",
             "source_path": ".cache/1802.01/box.ovf",
             "ssh_private_key_file": ".cache/id_rsa_vagrant",
             "ssh_pty": true,
@@ -100,17 +100,17 @@
         },
         {
             "type": "ansible-local",
-            "playbook_file": "ansible/pmm/main.yml",
+            "playbook_file": "ansible/mysql80/main.yml",
             "extra_arguments": ["-v"],
             "role_paths": [
                 "ansible/roles/cloud-node",
-                "ansible/roles/mysql-init"
+                "ansible/roles/mysql80-init"
             ]
         },
         {
             "type": "file",
             "destination": "/tmp",
-            "source": "test/integration/pmm/bats"
+            "source": "test/integration/mysql80/bats"
         },
         {
             "type": "shell",
@@ -121,24 +121,16 @@
     ],
     "post-processors": [
         [{
-            "type": "shell-local",
-            "only": ["virtualbox-ovf"],
-            "inline_shebang": "/bin/bash",
-            "inline": [
-                "set -o errexit",
-                "set -o xtrace",
-                "pushd pmm-virtualbox-ovf",
-                "    NAME=$(ls *.ovf | sed -e 's/.ovf//')",
-                "    sed -i'' -e 's/virtualbox-2.2/vmx-10/'        *.ovf",
-                "    sed -i'' -e 's/ovf:id=\"80\"/ovf:id=\"102\"/' *.ovf",
-                "    sed -i'' -e 's/>RedHat_64</>otherGuest</'     *.ovf",
-                "    sha1sum *.ovf *.vmdk \\",
-                "        | sed -E 's/^([^ ]+)  ([^ ]+)$/SHA1 (\\2)= \\1/' \\",
-                "        > ${NAME}.mf",
-                "    tar -cpf ${NAME}.ova *.ovf *.mf *-disk001.vmdk *-disk002.vmdk",
-                "    rm -rf               *.ovf *.mf *-disk001.vmdk *-disk002.vmdk",
-                "popd"
-            ]
-        }]
+                "type": "vagrant",
+                "only": ["virtualbox-ovf"],
+                "vagrantfile_template": "packer/mysql80.Vagrantfile"
+            },
+            {
+                "type": "vagrant-cloud",
+                "only": ["virtualbox-ovf"],
+                "box_tag": "perconalab/percona-server80",
+                "version": "{{isotime \"2006010215\"}}"
+            }
+        ]
     ]
 }

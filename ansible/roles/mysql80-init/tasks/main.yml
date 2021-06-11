@@ -1,11 +1,14 @@
 ---
-# Initialize Percona Server for MySQL 5.7
+# Initialize Percona Server for MySQL 8.0
+
+    - name: Percona Server for MySQL   | Install repo
+      shell: percona-release setup ps-80 
 
     - name: Percona Server for MySQL   | Install Percona Client
       when: ansible_os_family == 'RedHat'
       yum: name={{ item }} state=installed
       with_items:
-        - Percona-Server-client-57
+        - percona-server-client
 
     - name: Percona Server for MySQL   | Remove MariaDB Client
       when: ansible_os_family == 'RedHat'
@@ -17,7 +20,7 @@
       when: ansible_os_family == 'RedHat'
       yum: name={{ item }} state=installed
       with_items:
-        - Percona-Server-server-57
+        - percona-server-server
         - MySQL-python
 
     - name: Percona Server for MySQL   | Fix selinux
@@ -36,7 +39,7 @@
 
     - name: Percona Server for MySQL   | Change configuration
       ini_file:
-        dest: /etc/percona-server.conf.d/mysqld.cnf
+        dest: /etc/my.cnf
         section: mysqld
         option: datadir
         value: "{{ data_partition }}/mysql"
@@ -70,7 +73,7 @@
           )
           echo "
 
-          +++++++++++++++++++++++++++ Percona Server for MySQL 5.7 +++++++++++++++++++++++++++
+          +++++++++++++++++++++++++++ Percona Server for MySQL 8.0 +++++++++++++++++++++++++++
 
                 MySQL_TEMPORARY_PASSWORD:         ${TEMP_PASS}
                 Please note that you should update the password once finish setup

@@ -1,13 +1,13 @@
 ---
-    - name: security                   | Disable root SSH access
+    - name: Security                   | Disable root SSH access
       lineinfile:
         dest: /etc/ssh/sshd_config
         regexp: '^PermitRootLogin'
         line: 'PermitRootLogin no'
         state: present
 
-    - name: security                   | Remove percona key
+    - name: Security                   | Remove percona key
       lineinfile:
         dest: /root/.ssh/authorized_keys
-        regexp: '([Pp]acker|[Pp]ercona)'
+        regexp: '([Pp]acker|[Mm]ykola|[Pp]ercona)'
         state: absent

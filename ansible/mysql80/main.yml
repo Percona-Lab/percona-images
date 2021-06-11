@@ -7,7 +7,7 @@
     enable_lvm: false
   roles:
     - cloud-node
-    - mysql-init
+    - mysql80-init
 
   tasks:
     - name: Install console tools
@@ -33,14 +33,25 @@
         - vim
         - tmux
         - innotop
+        - firewalld
+        - firewalld-filesystem
 
     - name: Install Percona tools
       when: ansible_os_family == 'RedHat'
       yum: name={{ item }} state=installed
       with_items:
         - percona-toolkit
-        - percona-xtrabackup-24
-        - Percona-Server-devel-57
+        - percona-xtrabackup-80
+        - percona-server-devel
+
+    - name: Enable firewall
+      shell: cd /tmp; nohup sh -c "systemctl enable firewalld; systemctl restart dbus; systemctl restart firewalld"
+
+    - name: Check firewall
+      shell: cd /tmp; nohup sh -c "ps wwaux | grep firewalld"
+
+    - name: Check firewall 2
+      shell: cd /tmp; nohup sh -c "systemctl status firewalld"
 
     - name: Add firewalld rule
       when: ansible_os_family == 'RedHat'
