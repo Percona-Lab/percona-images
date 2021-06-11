@@ -1,0 +1,136 @@
+{
+    "builders": [{
+            "type": "amazon-ebs",
+            "ami_name": "Percona XtraDB Cluster 8.0 [{{isotime \"2006-01-02 0304\"}}]",
+            "instance_type": "t2.micro",
+            "launch_block_device_mappings": [{
+                    "delete_on_termination": true,
+                    "device_name": "/dev/sda1",
+                    "volume_size": 8,
+                    "volume_type": "gp2"
+                },
+                {
+                    "delete_on_termination": false,
+                    "device_name": "/dev/sdb",
+                    "volume_size": 50,
+                    "volume_type": "gp2"
+                }
+            ],
+            "region": "us-east-1",
+            "security_group_id": "sg-688c2b1c",
+            "source_ami": "ami-6f12ce10",
+            "ssh_pty": "true",
+            "ena_support": "true",
+            "ssh_username": "centos",
+            "subnet_id": "subnet-ee06e8e1",
+            "run_tags": {
+                "iit-billing-tag": "pxc80-ami"
+            },
+            "run_volume_tags": {
+                "iit-billing-tag": "pxc80-ami"
+            }
+        },
+        {
+            "type": "azure-arm",
+            "subscription_id": "41000701-4126-4674-9219-da03b1f9bb58",
+            "resource_group_name": "percona",
+            "storage_account": "percona",
+            "location": "East US",
+
+            "os_type": "Linux",
+            "image_publisher": "OpenLogic",
+            "image_offer": "CentOS",
+            "image_sku": "7.4",
+
+            "capture_container_name": "percona",
+            "capture_name_prefix": "pxc-8.0",
+            "os_disk_size_gb": "30",
+            "disk_additional_size": [50]
+        },
+        {
+            "type": "googlecompute",
+            "account_file": "packer/dev-services-43d9399a40fc.json",
+            "project_id": "dev-services-186815",
+            "source_image_family": "centos-7",
+            "zone": "us-central1-a",
+            "ssh_username": "centos",
+            "preemptible": "true",
+            "image_name": "percona-xtradb-cluster-v{{isotime \"200601021504\"}}",
+            "image_family": "percona-xtradb-cluster",
+            "image_description": "Percona XtraDB Cluster 8.0 [{{isotime \"2006-01-02 1504\"}}]"
+        },
+        {
+            "type": "virtualbox-ovf",
+            "vm_name": "Percona-XtraDB-Cluster80-{{isotime \"2006-01-02-1504\"}}",
+            "export_opts": [
+                "--ovf10",
+                "--manifest",
+                "--vsys", "0",
+                "--product", "Percona XtraDB Cluster 8.0",
+                "--producturl", "https://www.percona.com/software/mysql-database/percona-xtradb-cluster",
+                "--vendor", "Percona",
+                "--vendorurl", "https://www.percona.com",
+                "--version", "{{isotime \"2006-01-02\"}}",
+                "--description", "Percona XtraDB Cluster (PXC) supports your critical business applications, however challenging your public, private, and hybrid cloud environment. Our free, open source, enterprise-grade solution includes the high availability and security features your business needs to meet customer expectations and business goals."
+            ],
+            "format": "ova",
+            "guest_additions_mode": "upload",
+            "headless": true,
+            "output_directory": "pxc80-vagrant",
+            "shutdown_command": "cat /dev/zero > zero.fill; sync; sleep 1; sync; rm -f zero.fill; sudo shutdown -P now",
+            "source_path": ".cache/1802.01/box.ovf",
+            "ssh_private_key_file": ".cache/id_rsa_vagrant",
+            "ssh_pty": true,
+            "ssh_username": "vagrant",
+            "vboxmanage": [
+                ["modifyvm", "{{.Name}}", "--memory", "1024"],
+                ["modifyvm", "{{.Name}}", "--audio", "none"],
+                ["createhd", "--format", "VMDK", "--filename", "/tmp/{{.Name}}-disk2.vmdk", "--variant", "STREAM", "--size", "409600"],
+                ["storagectl", "{{.Name}}", "--name", "SATA Controller", "--add", "sata", "--controller", "IntelAHCI"],
+                ["storageattach", "{{.Name}}", "--storagectl", "SATA Controller", "--port", "1", "--type", "hdd", "--medium", "/tmp/{{.Name}}-disk2.vmdk"]
+            ]
+        }
+    ],
+    "provisioners": [{
+            "type": "shell",
+            "inline": [
+                "sudo yum -y install epel-release",
+                "sudo yum -y install ansible bats"
+            ]
+        },
+        {
+            "type": "ansible-local",
+            "playbook_file": "ansible/pxc80/main.yml",
+            "extra_arguments": ["-v"],
+            "role_paths": [
+                "ansible/roles/cloud-node",
+                "ansible/roles/pxc80-init"
+            ]
+        },
+        {
+            "type": "file",
+            "destination": "/tmp",
+            "source": "test/integration/pxc80/bats"
+        },
+        {
+            "type": "shell",
+            "inline": [
+                "sudo bats /tmp/bats/*.bats"
+            ]
+        }
+    ],
+    "post-processors": [
+        [{
+                "type": "vagrant",
+                "only": ["virtualbox-ovf"],
+                "vagrantfile_template": "packer/pxc80.Vagrantfile"
+            },
+            {
+                "type": "vagrant-cloud",
+                "only": ["virtualbox-ovf"],
+                "box_tag": "perconalab/pxc80",
+                "version": "{{isotime \"2006010215\"}}"
+            }
+        ]
+    ]
+}

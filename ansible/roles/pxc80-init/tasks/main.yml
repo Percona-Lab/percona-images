@@ -1,0 +1,86 @@
+---
+# Initialize Percona XtraDB Cluster 8.0
+
+    - name: Percona XtraDB Cluster   | Install repo
+      shell: percona-release setup pxc-80 
+
+    - name: Percona XtraDB Cluster   | Install Percona Client
+      when: ansible_os_family == 'RedHat'
+      yum: name={{ item }} state=installed
+      with_items:
+        - percona-xtradb-cluster-client
+
+    - name: Percona XtraDB Cluster   | Remove MariaDB Client
+      when: ansible_os_family == 'RedHat'
+      yum: name={{ item }} state=absent
+      with_items:
+        - mariadb-libs
+
+    - name: Percona XtraDB Cluster   | Install Percona Server
+      when: ansible_os_family == 'RedHat'
+      yum: name={{ item }} state=installed
+      with_items:
+        - percona-xtradb-cluster-server
+        - MySQL-python
+
+    - name: Percona XtraDB Cluster   | Fix selinux
+      sefcontext:
+        target: "{{ data_partition }}/mysql(/.*)?"
+        setype: mysqld_db_t
+        state: present
+
+    - name: Percona XtraDB Cluster   | Create directory
+      file:
+        path: "{{ data_partition }}/mysql"
+        mode: 0751
+        owner: mysql
+        group: mysql
+        state: directory
+
+    - name: Percona XtraDB Cluster   | Change configuration
+      ini_file:
+        dest: /etc/my.cnf
+        section: mysqld
+        option: datadir
+        value: "{{ data_partition }}/mysql"
+
+    - name: cloud-init                 | Fix start-up sequence
+      replace:
+        dest: /usr/lib/systemd/system/mysql.service
+        regexp: 'After=syslog.target'
+        replace: 'After=chronyd.service syslog.target'
+
+    - name: cloud-init                 | Wait for sync time
+      replace:
+        dest: /usr/lib/systemd/system/mysql.service
+        regexp: 'ExecStartPre=/usr/bin/mysqld_pre_systemd'
+        replace: 'ExecStartPre=/usr/bin/sleep 10\nExecStartPre=/usr/bin/mysqld_pre_systemd'
+
+    - name: Percona XtraDB Cluster   | stat /root/.my.cnf
+      stat: path=/root/.my.cnf
+      register: root_mycnf_file
+
+    - name: Percona XtraDB Cluster   | Add password generator script
+      when: not root_mycnf_file.stat.exists
+      copy:
+        content: |
+          #!/bin/sh
+
+          TEMP_PASS=$(grep 'temporary password' /var/log/mysqld.log  | sed -e 's/.*localhost: //' | tail -1)
+          SOURCE=$(
+              cat /var/lib/cloud/data/status.json 2>/dev/null \
+                  | python -c 'import json, sys; print json.load(sys.stdin)["v1"]["datasource"];' 2>/dev/null
+          )
+          echo "
+
+          +++++++++++++++++++++++++++ Percona XtraDB Cluster 8.0 +++++++++++++++++++++++++++
+
+                MySQL_TEMPORARY_PASSWORD:         ${TEMP_PASS}
+                Please note that you should update the password once finish setup
+
+          ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+          " | tee -a /dev/tty0
+
+        dest: /var/lib/cloud/scripts/per-once/init-mysql-password
+        mode: 0755
+

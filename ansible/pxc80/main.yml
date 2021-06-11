@@ -7,7 +7,7 @@
     enable_lvm: false
   roles:
     - cloud-node
-    - mysql80-init
+    - pxc80-init
 
   tasks:
     - name: Install console tools
@@ -42,7 +42,7 @@
       with_items:
         - percona-toolkit
         - percona-xtrabackup-80
-        - percona-server-devel
+        - percona-xtradb-cluster-devel
 
     - name: Enable firewall
       shell: cd /tmp; nohup sh -c "systemctl enable firewalld; systemctl restart dbus; systemctl restart firewalld"
@@ -64,7 +64,7 @@
       replace:
         dest: /usr/lib/systemd/system/cloud-final.service
         regexp: 'After='
-        replace: 'After=mysqld.service '
+        replace: 'After=mysql.service '
 
     - name: PMM                        | Fix SSH MACs
       shell: cd /tmp; nohup sh -c "echo 'MACs                                       hmac-sha2-256,hmac-sha2-512' >> /etc/ssh/sshd_config" 

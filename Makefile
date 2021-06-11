@@ -65,6 +65,19 @@ mysql80-az:
 	az storage container delete --account-name percona --name images
 	packer build -only azure-arm packer/mysql80.json
 
+pxc80-ovf: fetch
+	packer build -only virtualbox-ovf packer/pxc80.json
+
+pxc80-ami:
+	packer build -only amazon-ebs packer/pxc80.json
+
+pxc80-gcp:
+	packer build -only googlecompute packer/pxc80.json
+
+pxc80-az:
+	az storage container delete --account-name percona --name images
+	packer build -only azure-arm packer/pxc80.json
+
 docker-ovf: fetch
 	packer build -only virtualbox-ovf packer/docker.json
 
