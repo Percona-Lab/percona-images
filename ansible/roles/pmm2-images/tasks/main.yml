@@ -52,7 +52,6 @@
       file: path={{ item }} state=directory owner=pmm group=pmm
       with_items:
         - /srv/prometheus/data
-        - /srv/prometheus/rules
         - /srv/alertmanager/data
 
     - name: Create directories        | Create dirs
@@ -103,7 +102,6 @@
       yum:
         name:
           - percona-grafana
-          - percona-prometheus
           - percona-victoriametrics
           - percona-qan-api2
           - percona-dashboards
