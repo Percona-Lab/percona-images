@@ -148,14 +148,6 @@
         option: enabled
         value: 'false'
 
-    - name: Grafana                    | Set snapshot server
-      when: not grafana_db.stat.exists
-      ini_file:
-        dest: /etc/grafana/grafana.ini
-        section: snapshots
-        option: external_enabled
-        value: 'true'
-
     - name: Clickhouse                | Disable clickhouse-server in systemd
       when: ansible_virtualization_type != "docker"
       service: name=clickhouse-server state=stopped enabled=no
