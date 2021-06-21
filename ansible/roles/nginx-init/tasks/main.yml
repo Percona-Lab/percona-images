@@ -32,13 +32,13 @@
         dest: /etc/nginx/nginx.conf
         line: 'daemon off;'
 
-    - name: NGINX                      | Change location of nginx error logs
+    - name: NGINX                      | Change output for nginx error logs
       replace:
         dest: /etc/nginx/nginx.conf
         regexp: '/var/log/nginx/error\.log'
         replace: '/dev/stderr'
 
-    - name: NGINX                      | Change location of nginx access logs
+    - name: NGINX                      | Change output for nginx access logs
       replace:
         dest: /etc/nginx/nginx.conf
         regexp: '/var/log/nginx/access\.log'
