@@ -148,6 +148,13 @@
         option: enabled
         value: 'false'
 
+    - name: Grafana                   | Enable gzip for grafana
+      ini_file:
+        dest: /etc/grafana/grafana.ini
+        section: server
+        option: enable_gzip
+        value: "true"
+
     - name: Clickhouse                | Disable clickhouse-server in systemd
       when: ansible_virtualization_type != "docker"
       service: name=clickhouse-server state=stopped enabled=no
@@ -172,16 +179,28 @@
       with_items:
         - /srv/clickhouse
 
-    - name: Grafana                   | Enable gzip for grafana
-      ini_file:
-        dest: /etc/grafana/grafana.ini
-        section: server
-        option: enable_gzip
-        value: "true"
-
+    - name: PMM update                | Create pmm-update directory
+      file:
+        path: /srv/update
+        state: directory
+ 
     - name: Create tmp dirs           | Create tmp dirs
       when: ansible_virtualization_type != "docker"
       command: /usr/bin/systemd-tmpfiles --create --remove --boot --exclude-prefix=/dev
+
+    - name: Clickhouse logger         | Configure clickhouse logger
+      blockinfile:
+        path: /etc/clickhouse-server/config.yml
+        marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+        marker_begin: "<logger>"
+        marker_end: "</logger>"
+        block: |-
+          <!-- Possible levels: https://github.com/pocoproject/poco/blob/develop/Foundation/include/Poco/Logger.h#L105 -->
+          <level>trace</level>
+          <console>1</console>
+        state: present
+
+    # Start the services
 
     - name: Supervisord start        | Start supervisord service for AMI/OVF
       when: ansible_virtualization_type != "docker"
@@ -230,8 +249,3 @@
 
     - name: Cickhouse                 | Show ClickHouse database
       command: clickhouse-client --host 127.0.0.1 --query="SHOW DATABASES"
-
-    - name: PMM update                | Create pmm-update directory
-      file:
-        path: /srv/update
-        state: directory
