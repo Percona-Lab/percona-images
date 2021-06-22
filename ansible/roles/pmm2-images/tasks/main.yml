@@ -189,16 +189,15 @@
       command: /usr/bin/systemd-tmpfiles --create --remove --boot --exclude-prefix=/dev
 
     - name: Clickhouse logger         | Configure clickhouse logger
-      blockinfile:
-        path: /etc/clickhouse-server/config.xml
-        marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
-        marker_begin: "<logger>"
-        marker_end: "</logger>"
-        block: |-
-          <!-- Possible levels: https://github.com/pocoproject/poco/blob/develop/Foundation/include/Poco/Logger.h#L105 -->
-          <level>trace</level>
-          <console>1</console>
-        state: present
+      replace:
+        path: ./config.xml
+        regexp: '(<logger>[\s\S]*)</logger>'
+        replace: |-
+          <logger>
+                  <!-- Possible levels: https://github.com/pocoproject/poco/blob/develop/Foundation/include/Poco/Logger.h#L105 -->
+                  <level>trace</level>
+                  <console>1</console>
+              </logger>
 
     # Start the services
 
