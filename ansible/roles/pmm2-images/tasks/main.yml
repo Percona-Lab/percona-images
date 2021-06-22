@@ -190,7 +190,7 @@
 
     - name: Clickhouse logger         | Configure clickhouse logger
       blockinfile:
-        path: /etc/clickhouse-server/config.yml
+        path: /etc/clickhouse-server/config.xml
         marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
         marker_begin: "<logger>"
         marker_end: "</logger>"
