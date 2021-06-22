@@ -190,7 +190,7 @@
 
     - name: Clickhouse logger         | Configure clickhouse logger
       replace:
-        path: ./config.xml
+        path: /etc/clickhouse-server/config.xml
         regexp: '(<logger>[\s\S]*)</logger>'
         replace: |-
           <logger>
