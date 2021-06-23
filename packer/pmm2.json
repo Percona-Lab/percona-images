@@ -37,7 +37,7 @@
             "resource_group_name": "percona",
             "storage_account": "percona",
             "capture_container_name": "percona",
-            "capture_name_prefix": "pmm2-server-2.18.0",
+            "capture_name_prefix": "pmm2-server-{{isotime \"2006-01-02-1504\"}}",
 
             "os_type": "Linux",
             "image_publisher": "OpenLogic",
