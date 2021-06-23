@@ -18,6 +18,7 @@
       command: mkswap /var/tmp/swapfile
 
     - name: ami                 | Enable swap on AWS
+      when: ansible_virtualization_type == "xen"
       mount:
         path: swap
         src: /var/tmp/swapfile

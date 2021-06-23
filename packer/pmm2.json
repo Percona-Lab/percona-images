@@ -31,6 +31,30 @@
             }
         },
         {
+            "type": "azure-arm",
+
+            "subscription_id": "41000701-4126-4674-9219-da03b1f9bb58",
+            "resource_group_name": "percona",
+            "storage_account": "percona",
+            "capture_container_name": "percona",
+            "capture_name_prefix": "pmm2-server-2.18.0",
+
+            "os_type": "Linux",
+            "image_publisher": "OpenLogic",
+            "image_offer": "CentOS",
+            "image_sku": "7_9",
+            "image_version": "7.9.2021020400",
+
+            "azure_tags": {
+                "dept": "Engineering",
+                "task": "PMM2 Image deployment"
+            },
+
+            "location": "East US",
+            "vm_size": "Standard_B1s",
+            "disk_additional_size": [ 30 ]
+        },
+        {
             "type": "virtualbox-ovf",
             "vm_name": "PMM2-Server-{{isotime \"2006-01-02-1504\"}}",
             "export_opts": [
