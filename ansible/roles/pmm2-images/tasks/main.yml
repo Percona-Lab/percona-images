@@ -52,6 +52,7 @@
       file: path={{ item }} state=directory owner=pmm group=pmm
       with_items:
         - /srv/prometheus/data
+        - /srv/prometheus/rules
         - /srv/alertmanager/data
 
     - name: Create directories        | Create dirs
