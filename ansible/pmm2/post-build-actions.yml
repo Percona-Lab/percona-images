@@ -53,6 +53,14 @@
       when: ansible_virtualization_type == "docker"
       shell: supervisorctl shutdown
 
+    - name: Cleanup yum cache          | Cleanup yum cache
+      command: yum clean all
+
+      # "yum clean all" function will only remove cache from configured yum repositories
+      # Details: https://bugzilla.redhat.com/show_bug.cgi?id=1357083
+    - name: Remove yum cache          | Remove yum cache dir
+      command: rm -rf /var/cache/yum
+
     - name: Post-build cleanup         | Cleanup build logs and data
       file: path={{ item }} state=absent
       with_items:
