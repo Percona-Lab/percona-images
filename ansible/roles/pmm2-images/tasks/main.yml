@@ -191,7 +191,7 @@
     - name: Clickhouse logger         | Configure clickhouse logger
       replace:
         path: /etc/clickhouse-server/config.xml
-        regexp: '(<logger>[\s\S]*)</logger>'
+        regexp: '<logger>[\s\S]*</logger>'
         replace: |-
           <logger>
                   <!-- Possible levels: https://github.com/pocoproject/poco/blob/develop/Foundation/include/Poco/Logger.h#L105 -->
