@@ -111,8 +111,6 @@
           - pmm-server
           - pmm-managed
           - pmm-update
-          - percona-clickhouse-client
-          - percona-clickhouse-server
           - dbaas-controller
           - dbaas-tools
         state: installed
@@ -173,10 +171,6 @@
         option: external_snapshot_name
         value: Share with Percona
 
-    - name: Clickhouse                | Disable clickhouse-server in systemd
-      when: ansible_virtualization_type != "docker"
-      service: name=clickhouse-server state=stopped enabled=no
-
     - name: Cron                      | Disable crond
       when: ansible_virtualization_type != "docker"
       service: name=crond state=stopped enabled=no
@@ -191,11 +185,6 @@
         path: /etc/supervisord.d/pmm.ini
         section: supervisord
         state: absent
-
-    - name: Create directories        | Create dirs
-      file: path={{ item }} state=directory owner=root group=pmm
-      with_items:
-        - /srv/clickhouse
 
     - name: Grafana                   | Enable gzip for grafana
       ini_file:
@@ -249,12 +238,6 @@
         remote_src: yes
       with_fileglob:
         - "/usr/share/percona-dashboards/panels/*.zip"
-
-    - name: Cickhouse                 | Create ClickHouse database
-      command: clickhouse-client --host 127.0.0.1 --query="CREATE DATABASE IF NOT EXISTS pmm"
-
-    - name: Cickhouse                 | Show ClickHouse database
-      command: clickhouse-client --host 127.0.0.1 --query="SHOW DATABASES"
 
     - name: PMM update                | Create pmm-update directory
       file:
