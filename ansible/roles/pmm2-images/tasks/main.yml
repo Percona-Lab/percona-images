@@ -103,7 +103,6 @@
       yum:
         name:
           - percona-grafana
-          - percona-prometheus
           - percona-victoriametrics
           - percona-qan-api2
           - percona-dashboards
