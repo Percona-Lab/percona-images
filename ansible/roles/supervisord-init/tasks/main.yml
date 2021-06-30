@@ -61,12 +61,6 @@
         dest: /etc/tmpfiles.d/supervisor.conf
         mode: 0644
 
-    - name: Configure supervisor       | Add logrotate.d config
-      template:
-        src: supervisor_logrotate
-        dest: /etc/logrotate.d/supervisor
-        mode: 0644
-
     - name: Configure supervisor       | Fix credentials
       ini_file:
         dest: /etc/supervisord.conf
