@@ -10,7 +10,7 @@
     - name: Install nginx rpm          | Install nginx rpm
       yum:
         name:
-          - nginx-1.17.3
+          - nginx-1.21.0
         state: installed
 
     - name: NGINX SSL Certificate      | Add script to generate ssl certificate
@@ -32,23 +32,17 @@
         dest: /etc/nginx/nginx.conf
         line: 'daemon off;'
 
-    - name: NGINX                      | Change location of nginx error logs
+    - name: NGINX                      | Change output for nginx error logs
       replace:
         dest: /etc/nginx/nginx.conf
         regexp: '/var/log/nginx/error\.log'
-        replace: '/srv/logs/nginx.error.log'
+        replace: '/dev/stderr'
 
-    - name: NGINX                      | Change location of nginx access logs
+    - name: NGINX                      | Change output for nginx access logs
       replace:
         dest: /etc/nginx/nginx.conf
         regexp: '/var/log/nginx/access\.log'
-        replace: '/srv/logs/nginx.access.log'
-
-    - name: NGINX                      | Change location of nginx logs for logrotated
-      replace:
-        dest: /etc/logrotate.d/nginx
-        regexp: '/var/log/nginx/'
-        replace: '/srv/logs/nginx.'
+        replace: '/dev/stdout'
 
     - name: NGINX                      | Remove '/etc/nginx/conf.d/default.conf'
       file:

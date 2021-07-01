@@ -28,11 +28,10 @@
     - name: Packages                   | Install OS tools
       yum:
         name:
-          - screen
+          - lsof
           - yum-utils
           - yum-cron
           - yum-changelog
-          - logrotate
           - unzip
           - python2-pip
 
@@ -103,7 +102,6 @@
       yum:
         name:
           - percona-grafana
-          - percona-prometheus
           - percona-victoriametrics
           - percona-qan-api2
           - percona-dashboards
@@ -147,29 +145,12 @@
         option: enabled
         value: 'false'
 
-    - name: Grafana                    | Set snapshot server
-      when: not grafana_db.stat.exists
+    - name: Grafana                   | Enable gzip for grafana
       ini_file:
         dest: /etc/grafana/grafana.ini
-        section: snapshots
-        option: external_enabled
-        value: 'true'
-
-    - name: Grafana                    | Set snapshot server
-      when: not grafana_db.stat.exists
-      ini_file:
-        dest: /etc/grafana/grafana.ini
-        section: snapshots
-        option: external_snapshot_url
-        value: https://snapshots-g635.percona.com/graph/
-
-    - name: Grafana                    | Set snapshot server
-      when: not grafana_db.stat.exists
-      ini_file:
-        dest: /etc/grafana/grafana.ini
-        section: snapshots
-        option: external_snapshot_name
-        value: Share with Percona
+        section: server
+        option: enable_gzip
+        value: "true"
 
     - name: Cron                      | Disable crond
       when: ansible_virtualization_type != "docker"
@@ -196,6 +177,19 @@
     - name: Create tmp dirs           | Create tmp dirs
       when: ansible_virtualization_type != "docker"
       command: /usr/bin/systemd-tmpfiles --create --remove --boot --exclude-prefix=/dev
+
+    - name: Clickhouse logger         | Configure clickhouse logger
+      replace:
+        path: /etc/clickhouse-server/config.xml
+        regexp: '<logger>[\s\S]*</logger>'
+        replace: |-
+          <logger>
+                  <!-- Possible levels: https://github.com/pocoproject/poco/blob/develop/Foundation/include/Poco/Logger.h#L105 -->
+                  <level>trace</level>
+                  <console>1</console>
+              </logger>
+
+    # Start the services
 
     - name: Supervisord start        | Start supervisord service for AMI/OVF
       when: ansible_virtualization_type != "docker"
