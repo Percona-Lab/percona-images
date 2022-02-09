@@ -44,6 +44,12 @@
         - percona-xtrabackup-80
         - percona-server-devel
 
+    - name: Update NSS
+      when: ansible_os_family == 'RedHat'
+      yum: name={{ item }} state=installed
+      with_items:
+        - nss
+
     - name: Enable firewall
       shell: cd /tmp; nohup sh -c "systemctl enable firewalld; systemctl restart dbus; systemctl restart firewalld"
 
