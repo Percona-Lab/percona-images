@@ -1,5 +1,5 @@
 export PACKER_CACHE_DIR := .cache
-export PACKER_VERSION := 1.2.2
+export PACKER_VERSION := 1.8.2
 export CENTOS_ISO := 1802.01
 
 clean:
@@ -12,7 +12,7 @@ clean-all: clean
 fetch:
 	mkdir -p ${PACKER_CACHE_DIR}/${CENTOS_ISO} || :
 	test -f ${PACKER_CACHE_DIR}/id_rsa_vagrant \
-	    || curl -L https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant \
+		|| curl -L https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant \
 		-o ${PACKER_CACHE_DIR}/id_rsa_vagrant
 	chmod 600 ${PACKER_CACHE_DIR}/id_rsa_vagrant
 	test -f ${PACKER_CACHE_DIR}/${CENTOS_ISO}/CentOS7.ova \
@@ -22,8 +22,8 @@ fetch:
 		|| tar -C ${PACKER_CACHE_DIR}/${CENTOS_ISO} -xf ${PACKER_CACHE_DIR}/${CENTOS_ISO}/CentOS7.ova
 
 deps:
-	mkdir -p ${PACKER_CACHE_DIR} ~/bin || :
-	curl https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip -o ${PACKER_CACHE_DIR}/packer.zip
+	mkdir -p ${PACKER_CACHE_DIR} ~/bin
+	curl -L https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip -o ${PACKER_CACHE_DIR}/packer.zip
 	unzip -o ${PACKER_CACHE_DIR}/packer.zip -d ~/bin
 
 pmm-ovf: fetch
@@ -57,6 +57,7 @@ mysql80-ovf: fetch
 
 mysql80-ami:
 	packer build -only amazon-ebs packer/mysql80.json
+
 
 mysql80-gcp:
 	packer build -only googlecompute packer/mysql80.json

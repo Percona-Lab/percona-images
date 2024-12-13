@@ -78,17 +78,12 @@
       when: grub2_var.changed and grub2_conf.stat.exists
       command: grub2-mkconfig -o /boot/grub2/grub.cfg
 
-    - name: Packages                   | Add EPEL repository
-      when: ansible_os_family == 'RedHat'
-      yum:
-        name: https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-14.noarch.rpm
-        state: installed
-
     - name: Packages                   | Add Percona repository
       when: ansible_os_family == 'RedHat'
       yum:
         name: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
         state: installed
+        disable_gpg_check: yes
 
     - name: Packages                   | Update OS
       when: ansible_os_family == 'RedHat'
@@ -104,8 +99,9 @@
         - screen
         - yum-utils
         - cloud-init
-        - yum-cron
+        - dnf-automatic
         - firewalld
+        - epel-release
 
     - name: Firewalld                  | Start
       when: ansible_os_family == 'RedHat'
@@ -194,17 +190,18 @@
         regexp: 'name: centos'
         replace: 'name: admin'
 
-    - name: cloud-init                 | Configure yum-cron
+    - name: Configure dnf-automatic for minimal-security updates
       replace:
-        dest: /etc/yum/yum-cron-hourly.conf
-        regexp: 'update_cmd = default'
-        replace: 'update_cmd = minimal-security'
+        path: /etc/dnf/automatic.conf
+        regexp: '^upgrade_type =.*'
+        replace: 'upgrade_type = security'
 
-    - name: cloud-init                 | Configure yum-cron
+    - name: Ensure random sleep is configured
       replace:
-        dest: /etc/yum/yum-cron.conf
-        regexp: 'update_cmd = default'
-        replace: 'update_cmd = minimal-security'
+        path: /etc/dnf/automatic.conf
+        regexp: '^random_sleep =.*'
+        replace: 'random_sleep = 360'
+
 
     - name: Data partition             | Auto resize LVM
       when: enable_lvm == true

@@ -3,32 +3,35 @@
             "type": "amazon-ebs",
             "ami_name": "Percona Server for MySQL 8.0 [{{isotime \"2006-01-02 0304\"}}]",
             "instance_type": "t2.micro",
-            "launch_block_device_mappings": [{
+            "launch_block_device_mappings": [
+                {
                     "delete_on_termination": true,
                     "device_name": "/dev/sda1",
-                    "volume_size": 8,
-                    "volume_type": "gp2"
+                    "volume_size": 10,
+                    "volume_type": "gp3"
                 },
                 {
                     "delete_on_termination": false,
                     "device_name": "/dev/sdb",
-                    "volume_size": 50,
-                    "volume_type": "gp2"
+                    "volume_size": 100,
+                    "volume_type": "gp3"
                 }
             ],
             "region": "us-east-1",
             "security_group_id": "sg-688c2b1c",
-            "source_ami": "ami-6f12ce10",
-            "ssh_pty": "true",
-            "ena_support": "true",
-            "ssh_username": "centos",
+            "source_ami": "ami-0da806cbfc9e67dbb",
+            "ssh_username": "ec2-user",
+            "ssh_pty": true,
+            "ena_support": true,
             "subnet_id": "subnet-ee06e8e1",
             "run_tags": {
-                "iit-billing-tag": "ps80-ami"
+                "iit-billing-tag": "ps80-ami",
+                "Name": "Packer Builder"
             },
             "run_volume_tags": {
                 "iit-billing-tag": "ps80-ami"
-            }
+            },
+	    "ssh_clear_authorized_keys": "true"
         },
         {
             "type": "azure-arm",

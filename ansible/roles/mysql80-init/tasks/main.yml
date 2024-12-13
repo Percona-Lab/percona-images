@@ -2,7 +2,7 @@
 # Initialize Percona Server for MySQL 8.0
 
     - name: Percona Server for MySQL   | Install repo
-      shell: percona-release setup ps-80 
+      shell: percona-release enable pdps-8.0 release 
 
     - name: Percona Server for MySQL   | Install Percona Client
       when: ansible_os_family == 'RedHat'
@@ -21,7 +21,16 @@
       yum: name={{ item }} state=installed
       with_items:
         - percona-server-server
-        - MySQL-python
+
+    - name: MySQL Connector Python | Install pip
+      yum:
+        name: python3-pip
+        state: present
+
+    - name: MySQL Connector Python | Install connector via pip
+      pip:
+        name: mysql-connector-python
+        state: present
 
     - name: Percona Server for MySQL   | Fix selinux
       sefcontext:

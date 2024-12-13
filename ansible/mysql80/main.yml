@@ -21,9 +21,8 @@
         - qpress
         - yum-utils
         - cronie
-        - policycoreutils
-        - policycoreutils-python
-        - python-boto
+        - policycoreutils-python-utils
+        - python3-boto3
         - python-setuptools
         - python-requests
         - rsync
@@ -32,7 +31,6 @@
         - lsof
         - vim
         - tmux
-        - innotop
         - firewalld
         - firewalld-filesystem
 
