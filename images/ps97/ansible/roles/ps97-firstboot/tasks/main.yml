@@ -1,0 +1,29 @@
+---
+- name: Install the first-boot script
+  ansible.builtin.copy:
+    src: ps97-firstboot.sh
+    dest: "{{ ps97_firstboot_script }}"
+    owner: root
+    group: root
+    mode: "0750"
+
+- name: Install the first-boot unit
+  ansible.builtin.copy:
+    src: ps97-firstboot.service
+    dest: "/etc/systemd/system/{{ ps97_firstboot_unit }}"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Enable the first-boot unit
+  ansible.builtin.systemd:
+    name: "{{ ps97_firstboot_unit }}"
+    enabled: true
+    daemon_reload: true
+
+- name: Enable the MySQL service
+  # Enabled but never started during the bake. Starting it here would
+  # initialize the datadir, which is exactly what must happen per instance.
+  ansible.builtin.systemd:
+    name: mysqld.service
+    enabled: true

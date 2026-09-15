@@ -1,0 +1,46 @@
+---
+- name: Install the MySQL baseline configuration
+  ansible.builtin.copy:
+    src: 99-percona-ami.cnf
+    dest: /etc/my.cnf.d/99-percona-ami.cnf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Install the sysctl values
+  ansible.builtin.copy:
+    src: 99-ps97.conf
+    dest: /etc/sysctl.d/99-ps97.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Install the transparent huge pages unit
+  ansible.builtin.copy:
+    src: ps97-thp.service
+    dest: /etc/systemd/system/ps97-thp.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Enable the transparent huge pages unit
+  ansible.builtin.systemd:
+    name: ps97-thp.service
+    enabled: true
+    daemon_reload: true
+
+- name: Create the mysqld unit drop-in directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/mysqld.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install the mysqld unit drop-in
+  ansible.builtin.copy:
+    src: 10-limits.conf
+    dest: /etc/systemd/system/mysqld.service.d/10-limits.conf
+    owner: root
+    group: root
+    mode: "0644"
