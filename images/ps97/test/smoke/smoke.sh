@@ -62,7 +62,12 @@ check() {
 }
 
 remote() {
-    ssh -i "$SMOKE_KEY_FILE" -o StrictHostKeyChecking=no \
+    # Bounds the whole remote command, not just connect: ConnectTimeout
+    # only covers session setup, so a command that hangs afterwards would
+    # need an external kill, and that bypasses the EXIT trap that
+    # terminates the instance.
+    timeout "${SMOKE_REMOTE_TIMEOUT:-120}" \
+        ssh -i "$SMOKE_KEY_FILE" -o StrictHostKeyChecking=no \
         -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 \
         "ec2-user@${PUBLIC_IP}" "$@"
 }
@@ -145,15 +150,15 @@ check "innodb_dedicated_server sized the buffer pool above the default" \
 # actually about the image. The external probe below can pass merely
 # because a security group blocked the port, so it cannot carry this claim.
 check "mysqld listens on loopback only" bash -c '
-    remote "sudo ss -ltn" | grep -q "127.0.0.1:3306"
-    ! remote "sudo ss -ltn" | grep -qE "0\.0\.0\.0:3306|\[::\]:3306"'
+    remote "sudo ss -ltn" | grep -q "127.0.0.1:3306" \
+    && ! remote "sudo ss -ltn" | grep -qE "0\.0\.0\.0:3306|\[::\]:3306"'
 
 check "3306 is closed from the test runner as well" \
     bash -c "! timeout 5 bash -c \"</dev/tcp/${PUBLIC_IP}/3306\" 2>/dev/null"
 
 # shellcheck disable=SC2016  # $PASSWORD is expanded on the instance, inside the remote quoting
 check "xtrabackup completes a backup and prepare" bash -c '
-    timeout 900 remote "sudo rm -rf /tmp/xb && sudo mkdir -p /tmp/xb \
+    SMOKE_REMOTE_TIMEOUT=900 remote "sudo rm -rf /tmp/xb && sudo mkdir -p /tmp/xb \
       && sudo xtrabackup --backup --target-dir=/tmp/xb --user=root --password='\''"$PASSWORD"'\'' \
       && sudo xtrabackup --prepare --target-dir=/tmp/xb" >/dev/null 2>&1'
 
