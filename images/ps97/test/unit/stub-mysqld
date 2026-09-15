@@ -1,0 +1,36 @@
+#!/bin/bash
+# Test double for mysqld. Records its arguments and mimics the two invocations
+# the first-boot script makes: one-shot initialization, and a daemonized
+# instance that applies an init file.
+set -euo pipefail
+
+printf '%s\n' "$*" >> "${STUB_MYSQLD_LOG}"
+
+INIT=0
+DATADIR=""
+PIDFILE=""
+INITFILE=""
+
+for arg in "$@"; do
+    case "$arg" in
+        --initialize-insecure) INIT=1 ;;
+        --datadir=*)  DATADIR="${arg#--datadir=}" ;;
+        --pid-file=*) PIDFILE="${arg#--pid-file=}" ;;
+        --init-file=*) INITFILE="${arg#--init-file=}" ;;
+    esac
+done
+
+if [ "$INIT" = "1" ]; then
+    # A real initialization creates the system schema directory, which is what
+    # the script uses to decide the datadir is already populated.
+    mkdir -p "${DATADIR}/mysql"
+    exit 0
+fi
+
+# Preserve the init file so a test can assert on the SQL that was applied; the
+# script deletes the original as soon as this process exits.
+cp "$INITFILE" "${STUB_MYSQLD_INIT_COPY}"
+
+sleep 300 &
+printf '%s\n' "$!" > "$PIDFILE"
+exit 0
