@@ -1,0 +1,43 @@
+---
+- name: Import the Percona packaging key
+  ansible.builtin.rpm_key:
+    key: https://repo.percona.com/yum/PERCONA-PACKAGING-KEY
+    fingerprint: 4D1BB29D63D98E422B2113B19334A25F8507EFA5
+    state: present
+
+- name: Download the percona-release package
+  ansible.builtin.get_url:
+    url: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+    dest: /tmp/percona-release.rpm
+    mode: "0644"
+
+- name: Verify the percona-release signature
+  ansible.builtin.command: rpmkeys --checksig /tmp/percona-release.rpm
+  changed_when: false
+
+- name: Install percona-release
+  ansible.builtin.dnf:
+    name: /tmp/percona-release.rpm
+    state: present
+    disable_gpg_check: false
+
+- name: Disable all Percona repositories
+  # Starting from nothing keeps a future percona-release default from quietly
+  # adding a component this image was never meant to install from.
+  ansible.builtin.command: percona-release disable all
+  changed_when: true
+
+- name: Enable the server repository channel
+  ansible.builtin.command: >-
+    percona-release enable {{ ps97_server_component }} {{ ps97_repo_channel }}
+  changed_when: true
+
+- name: Enable the backup repository channel
+  ansible.builtin.command: >-
+    percona-release enable {{ ps97_backup_component }} {{ ps97_repo_channel }}
+  changed_when: true
+
+- name: Remove the downloaded percona-release package
+  ansible.builtin.file:
+    path: /tmp/percona-release.rpm
+    state: absent

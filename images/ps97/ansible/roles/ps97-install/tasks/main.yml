@@ -1,0 +1,58 @@
+---
+- name: Install the Percona Server package set
+  ansible.builtin.dnf:
+    name: "{{ ps97_packages }}"
+    state: present
+
+- name: Read the installed server version  # noqa: command-instead-of-module
+  ansible.builtin.command: rpm -q --queryformat '%{VERSION}' percona-server-server
+  register: ps97_installed_version
+  changed_when: false
+
+- name: Fail when the installed version is not the requested version
+  # A channel that has not been promoted yet otherwise produces an AMI whose
+  # name claims a version it does not contain.
+  ansible.builtin.assert:
+    that:
+      - ps97_installed_version.stdout == ps97_version
+    fail_msg: >-
+      Requested {{ ps97_version }} but the {{ ps97_repo_channel }} channel
+      resolved {{ ps97_installed_version.stdout }}
+
+- name: Read the repository each Percona package came from  # noqa: command-instead-of-module
+  ansible.builtin.command: >-
+    rpm -q --queryformat '%{NAME} %{VENDOR}\n'
+    percona-server-server percona-server-client percona-xtrabackup-97
+  register: ps97_vendors
+  changed_when: false
+
+- name: Fail when a package did not come from Percona
+  # Amazon Linux ships its own MySQL-compatible packages; this catches the case
+  # where dnf satisfied a name from the distribution instead of the enabled
+  # Percona component.
+  ansible.builtin.assert:
+    that:
+      - ps97_vendors.stdout_lines | select('search', '(?i)percona') | list | length == 3
+    fail_msg: "A package was not provided by Percona: {{ ps97_vendors.stdout }}"
+
+- name: Read the installed XtraBackup release  # noqa: command-instead-of-module
+  ansible.builtin.command: rpm -q --queryformat '%{VERSION}-%{RELEASE}' percona-xtrabackup-97
+  register: ps97_xtrabackup_release
+  changed_when: false
+
+- name: Fail when a release candidate would ship on the release channel
+  # percona-xtrabackup-97 was still at 9.7.1-1.rc1 in the release channel when
+  # this image was designed. A Marketplace candidate must not carry it.
+  ansible.builtin.assert:
+    that:
+      - not (ps97_repo_channel == 'release' and 'rc' in ps97_xtrabackup_release.stdout)
+    fail_msg: >-
+      XtraBackup {{ ps97_xtrabackup_release.stdout }} is a release candidate.
+      Build against the testing channel, or wait for GA.
+
+- name: Report the resolved versions
+  ansible.builtin.debug:
+    msg: >-
+      percona-server-server {{ ps97_installed_version.stdout }},
+      percona-xtrabackup-97 {{ ps97_xtrabackup_release.stdout }},
+      channel {{ ps97_repo_channel }}

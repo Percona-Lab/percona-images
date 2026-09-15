@@ -1,0 +1,6 @@
+# Role directories in this repository are hyphenated: cloud-node, mysql80-init,
+# lvm-init, and every role in the Valkey image project follow that form. The
+# playbook and the Packer ansible-local provisioner reference these directories
+# by name, so matching the repository beats matching the linter's preferred style.
+skip_list:
+  - role-name

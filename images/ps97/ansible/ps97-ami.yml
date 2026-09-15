@@ -1,0 +1,12 @@
+---
+- name: Build the Percona Server for MySQL image
+  hosts: all
+  become: true
+  gather_facts: true
+  roles:
+    - ps97-repo
+    - ps97-install
+    - ps97-storage
+    - ps97-tuning
+    - ps97-firstboot
+    - cloud-cleanup

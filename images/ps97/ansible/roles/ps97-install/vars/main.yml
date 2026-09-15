@@ -1,0 +1,8 @@
+---
+# percona-toolkit has no Amazon Linux 2023 build in the tools repository, so the
+# package set of the Percona Server 8.0 image cannot be reproduced here. It is
+# omitted rather than replaced with a substitute.
+ps97_packages:
+  - percona-server-server
+  - percona-server-client
+  - percona-xtrabackup-97
