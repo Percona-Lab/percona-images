@@ -116,6 +116,7 @@ done
 check "the generated password authenticates" \
     bash -c "[ \"\$(sql 'SELECT 1')\" = '1' ]"
 
+# shellcheck disable=SC2016  # the sql helper is expanded by the remote shell, not here
 check "a write and read round-trip succeeds" bash -c '
     sql "CREATE DATABASE smoke; CREATE TABLE smoke.t (id INT PRIMARY KEY); INSERT INTO smoke.t VALUES (42);" >/dev/null
     [ "$(sql "SELECT id FROM smoke.t")" = "42" ]'
@@ -135,6 +136,7 @@ check "innodb_dedicated_server sized the buffer pool above the default" \
 check "port 3306 is not reachable from outside the instance" \
     bash -c "! timeout 5 bash -c \"</dev/tcp/${PUBLIC_IP}/3306\" 2>/dev/null"
 
+# shellcheck disable=SC2016  # $PASSWORD is expanded on the instance, inside the remote quoting
 check "xtrabackup completes a backup and prepare" bash -c '
     remote "sudo rm -rf /tmp/xb && sudo mkdir -p /tmp/xb \
       && sudo xtrabackup --backup --target-dir=/tmp/xb --user=root --password='\''"$PASSWORD"'\'' \
