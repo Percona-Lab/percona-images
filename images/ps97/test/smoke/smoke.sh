@@ -35,9 +35,11 @@ done
 : "${SMOKE_KEY_NAME:?SMOKE_KEY_NAME must be set}"
 : "${SMOKE_KEY_FILE:?SMOKE_KEY_FILE must be set}"
 
-INSTANCE_ID=""
-PUBLIC_IP=""
-PASSWORD=""
+# Exported, not merely assigned: the check helper runs each assertion in a
+# child bash, which inherits environment variables but not shell variables.
+export INSTANCE_ID=""
+export PUBLIC_IP=""
+export PASSWORD=""
 FAILURES=0
 
 cleanup() {
@@ -68,6 +70,12 @@ remote() {
 sql() {
     remote "mysql -u root -p'${PASSWORD}' -N -B -e \"$1\""
 }
+
+# Functions are not inherited across the process boundary that `check`
+# creates, so without this every assertion fails with "command not found"
+# no matter how healthy the instance is.
+export -f remote sql
+export SMOKE_KEY_FILE
 
 echo "Launching ${AMI_ID} as ${INSTANCE_TYPE} in ${REGION}"
 INSTANCE_ID="$(aws ec2 run-instances --region "$REGION" \
@@ -133,12 +141,19 @@ check "a server identity was generated on this instance" \
 check "innodb_dedicated_server sized the buffer pool above the default" \
     bash -c "[ \"\$(sql 'SELECT @@innodb_buffer_pool_size')\" -gt 134217728 ]"
 
-check "port 3306 is not reachable from outside the instance" \
+# Asking the instance what it is listening on is the assertion that is
+# actually about the image. The external probe below can pass merely
+# because a security group blocked the port, so it cannot carry this claim.
+check "mysqld listens on loopback only" bash -c '
+    remote "sudo ss -ltn" | grep -q "127.0.0.1:3306"
+    ! remote "sudo ss -ltn" | grep -qE "0\.0\.0\.0:3306|\[::\]:3306"'
+
+check "3306 is closed from the test runner as well" \
     bash -c "! timeout 5 bash -c \"</dev/tcp/${PUBLIC_IP}/3306\" 2>/dev/null"
 
 # shellcheck disable=SC2016  # $PASSWORD is expanded on the instance, inside the remote quoting
 check "xtrabackup completes a backup and prepare" bash -c '
-    remote "sudo rm -rf /tmp/xb && sudo mkdir -p /tmp/xb \
+    timeout 900 remote "sudo rm -rf /tmp/xb && sudo mkdir -p /tmp/xb \
       && sudo xtrabackup --backup --target-dir=/tmp/xb --user=root --password='\''"$PASSWORD"'\'' \
       && sudo xtrabackup --prepare --target-dir=/tmp/xb" >/dev/null 2>&1'
 
