@@ -11,24 +11,31 @@ set -euo pipefail
 # name pattern is shared with the other Percona image jobs, so matching on the
 # name would risk deleting a key pair belonging to a concurrent build.
 #
-# Usage: cleanup-orphans.sh [region] [billing-tag]
+# Usage: cleanup-orphans.sh [region] [billing-tag] [max-age-minutes]
 
 REGION="${1:-us-east-1}"
 BILLING_TAG="${2:-ps97-ami}"
+
+# An orphan is an instance whose build agent vanished. A live build's
+# instances are minutes old, so an age floor is what separates the two.
+# Without it this script would terminate a healthy concurrent build.
+MAX_AGE_MINUTES="${3:-180}"
 
 if ! command -v aws >/dev/null 2>&1; then
     echo "aws CLI is not available, skipping orphan cleanup"
     exit 0
 fi
 
-echo "Looking for orphaned instances tagged iit-billing-tag=${BILLING_TAG} in ${REGION}"
+echo "Looking for orphaned instances tagged iit-billing-tag=${BILLING_TAG} in ${REGION}, older than ${MAX_AGE_MINUTES} minutes"
 
-# The backticks below are JMESPath literal syntax, not command substitution.
-# shellcheck disable=SC2016
+CUTOFF="$(date -u -d "-${MAX_AGE_MINUTES} minutes" +%Y-%m-%dT%H:%M:%S)"
+
+echo "Ignoring instances launched after ${CUTOFF}Z"
+
 instances="$(aws ec2 describe-instances --region "$REGION" \
     --filters "Name=tag:iit-billing-tag,Values=${BILLING_TAG}" \
               "Name=instance-state-name,Values=pending,running,stopping,stopped" \
-    --query 'Reservations[].Instances[].[InstanceId,KeyName,Tags[?Key==`Name`]|[0].Value]' \
+    --query "Reservations[].Instances[?LaunchTime<='${CUTOFF}'].[InstanceId,KeyName,Tags[?Key=='Name']|[0].Value]" \
     --output text 2>/dev/null || true)"
 
 if [ -z "$instances" ]; then

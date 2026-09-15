@@ -20,7 +20,7 @@ locals {
     Product           = "Percona Server for MySQL"
     ServerVersion     = var.ps97_version
     RepoChannel       = var.repo_channel
-    BuildDate         = formatdate("YYYYMMDD-hhmm", timestamp())
+    BuildDate         = local.build_date
     "iit-billing-tag" = var.billing_tag
   }
 
