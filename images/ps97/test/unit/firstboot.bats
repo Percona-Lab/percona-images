@@ -13,6 +13,7 @@ setup() {
     export PS97_FIRSTBOOT_SKIP_CHOWN=1
     export STUB_MYSQLD_LOG="$BATS_TEST_TMPDIR/mysqld.log"
     export STUB_MYSQLD_INIT_COPY="$BATS_TEST_TMPDIR/init.sql"
+    export STUB_MYSQLD_INIT_MODE="$BATS_TEST_TMPDIR/init.mode"
 
     mkdir -p "$PS97_FIRSTBOOT_ROOT/data"
     : > "$STUB_MYSQLD_LOG"
@@ -34,11 +35,16 @@ password_from_motd() {
 
 @test 'generates a different password on a clean run' {
     run "$SCRIPT"
+    [ "$status" -eq 0 ]
     first=$(password_from_motd)
+    [ "${#first}" -eq 32 ]
     rm -rf "$PS97_FIRSTBOOT_ROOT"
     mkdir -p "$PS97_FIRSTBOOT_ROOT/data"
+    : > "$STUB_MYSQLD_LOG"
     run "$SCRIPT"
+    [ "$status" -eq 0 ]
     second=$(password_from_motd)
+    [ "${#second}" -eq 32 ]
     [ "$first" != "$second" ]
 }
 
@@ -103,4 +109,16 @@ password_from_motd() {
 @test 'the motd file is world readable' {
     run "$SCRIPT"
     [ "$(stat -c '%a' "$MOTD")" = "644" ]
+}
+
+@test 'the init file is created with owner-only permissions' {
+    run "$SCRIPT"
+    [ "$status" -eq 0 ]
+    [ "$(cat "$STUB_MYSQLD_INIT_MODE")" = "600" ]
+}
+
+@test 'the run directory is not readable by other users' {
+    run "$SCRIPT"
+    [ "$status" -eq 0 ]
+    [ "$(stat -c '%a' "$PS97_FIRSTBOOT_RUNDIR")" = "700" ]
 }

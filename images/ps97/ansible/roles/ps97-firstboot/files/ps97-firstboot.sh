@@ -65,6 +65,11 @@ write_init_sql() {
     install -d -m 0700 "$RUN_DIR"
     own_as_mysql "$RUN_DIR"
 
+    # The file below carries the password in plaintext. Removing it from a trap
+    # covers the paths where the server fails to start and errexit ends the
+    # script before the explicit cleanup runs.
+    trap 'rm -f "$INIT_SQL"' EXIT INT TERM
+
     # RUN_DIR is on tmpfs, so the plaintext never reaches disk, and the file is
     # removed as soon as the temporary instance exits.
     (umask 077; printf "ALTER USER 'root'@'localhost' IDENTIFIED BY '%s';\n" \

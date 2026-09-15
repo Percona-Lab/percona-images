@@ -30,6 +30,7 @@ fi
 # Preserve the init file so a test can assert on the SQL that was applied; the
 # script deletes the original as soon as this process exits.
 cp "$INITFILE" "${STUB_MYSQLD_INIT_COPY}"
+stat -c '%a' "$INITFILE" > "${STUB_MYSQLD_INIT_MODE}"
 
 sleep 300 &
 printf '%s\n' "$!" > "$PIDFILE"
