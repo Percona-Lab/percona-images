@@ -19,21 +19,26 @@
       Requested {{ ps97_version }} but the {{ ps97_repo_channel }} channel
       resolved {{ ps97_installed_version.stdout }}
 
-- name: Read the repository each Percona package came from  # noqa: command-instead-of-module
+- name: Read the repository each package was installed from  # noqa: command-instead-of-module
   ansible.builtin.command: >-
-    rpm -q --queryformat '%{NAME} %{VENDOR}\n'
+    dnf repoquery --installed --qf '%{name}|%{from_repo}'
     percona-server-server percona-server-client percona-xtrabackup-97
-  register: ps97_vendors
+  register: ps97_origins
   changed_when: false
 
-- name: Fail when a package did not come from Percona
-  # Amazon Linux ships its own MySQL-compatible packages; this catches the case
-  # where dnf satisfied a name from the distribution instead of the enabled
-  # Percona component.
+- name: Fail when a package did not come from the enabled Percona component
+  # The vendor field cannot carry this check: Percona populates it for the
+  # server packages but leaves it empty for percona-xtrabackup-97, so a vendor
+  # match would fail every build. Matching after the pipe separator also keeps
+  # the package name, which always contains "percona", from satisfying the test
+  # on its own.
   ansible.builtin.assert:
     that:
-      - ps97_vendors.stdout_lines | select('search', '(?i)percona') | list | length == 3
-    fail_msg: "A package was not provided by Percona: {{ ps97_vendors.stdout }}"
+      - ps97_origins.stdout_lines | length == 3
+      - ps97_origins.stdout_lines | select('search', '\|(ps-97-lts|pxb-97-lts)') | list | length == 3
+    fail_msg: >-
+      A package did not come from ps-97-lts or pxb-97-lts:
+      {{ ps97_origins.stdout }}
 
 - name: Read the installed XtraBackup release  # noqa: command-instead-of-module
   ansible.builtin.command: rpm -q --queryformat '%{VERSION}-%{RELEASE}' percona-xtrabackup-97
@@ -45,7 +50,7 @@
   # this image was designed. A Marketplace candidate must not carry it.
   ansible.builtin.assert:
     that:
-      - not (ps97_repo_channel == 'release' and 'rc' in ps97_xtrabackup_release.stdout)
+      - not (ps97_repo_channel == 'release' and 'rc' in ps97_xtrabackup_release.stdout | lower)
     fail_msg: >-
       XtraBackup {{ ps97_xtrabackup_release.stdout }} is a release candidate.
       Build against the testing channel, or wait for GA.
