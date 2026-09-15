@@ -1,32 +1,63 @@
 ---
-- name: Find the unpartitioned, unmounted disk
-  # The block device mapping asks for /dev/sdb, but these instance types are
-  # Nitro, so the guest sees /dev/nvme1n1. Selecting by shape rather than by
-  # name is what makes this work on both x86_64 and arm64.
+- name: Identify the disk the running system boots from
+  # lsblk -d reports an empty MOUNTPOINT for a partitioned root volume, because
+  # the mountpoint belongs to the partition rather than the disk. Resolving the
+  # root disk explicitly is what keeps the selection below from ever choosing
+  # it. -s walks up the device tree, so this holds for a plain partition and for
+  # LVM alike; -r suppresses the tree glyphs that would otherwise corrupt the name.
   ansible.builtin.shell:
-    cmd: >-
-      set -o pipefail;
-      lsblk -dnp -o NAME,TYPE,MOUNTPOINT
-      | awk '$2 == "disk" && $3 == "" { print $1 }'
-      | head -1
+    cmd: |
+      set -o pipefail
+      root_source=$(findmnt -n -o SOURCE / | sed 's/\[.*\]$//')
+      lsblk -nrpo NAME,TYPE -s "$root_source" | awk '$2 == "disk" { print $1; exit }'
     executable: /bin/bash
-  register: ps97_data_device
+  register: ps97_root_disk
   changed_when: false
   when: ps97_storage_mode == 'volume'
 
-- name: Fail when no data disk is attached
+- name: Find candidate data disks
+  # A candidate is not the root disk, carries no partitions, and has no
+  # filesystem signature of its own. All three conditions are needed: the first
+  # two alone would still accept an already-formatted volume.
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      root_disk="{{ ps97_root_disk.stdout }}"
+      for disk in $(lsblk -dnp -o NAME,TYPE | awk '$2 == "disk" { print $1 }'); do
+          if [ "$disk" = "$root_disk" ]; then
+              continue
+          fi
+          if [ -n "$(lsblk -nr -o NAME "$disk" | tail -n +2)" ]; then
+              continue
+          fi
+          if [ -n "$(lsblk -dnr -o FSTYPE "$disk")" ]; then
+              continue
+          fi
+          printf '%s\n' "$disk"
+      done
+      exit 0
+    executable: /bin/bash
+  register: ps97_data_candidates
+  changed_when: false
+  when: ps97_storage_mode == 'volume'
+
+- name: Fail unless exactly one data disk is attached
+  # Exactly one, not at least one: an ambiguous match is how the wrong disk gets
+  # formatted, so ambiguity must stop the build rather than pick a winner.
   ansible.builtin.assert:
     that:
-      - ps97_data_device.stdout | length > 0
+      - ps97_data_candidates.stdout_lines | length == 1
     fail_msg: >-
-      No unpartitioned, unmounted disk found. The build instance must be
-      launched with the data volume in its block device mapping.
+      Expected exactly one unpartitioned, unformatted disk besides the root disk
+      {{ ps97_root_disk.stdout }}, found
+      {{ ps97_data_candidates.stdout_lines | length }}:
+      {{ ps97_data_candidates.stdout_lines | join(', ') }}
   when: ps97_storage_mode == 'volume'
 
 - name: Create the data filesystem
   community.general.filesystem:
     fstype: xfs
-    dev: "{{ ps97_data_device.stdout }}"
+    dev: "{{ ps97_data_candidates.stdout_lines[0] }}"
     opts: "-L {{ ps97_data_label }}"
   when: ps97_storage_mode == 'volume'
 
