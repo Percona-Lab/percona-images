@@ -1,0 +1,67 @@
+---
+- name: Remove SSH host keys
+  # Regenerated on first boot. Shipping them would give every instance from
+  # this AMI the same host identity.
+  ansible.builtin.shell:
+    cmd: rm -f /etc/ssh/ssh_host_*
+    removes: /etc/ssh/ssh_host_ed25519_key
+
+- name: Find authorized_keys files
+  ansible.builtin.find:
+    paths:
+      - /root/.ssh
+      - /home
+    patterns: authorized_keys
+    recurse: true
+    hidden: true
+  register: ps97_authorized_keys
+
+- name: Remove authorized_keys files
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ ps97_authorized_keys.files }}"
+
+- name: Disable root login over SSH
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?\s*PermitRootLogin'
+    line: 'PermitRootLogin no'
+
+- name: Remove stored MySQL credentials
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /root/.my.cnf
+    - /home/ec2-user/.my.cnf
+
+- name: Clear the machine id
+  # A duplicated machine-id makes every instance look like the same host to
+  # journald, DHCP, and anything else keyed on it.
+  ansible.builtin.copy:
+    content: ""
+    dest: /etc/machine-id
+    owner: root
+    group: root
+    mode: "0444"
+
+- name: Reset cloud-init state
+  ansible.builtin.file:
+    path: /var/lib/cloud
+    state: absent
+
+- name: Clean the package cache
+  ansible.builtin.command: dnf clean all
+  changed_when: true
+
+- name: Remove provisioning logs and history
+  ansible.builtin.shell:
+    cmd: >-
+      rm -rf /var/log/dnf.* /var/log/cloud-init*.log /var/log/mysqld.log
+      /root/.bash_history /home/ec2-user/.bash_history /tmp/* /var/tmp/*
+    removes: /var/log/dnf.log
+
+- name: Truncate the system journal
+  ansible.builtin.command: journalctl --rotate --vacuum-time=1s
+  changed_when: true
