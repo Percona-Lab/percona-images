@@ -3,6 +3,14 @@
 VERSION="${PS97_VERSION:-9.7.1}"
 CHANNEL="${PS97_REPO_CHANNEL:-release}"
 
+@test 'the build passed its version and channel through' {
+    # These default when unset, so without this test a broken environment
+    # handoff from the Packer provisioner would be invisible: the version
+    # assertion below would compare the default against itself.
+    [ -n "${PS97_VERSION:-}" ]
+    [ -n "${PS97_REPO_CHANNEL:-}" ]
+}
+
 @test 'the server package is installed' {
     rpm -q percona-server-server
 }

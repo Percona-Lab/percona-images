@@ -25,13 +25,15 @@
 }
 
 @test 'the datadir is empty' {
-    # The single most important assertion in this image. A populated datadir
-    # means a baked server UUID and a baked root credential shared by every
-    # instance launched from the AMI.
+    # The existence guard is not redundant with the ownership test above: a bare
+    # `ls -A` on a missing directory prints nothing and succeeds, so without it
+    # this assertion would report green in exactly the case it exists to catch.
+    [ -d /data/mysql ]
     [ -z "$(ls -A /data/mysql)" ]
 }
 
 @test 'no server identity was baked' {
+    [ -d /data/mysql ]
     [ ! -e /data/mysql/auto.cnf ]
 }
 

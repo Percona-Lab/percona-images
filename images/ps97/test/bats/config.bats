@@ -7,6 +7,9 @@ BASELINE=/etc/my.cnf.d/99-percona-ami.cnf
 }
 
 @test 'the packaged my.cnf was not edited' {
+    # grep exits 2 on a missing file and `!` turns that into a pass, so the
+    # file's existence has to be asserted before the negative checks mean anything.
+    [ -f /etc/my.cnf ]
     ! grep -q 'percona-ami' /etc/my.cnf
     ! grep -qE '^\s*datadir\s*=\s*/data' /etc/my.cnf
 }
