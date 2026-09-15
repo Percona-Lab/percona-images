@@ -67,8 +67,12 @@ write_init_sql() {
 
     # The file below carries the password in plaintext. Removing it from a trap
     # covers the paths where the server fails to start and errexit ends the
-    # script before the explicit cleanup runs.
-    trap 'rm -f "$INIT_SQL"' EXIT INT TERM
+    # script before the explicit cleanup runs. The signal handlers exit rather
+    # than returning, because a handler that falls through would leave this
+    # script ignoring the stop request systemd sends its unit.
+    trap 'rm -f "$INIT_SQL"' EXIT
+    trap 'rm -f "$INIT_SQL"; exit 143' TERM
+    trap 'rm -f "$INIT_SQL"; exit 130' INT
 
     # RUN_DIR is on tmpfs, so the plaintext never reaches disk, and the file is
     # removed as soon as the temporary instance exits.
