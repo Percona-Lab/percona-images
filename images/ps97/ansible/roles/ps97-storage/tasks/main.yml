@@ -1,0 +1,85 @@
+---
+- name: Find the unpartitioned, unmounted disk
+  # The block device mapping asks for /dev/sdb, but these instance types are
+  # Nitro, so the guest sees /dev/nvme1n1. Selecting by shape rather than by
+  # name is what makes this work on both x86_64 and arm64.
+  ansible.builtin.shell:
+    cmd: >-
+      set -o pipefail;
+      lsblk -dnp -o NAME,TYPE,MOUNTPOINT
+      | awk '$2 == "disk" && $3 == "" { print $1 }'
+      | head -1
+    executable: /bin/bash
+  register: ps97_data_device
+  changed_when: false
+  when: ps97_storage_mode == 'volume'
+
+- name: Fail when no data disk is attached
+  ansible.builtin.assert:
+    that:
+      - ps97_data_device.stdout | length > 0
+    fail_msg: >-
+      No unpartitioned, unmounted disk found. The build instance must be
+      launched with the data volume in its block device mapping.
+  when: ps97_storage_mode == 'volume'
+
+- name: Create the data filesystem
+  community.general.filesystem:
+    fstype: xfs
+    dev: "{{ ps97_data_device.stdout }}"
+    opts: "-L {{ ps97_data_label }}"
+  when: ps97_storage_mode == 'volume'
+
+- name: Mount the data filesystem by label
+  # By label, never by device path: the path differs between instance families
+  # and a wrong entry here leaves the instance in emergency mode at boot.
+  # nofail keeps a missing volume from doing the same.
+  ansible.posix.mount:
+    path: "{{ ps97_data_mount }}"
+    src: "LABEL={{ ps97_data_label }}"
+    fstype: xfs
+    opts: defaults,nofail
+    passno: "2"
+    state: mounted
+  when: ps97_storage_mode == 'volume'
+
+- name: Create the data mount point
+  ansible.builtin.file:
+    path: "{{ ps97_data_mount }}"
+    state: directory
+    mode: "0755"
+  when: ps97_storage_mode == 'directory'
+
+- name: Install the SELinux policy tools
+  ansible.builtin.dnf:
+    name: policycoreutils-python-utils
+    state: present
+
+- name: Label the datadir for SELinux
+  # The packaged policy labels /var/lib/mysql. Moving the datadir without
+  # carrying the label over leaves the server unable to start the moment
+  # anyone switches SELinux to enforcing.
+  community.general.sefcontext:
+    target: "{{ ps97_datadir }}(/.*)?"
+    setype: mysqld_db_t
+    state: present
+
+- name: Create the datadir
+  # Created empty and left that way. mysqld --initialize refuses a non-empty
+  # directory, and a datadir populated at bake time would give every instance
+  # the same server UUID and the same root credential.
+  ansible.builtin.file:
+    path: "{{ ps97_datadir }}"
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: "0750"
+
+- name: Apply the SELinux context to the datadir
+  # Tolerant because this same role runs in a container with no SELinux
+  # filesystem mounted. The durable part is the fcontext rule written above,
+  # which storage.bats asserts through semanage; relabelling is what a real
+  # instance does at boot anyway.
+  ansible.builtin.command: restorecon -R {{ ps97_datadir }}
+  changed_when: false
+  failed_when: false

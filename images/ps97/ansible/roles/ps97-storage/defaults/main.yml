@@ -1,0 +1,9 @@
+---
+ps97_data_mount: /data
+ps97_data_label: PS97DATA
+ps97_datadir: /data/mysql
+
+# 'volume' formats and mounts the attached data disk, which is what a real build
+# does. 'directory' skips every block-device task so the same roles can be
+# exercised in a container that has no second disk.
+ps97_storage_mode: volume
