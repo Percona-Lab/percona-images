@@ -1,0 +1,17 @@
+[mysqld]
+datadir                 = /data/mysql
+socket                  = /var/lib/mysql/mysql.sock
+log-error               = /var/log/mysqld.log
+pid-file                = /run/mysqld/mysqld.pid
+
+# Nothing is reachable off-instance until the user opts in. Security groups are
+# the boundary; the image ships no host firewall.
+bind-address            = 127.0.0.1
+
+# Removes a DNS round trip, and a DNS failure, from every connection attempt.
+skip-name-resolve       = ON
+
+# Buffer pool, redo log capacity and flush method are derived from detected
+# memory at every start, so the values follow the instance type rather than
+# whatever it happened to be at first boot.
+innodb_dedicated_server = ON

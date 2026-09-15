@@ -1,0 +1,18 @@
+[Unit]
+Description=Percona Server for MySQL first-boot configuration
+# Ordered before mysqld so the server never starts against an uninitialized
+# datadir, which removes any need to restart it after configuration.
+Before=mysqld.service
+# The datadir lives on the data volume; without this the unit can run before
+# /data is mounted and initialize into the mount point instead of the disk.
+RequiresMountsFor=/data
+After=cloud-init.service
+ConditionPathExists=!/data/.ps97-firstboot-done
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/ps97-firstboot
+
+[Install]
+WantedBy=multi-user.target

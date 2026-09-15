@@ -1,0 +1,16 @@
+[Unit]
+Description=Disable transparent huge pages for Percona Server for MySQL
+# Must land before the buffer pool is allocated, or the allocation happens
+# under the setting this unit exists to remove.
+Before=mysqld.service
+DefaultDependencies=no
+After=sysinit.target local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'echo never > /sys/kernel/mm/transparent_hugepage/enabled'
+ExecStart=/bin/sh -c 'echo never > /sys/kernel/mm/transparent_hugepage/defrag'
+
+[Install]
+WantedBy=multi-user.target
