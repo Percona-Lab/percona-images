@@ -100,7 +100,12 @@ apply_password() {
     # credential that was just set, which this script deliberately does not keep.
     kill "$pid" 2>/dev/null || true
     while kill -0 "$pid" 2>/dev/null; do
-        [ "$elapsed" -ge "$SHUTDOWN_TIMEOUT" ] && break
+        if [ "$elapsed" -ge "$SHUTDOWN_TIMEOUT" ]; then
+            # Continuing here would leave a --skip-networking server holding the
+            # datadir, and the marker written below would prevent any retry.
+            echo "temporary server did not exit within ${SHUTDOWN_TIMEOUT}s" >&2
+            exit 1
+        fi
         sleep 1
         elapsed=$(( elapsed + 1 ))
     done

@@ -40,6 +40,7 @@ done
 export INSTANCE_ID=""
 export PUBLIC_IP=""
 export PASSWORD=""
+export BOOT_ID_BEFORE=""
 FAILURES=0
 
 cleanup() {
@@ -163,6 +164,7 @@ check "xtrabackup completes a backup and prepare" bash -c '
       && sudo xtrabackup --prepare --target-dir=/tmp/xb" >/dev/null 2>&1'
 
 echo "Rebooting to confirm the credential survives"
+BOOT_ID_BEFORE="$(remote 'cat /proc/sys/kernel/random/boot_id')"
 remote "sudo systemctl reboot" >/dev/null 2>&1 || true
 sleep 45
 elapsed=0
@@ -171,6 +173,11 @@ until remote true 2>/dev/null; do
     sleep 10
     elapsed=$(( elapsed + 10 ))
 done
+
+# shellcheck disable=SC2016  # BOOT_ID_BEFORE and remote are expanded by the inner bash, not here
+check "the instance actually rebooted" bash -c '
+    [ -n "$BOOT_ID_BEFORE" ] \
+    && [ "$(remote "cat /proc/sys/kernel/random/boot_id")" != "$BOOT_ID_BEFORE" ]'
 
 check "the password is unchanged after a reboot" \
     bash -c "[ \"\$(sql 'SELECT 1')\" = '1' ]"
