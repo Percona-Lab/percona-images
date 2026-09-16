@@ -2,3 +2,4 @@
 ps97_repo_channel: release
 ps97_server_component: ps-97-lts
 ps97_backup_component: pxb-97-lts
+ps97_toolkit_component: pt

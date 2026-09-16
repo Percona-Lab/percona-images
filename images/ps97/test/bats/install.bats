@@ -23,6 +23,10 @@ CHANNEL="${PS97_REPO_CHANNEL:-release}"
     rpm -q percona-xtrabackup-97
 }
 
+@test 'percona-toolkit is installed' {
+    rpm -q percona-toolkit
+}
+
 @test 'the installed server version matches the requested version' {
     [ "$(rpm -q --queryformat '%{VERSION}' percona-server-server)" = "$VERSION" ]
 }
@@ -33,10 +37,10 @@ CHANNEL="${PS97_REPO_CHANNEL:-release}"
     # The repository a package was installed from answers the real question and
     # carries the channel too.
     run dnf repoquery --installed --qf '%{name}|%{from_repo}' \
-        percona-server-server percona-server-client percona-xtrabackup-97
+        percona-server-server percona-server-client percona-xtrabackup-97 percona-toolkit
     [ "$status" -eq 0 ]
-    [ "$(printf '%s\n' "$output" | grep -c .)" -eq 3 ]
-    [ "$(printf '%s\n' "$output" | grep -cE "\|(ps-97-lts|pxb-97-lts)-${CHANNEL}-")" -eq 3 ]
+    [ "$(printf '%s\n' "$output" | grep -c .)" -eq 4 ]
+    [ "$(printf '%s\n' "$output" | grep -cE "\|(ps-97-lts|pxb-97-lts|pt)-${CHANNEL}-")" -eq 4 ]
 }
 
 @test 'no release candidate ships on the release channel' {

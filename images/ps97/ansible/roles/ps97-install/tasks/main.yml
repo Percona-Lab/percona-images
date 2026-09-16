@@ -22,7 +22,7 @@
 - name: Read the repository each package was installed from  # noqa: command-instead-of-module
   ansible.builtin.command: >-
     dnf repoquery --installed --qf '%{name}|%{from_repo}'
-    percona-server-server percona-server-client percona-xtrabackup-97
+    percona-server-server percona-server-client percona-xtrabackup-97 percona-toolkit
   register: ps97_origins
   changed_when: false
 
@@ -34,8 +34,8 @@
   # on its own.
   ansible.builtin.assert:
     that:
-      - ps97_origins.stdout_lines | length == 3
-      - ps97_origins.stdout_lines | select('search', '\|(ps-97-lts|pxb-97-lts)') | list | length == 3
+      - ps97_origins.stdout_lines | length == 4
+      - ps97_origins.stdout_lines | select('search', '\|(ps-97-lts|pxb-97-lts|pt)-') | list | length == 4
     fail_msg: >-
       A package did not come from ps-97-lts or pxb-97-lts:
       {{ ps97_origins.stdout }}

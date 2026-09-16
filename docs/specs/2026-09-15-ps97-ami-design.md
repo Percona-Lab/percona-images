@@ -90,10 +90,12 @@ image.
 | `percona-server-server` | `ps-97-lts` | mysqld, systemd units, `mysqld_pre_systemd` |
 | `percona-server-client` | `ps-97-lts` | mysql, mysqladmin, mysqldump |
 | `percona-xtrabackup-97` | `pxb-97-lts` | xtrabackup, xbstream, xbcloud |
+| `percona-toolkit` | `pt` | pt-online-schema-change, pt-table-checksum, and the rest of the toolkit |
 
-`percona-toolkit` is **not** available for Amazon Linux 2023 — the `tools` repository carries
-only `perl-DBD-MySQL` for that distribution — so the Percona Server 8.0 image's package set
-cannot be carried over. It is omitted rather than substituted.
+`percona-toolkit` **is** available for Amazon Linux 2023, from the `pt` component. The
+`tools` component enables cleanly on this distribution but carries no toolkit package,
+which is an easy way to conclude wrongly that it is unavailable; the package set from the
+Percona Server 8.0 image is carried over in full via `pt`.
 
 At the time of writing `percona-xtrabackup-97` resolves to `9.7.1-1.rc1` in the `release`
 channel. The install role fails the build when the resolved XtraBackup version contains `rc`

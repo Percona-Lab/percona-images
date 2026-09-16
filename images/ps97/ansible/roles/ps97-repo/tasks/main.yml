@@ -37,6 +37,14 @@
     percona-release enable {{ ps97_backup_component }} {{ ps97_repo_channel }}
   changed_when: true
 
+- name: Enable the toolkit repository channel
+  # percona-toolkit lives in the pt component on Amazon Linux 2023. The
+  # tools component enables without error here but provides no toolkit,
+  # which is an easy way to conclude wrongly that it is unavailable.
+  ansible.builtin.command: >-
+    percona-release enable {{ ps97_toolkit_component }} {{ ps97_repo_channel }}
+  changed_when: true
+
 - name: Remove the downloaded percona-release package
   ansible.builtin.file:
     path: /tmp/percona-release.rpm

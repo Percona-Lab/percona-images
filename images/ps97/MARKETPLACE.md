@@ -22,10 +22,9 @@ submission time, not a record of a completed build.
 > for production use on Amazon Linux 2023, built and tested by Percona from
 > the same sources as the Percona Server DEB and RPM packages.
 >
-> The image includes the server, the client tools, and Percona XtraBackup for
-> hot physical backups. Percona Toolkit is not included: it has no Amazon
-> Linux 2023 build in Percona's repositories, so it is omitted rather than
-> substituted with something else.
+> The image includes the server, the client tools, Percona XtraBackup for
+> hot physical backups, and Percona Toolkit for routine administration and
+> troubleshooting.
 >
 > Each instance generates a unique root password on first boot, prints it to
 > the instance console log and to the message of the day, and listens on
@@ -61,15 +60,14 @@ Region coverage is listed in `packer/release.pkvars.hcl`.
 |---|---|
 | Percona Server for MySQL | *to be filled at submission — see Open decisions* |
 | Percona XtraBackup (`percona-xtrabackup-97`) | *to be filled at submission — see Open decisions* |
+| Percona Toolkit (`percona-toolkit`) | *to be filled at submission — see Open decisions* |
 | Base OS | Amazon Linux 2023 |
-
-Percona Toolkit is not part of the image; see Product identity above.
 
 Confirm the installed versions against the built image rather than this
 table:
 
 ```bash
-rpm -q percona-server-server percona-server-client percona-xtrabackup-97
+rpm -q percona-server-server percona-server-client percona-xtrabackup-97 percona-toolkit
 ```
 
 ## Instance type guidance
