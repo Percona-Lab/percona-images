@@ -57,14 +57,15 @@
   changed_when: true
 
 - name: Remove provisioning logs and history
-  # Wiping /tmp here is safe only because the bats suite is uploaded to /tmp
-  # after this playbook finishes, not before it. Reordering those two steps
-  # would leave the build green while its verification gate ran against files
-  # that no longer existed.
+  # Deliberately does not touch /tmp: Packer stages this playbook under
+  # /tmp/packer-provisioner-ansible-local and runs ansible-playbook from that
+  # directory, so wiping /tmp here destroys the working directory of the
+  # process executing this very task. The Packer teardown does it afterwards,
+  # from a shell that is not running out of /tmp.
   ansible.builtin.shell:
     cmd: >-
       rm -rf /var/log/dnf.* /var/log/cloud-init*.log /var/log/mysqld.log
-      /root/.bash_history /home/ec2-user/.bash_history /tmp/* /var/tmp/*
+      /root/.bash_history /home/ec2-user/.bash_history
     removes: /var/log/dnf.log
 
 - name: Truncate the system journal

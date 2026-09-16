@@ -164,6 +164,10 @@ build {
       "rm -rf /tmp/bats",
       "sudo rm -rf /opt/bats",
       "sudo rm -rf /var/log/dnf.* /root/.ansible /home/ec2-user/.ansible /usr/share/ansible/collections",
+      # Left until now because the playbook itself ran out of /tmp. Packer
+      # removes its own uploaded scripts, so only the staging tree and anything
+      # the build left behind needs clearing.
+      "sudo rm -rf /tmp/packer-provisioner-ansible-local /var/tmp/*",
     ]
   }
 }
